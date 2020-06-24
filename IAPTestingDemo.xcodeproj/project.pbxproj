@@ -7,34 +7,30 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		688774E924A39F41006840A8 /* IAPError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 688774E824A39F41006840A8 /* IAPError.swift */; };
+		688774EA24A3A26D006840A8 /* Configuration.storekit in Resources */ = {isa = PBXBuildFile; fileRef = 68E05E3E24A263B100B6728D /* Configuration.storekit */; };
+		688774EC24A3A2C3006840A8 /* IAPConfigurationReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 688774EB24A3A2C3006840A8 /* IAPConfigurationReader.swift */; };
+		688774EE24A3BC98006840A8 /* IAPConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 688774ED24A3BC98006840A8 /* IAPConfiguration.swift */; };
+		688774F024A3BF36006840A8 /* ConfigurationRelease.storekit in Resources */ = {isa = PBXBuildFile; fileRef = 688774EF24A3BF36006840A8 /* ConfigurationRelease.storekit */; };
+		688774F224A3C090006840A8 /* AppleIncRootCertificate.cer in Resources */ = {isa = PBXBuildFile; fileRef = 688774F124A3C080006840A8 /* AppleIncRootCertificate.cer */; };
 		68E05E0F24A262C200B6728D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68E05E0E24A262C200B6728D /* AppDelegate.swift */; };
 		68E05E1124A262C200B6728D /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68E05E1024A262C200B6728D /* SceneDelegate.swift */; };
 		68E05E1324A262C200B6728D /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68E05E1224A262C200B6728D /* ViewController.swift */; };
 		68E05E1624A262C200B6728D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 68E05E1424A262C200B6728D /* Main.storyboard */; };
 		68E05E1824A262C300B6728D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 68E05E1724A262C300B6728D /* Assets.xcassets */; };
 		68E05E1B24A262C300B6728D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 68E05E1924A262C300B6728D /* LaunchScreen.storyboard */; };
-		68E05E2624A262C300B6728D /* IAPTestingDemoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68E05E2524A262C300B6728D /* IAPTestingDemoTests.swift */; };
-		68E05E3124A262C300B6728D /* IAPTestingDemoUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68E05E3024A262C300B6728D /* IAPTestingDemoUITests.swift */; };
+		68E05E4024A2681800B6728D /* StoreKitTestCertificate.cer in Resources */ = {isa = PBXBuildFile; fileRef = 68E05E3F24A2681800B6728D /* StoreKitTestCertificate.cer */; };
+		68E05E4424A269CD00B6728D /* IAPHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68E05E4124A269CD00B6728D /* IAPHelper.swift */; };
+		68E05E4524A269CD00B6728D /* IAPNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68E05E4224A269CD00B6728D /* IAPNotification.swift */; };
 /* End PBXBuildFile section */
 
-/* Begin PBXContainerItemProxy section */
-		68E05E2224A262C300B6728D /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 68E05E0324A262C200B6728D /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 68E05E0A24A262C200B6728D;
-			remoteInfo = IAPTestingDemo;
-		};
-		68E05E2D24A262C300B6728D /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 68E05E0324A262C200B6728D /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 68E05E0A24A262C200B6728D;
-			remoteInfo = IAPTestingDemo;
-		};
-/* End PBXContainerItemProxy section */
-
 /* Begin PBXFileReference section */
+		6811A5EE24A3D7DF00458F85 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		688774E824A39F41006840A8 /* IAPError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IAPError.swift; sourceTree = "<group>"; };
+		688774EB24A3A2C3006840A8 /* IAPConfigurationReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IAPConfigurationReader.swift; sourceTree = "<group>"; };
+		688774ED24A3BC98006840A8 /* IAPConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IAPConfiguration.swift; sourceTree = "<group>"; };
+		688774EF24A3BF36006840A8 /* ConfigurationRelease.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = ConfigurationRelease.storekit; sourceTree = "<group>"; };
+		688774F124A3C080006840A8 /* AppleIncRootCertificate.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = AppleIncRootCertificate.cer; sourceTree = "<group>"; };
 		68E05E0B24A262C200B6728D /* IAPTestingDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = IAPTestingDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		68E05E0E24A262C200B6728D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		68E05E1024A262C200B6728D /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -43,30 +39,14 @@
 		68E05E1724A262C300B6728D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		68E05E1A24A262C300B6728D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		68E05E1C24A262C300B6728D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		68E05E2124A262C300B6728D /* IAPTestingDemoTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = IAPTestingDemoTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		68E05E2524A262C300B6728D /* IAPTestingDemoTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IAPTestingDemoTests.swift; sourceTree = "<group>"; };
-		68E05E2724A262C300B6728D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		68E05E2C24A262C300B6728D /* IAPTestingDemoUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = IAPTestingDemoUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		68E05E3024A262C300B6728D /* IAPTestingDemoUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IAPTestingDemoUITests.swift; sourceTree = "<group>"; };
-		68E05E3224A262C300B6728D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		68E05E3E24A263B100B6728D /* Configuration.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = Configuration.storekit; sourceTree = "<group>"; };
+		68E05E3F24A2681800B6728D /* StoreKitTestCertificate.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = StoreKitTestCertificate.cer; sourceTree = "<group>"; };
+		68E05E4124A269CD00B6728D /* IAPHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IAPHelper.swift; sourceTree = "<group>"; };
+		68E05E4224A269CD00B6728D /* IAPNotification.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IAPNotification.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		68E05E0824A262C200B6728D /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		68E05E1E24A262C300B6728D /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		68E05E2924A262C300B6728D /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -79,9 +59,8 @@
 		68E05E0224A262C200B6728D = {
 			isa = PBXGroup;
 			children = (
+				6811A5EE24A3D7DF00458F85 /* README.md */,
 				68E05E0D24A262C200B6728D /* IAPTestingDemo */,
-				68E05E2424A262C300B6728D /* IAPTestingDemoTests */,
-				68E05E2F24A262C300B6728D /* IAPTestingDemoUITests */,
 				68E05E0C24A262C200B6728D /* Products */,
 			);
 			sourceTree = "<group>";
@@ -90,8 +69,6 @@
 			isa = PBXGroup;
 			children = (
 				68E05E0B24A262C200B6728D /* IAPTestingDemo.app */,
-				68E05E2124A262C300B6728D /* IAPTestingDemoTests.xctest */,
-				68E05E2C24A262C300B6728D /* IAPTestingDemoUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -99,33 +76,24 @@
 		68E05E0D24A262C200B6728D /* IAPTestingDemo */ = {
 			isa = PBXGroup;
 			children = (
+				688774F124A3C080006840A8 /* AppleIncRootCertificate.cer */,
+				68E05E3F24A2681800B6728D /* StoreKitTestCertificate.cer */,
+				68E05E1C24A262C300B6728D /* Info.plist */,
+				68E05E3E24A263B100B6728D /* Configuration.storekit */,
+				688774EF24A3BF36006840A8 /* ConfigurationRelease.storekit */,
 				68E05E0E24A262C200B6728D /* AppDelegate.swift */,
+				688774ED24A3BC98006840A8 /* IAPConfiguration.swift */,
+				688774EB24A3A2C3006840A8 /* IAPConfigurationReader.swift */,
+				688774E824A39F41006840A8 /* IAPError.swift */,
+				68E05E4124A269CD00B6728D /* IAPHelper.swift */,
+				68E05E4224A269CD00B6728D /* IAPNotification.swift */,
 				68E05E1024A262C200B6728D /* SceneDelegate.swift */,
 				68E05E1224A262C200B6728D /* ViewController.swift */,
-				68E05E1424A262C200B6728D /* Main.storyboard */,
 				68E05E1724A262C300B6728D /* Assets.xcassets */,
 				68E05E1924A262C300B6728D /* LaunchScreen.storyboard */,
-				68E05E1C24A262C300B6728D /* Info.plist */,
+				68E05E1424A262C200B6728D /* Main.storyboard */,
 			);
 			path = IAPTestingDemo;
-			sourceTree = "<group>";
-		};
-		68E05E2424A262C300B6728D /* IAPTestingDemoTests */ = {
-			isa = PBXGroup;
-			children = (
-				68E05E2524A262C300B6728D /* IAPTestingDemoTests.swift */,
-				68E05E2724A262C300B6728D /* Info.plist */,
-			);
-			path = IAPTestingDemoTests;
-			sourceTree = "<group>";
-		};
-		68E05E2F24A262C300B6728D /* IAPTestingDemoUITests */ = {
-			isa = PBXGroup;
-			children = (
-				68E05E3024A262C300B6728D /* IAPTestingDemoUITests.swift */,
-				68E05E3224A262C300B6728D /* Info.plist */,
-			);
-			path = IAPTestingDemoUITests;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -148,42 +116,6 @@
 			productReference = 68E05E0B24A262C200B6728D /* IAPTestingDemo.app */;
 			productType = "com.apple.product-type.application";
 		};
-		68E05E2024A262C300B6728D /* IAPTestingDemoTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 68E05E3824A262C300B6728D /* Build configuration list for PBXNativeTarget "IAPTestingDemoTests" */;
-			buildPhases = (
-				68E05E1D24A262C300B6728D /* Sources */,
-				68E05E1E24A262C300B6728D /* Frameworks */,
-				68E05E1F24A262C300B6728D /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				68E05E2324A262C300B6728D /* PBXTargetDependency */,
-			);
-			name = IAPTestingDemoTests;
-			productName = IAPTestingDemoTests;
-			productReference = 68E05E2124A262C300B6728D /* IAPTestingDemoTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
-		68E05E2B24A262C300B6728D /* IAPTestingDemoUITests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 68E05E3B24A262C300B6728D /* Build configuration list for PBXNativeTarget "IAPTestingDemoUITests" */;
-			buildPhases = (
-				68E05E2824A262C300B6728D /* Sources */,
-				68E05E2924A262C300B6728D /* Frameworks */,
-				68E05E2A24A262C300B6728D /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				68E05E2E24A262C300B6728D /* PBXTargetDependency */,
-			);
-			name = IAPTestingDemoUITests;
-			productName = IAPTestingDemoUITests;
-			productReference = 68E05E2C24A262C300B6728D /* IAPTestingDemoUITests.xctest */;
-			productType = "com.apple.product-type.bundle.ui-testing";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -195,14 +127,6 @@
 				TargetAttributes = {
 					68E05E0A24A262C200B6728D = {
 						CreatedOnToolsVersion = 12.0;
-					};
-					68E05E2024A262C300B6728D = {
-						CreatedOnToolsVersion = 12.0;
-						TestTargetID = 68E05E0A24A262C200B6728D;
-					};
-					68E05E2B24A262C300B6728D = {
-						CreatedOnToolsVersion = 12.0;
-						TestTargetID = 68E05E0A24A262C200B6728D;
 					};
 				};
 			};
@@ -220,8 +144,6 @@
 			projectRoot = "";
 			targets = (
 				68E05E0A24A262C200B6728D /* IAPTestingDemo */,
-				68E05E2024A262C300B6728D /* IAPTestingDemoTests */,
-				68E05E2B24A262C300B6728D /* IAPTestingDemoUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -232,22 +154,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				68E05E1B24A262C300B6728D /* LaunchScreen.storyboard in Resources */,
+				688774F024A3BF36006840A8 /* ConfigurationRelease.storekit in Resources */,
+				688774F224A3C090006840A8 /* AppleIncRootCertificate.cer in Resources */,
+				688774EA24A3A26D006840A8 /* Configuration.storekit in Resources */,
 				68E05E1824A262C300B6728D /* Assets.xcassets in Resources */,
 				68E05E1624A262C200B6728D /* Main.storyboard in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		68E05E1F24A262C300B6728D /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		68E05E2A24A262C300B6728D /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
+				68E05E4024A2681800B6728D /* StoreKitTestCertificate.cer in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -258,42 +170,18 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				68E05E4524A269CD00B6728D /* IAPNotification.swift in Sources */,
+				68E05E4424A269CD00B6728D /* IAPHelper.swift in Sources */,
 				68E05E1324A262C200B6728D /* ViewController.swift in Sources */,
+				688774EC24A3A2C3006840A8 /* IAPConfigurationReader.swift in Sources */,
 				68E05E0F24A262C200B6728D /* AppDelegate.swift in Sources */,
+				688774EE24A3BC98006840A8 /* IAPConfiguration.swift in Sources */,
+				688774E924A39F41006840A8 /* IAPError.swift in Sources */,
 				68E05E1124A262C200B6728D /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		68E05E1D24A262C300B6728D /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				68E05E2624A262C300B6728D /* IAPTestingDemoTests.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		68E05E2824A262C300B6728D /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				68E05E3124A262C300B6728D /* IAPTestingDemoUITests.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		68E05E2324A262C300B6728D /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 68E05E0A24A262C200B6728D /* IAPTestingDemo */;
-			targetProxy = 68E05E2224A262C300B6728D /* PBXContainerItemProxy */;
-		};
-		68E05E2E24A262C300B6728D /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 68E05E0A24A262C200B6728D /* IAPTestingDemo */;
-			targetProxy = 68E05E2D24A262C300B6728D /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		68E05E1424A262C200B6728D /* Main.storyboard */ = {
@@ -469,90 +357,6 @@
 			};
 			name = Release;
 		};
-		68E05E3924A262C300B6728D /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = R6BE99W3FU;
-				INFOPLIST_FILE = IAPTestingDemoTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.rarcher.IAPTestingDemoTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/IAPTestingDemo.app/IAPTestingDemo";
-			};
-			name = Debug;
-		};
-		68E05E3A24A262C300B6728D /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = R6BE99W3FU;
-				INFOPLIST_FILE = IAPTestingDemoTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.rarcher.IAPTestingDemoTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/IAPTestingDemo.app/IAPTestingDemo";
-			};
-			name = Release;
-		};
-		68E05E3C24A262C300B6728D /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = R6BE99W3FU;
-				INFOPLIST_FILE = IAPTestingDemoUITests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.rarcher.IAPTestingDemoUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = IAPTestingDemo;
-			};
-			name = Debug;
-		};
-		68E05E3D24A262C300B6728D /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = R6BE99W3FU;
-				INFOPLIST_FILE = IAPTestingDemoUITests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.rarcher.IAPTestingDemoUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = IAPTestingDemo;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -570,24 +374,6 @@
 			buildConfigurations = (
 				68E05E3624A262C300B6728D /* Debug */,
 				68E05E3724A262C300B6728D /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		68E05E3824A262C300B6728D /* Build configuration list for PBXNativeTarget "IAPTestingDemoTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				68E05E3924A262C300B6728D /* Debug */,
-				68E05E3A24A262C300B6728D /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		68E05E3B24A262C300B6728D /* Build configuration list for PBXNativeTarget "IAPTestingDemoUITests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				68E05E3C24A262C300B6728D /* Debug */,
-				68E05E3D24A262C300B6728D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

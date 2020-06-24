@@ -1,0 +1,54 @@
+{
+  "products" : [
+    {
+      "displayPrice" : "1.99",
+      "familyShareable" : false,
+      "internalID" : "48594F7A",
+      "localizations" : [
+        {
+          "description" : "A lovely large bunch of mixed flowers",
+          "displayName" : "Flowers Large",
+          "locale" : "en_US"
+        },
+        {
+          "description" : "A lovely large bunch of mixed flowers",
+          "displayName" : "Flowers Large",
+          "locale" : "en_GB"
+        }
+      ],
+      "productID" : "com.rarcher.flowers-large",
+      "referenceName" : "flowers-large",
+      "type" : "NonConsumable"
+    },
+    {
+      "displayPrice" : "0.99",
+      "familyShareable" : false,
+      "internalID" : "FB9E68BF",
+      "localizations" : [
+        {
+          "description" : "A lovely small bunch of flowers",
+          "displayName" : "Flowers Small",
+          "locale" : "en_US"
+        },
+        {
+          "description" : "A lovely small bunch of flowers",
+          "displayName" : "Flowers Small",
+          "locale" : "en_GB"
+        }
+      ],
+      "productID" : "com.rarcher.flowers-small",
+      "referenceName" : "flowers-small",
+      "type" : "NonConsumable"
+    }
+  ],
+  "settings" : {
+    "_askToBuyEnabled" : false
+  },
+  "subscriptionGroups" : [
+
+  ],
+  "version" : {
+    "major" : 1,
+    "minor" : 0
+  }
+}
