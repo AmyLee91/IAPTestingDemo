@@ -8,6 +8,7 @@
 
 import Foundation
 
+/// Notifications issued by IAPHelper
 public enum IAPNotificaton {
     case purchaseStarted
     case purchaseInProgress

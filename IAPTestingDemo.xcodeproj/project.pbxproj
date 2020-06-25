@@ -7,6 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		6845FC0224A4D1EE007FF7BA /* IAPPersistenceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6845FC0124A4D1EE007FF7BA /* IAPPersistenceProtocol.swift */; };
+		6845FC0424A4F379007FF7BA /* IAPLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6845FC0324A4F379007FF7BA /* IAPLog.swift */; };
+		6845FC0624A4F503007FF7BA /* IAPConfigurationError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6845FC0524A4F503007FF7BA /* IAPConfigurationError.swift */; };
+		6845FC0D24A50845007FF7BA /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6845FC0B24A50831007FF7BA /* libcrypto.a */; };
+		6845FC0E24A50853007FF7BA /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6845FC0C24A50831007FF7BA /* libssl.a */; };
 		688774E924A39F41006840A8 /* IAPError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 688774E824A39F41006840A8 /* IAPError.swift */; };
 		688774EA24A3A26D006840A8 /* Configuration.storekit in Resources */ = {isa = PBXBuildFile; fileRef = 68E05E3E24A263B100B6728D /* Configuration.storekit */; };
 		688774EC24A3A2C3006840A8 /* IAPConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 688774EB24A3A2C3006840A8 /* IAPConfiguration.swift */; };
@@ -31,6 +36,13 @@
 
 /* Begin PBXFileReference section */
 		6811A5EE24A3D7DF00458F85 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		6845FC0124A4D1EE007FF7BA /* IAPPersistenceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IAPPersistenceProtocol.swift; sourceTree = "<group>"; };
+		6845FC0324A4F379007FF7BA /* IAPLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IAPLog.swift; sourceTree = "<group>"; };
+		6845FC0524A4F503007FF7BA /* IAPConfigurationError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IAPConfigurationError.swift; sourceTree = "<group>"; };
+		6845FC0724A505DB007FF7BA /* IAPTestingDemo-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "IAPTestingDemo-Bridging-Header.h"; sourceTree = "<group>"; };
+		6845FC0824A50610007FF7BA /* openssl */ = {isa = PBXFileReference; lastKnownFileType = folder; path = openssl; sourceTree = "<group>"; };
+		6845FC0B24A50831007FF7BA /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcrypto.a; path = IAPTestingDemo/openssl/lib/libcrypto.a; sourceTree = "<group>"; };
+		6845FC0C24A50831007FF7BA /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libssl.a; path = IAPTestingDemo/openssl/lib/libssl.a; sourceTree = "<group>"; };
 		688774E824A39F41006840A8 /* IAPError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IAPError.swift; sourceTree = "<group>"; };
 		688774EB24A3A2C3006840A8 /* IAPConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IAPConfiguration.swift; sourceTree = "<group>"; };
 		688774ED24A3BC98006840A8 /* IAPConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IAPConstants.swift; sourceTree = "<group>"; };
@@ -60,25 +72,40 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6845FC0E24A50853007FF7BA /* libssl.a in Frameworks */,
+				6845FC0D24A50845007FF7BA /* libcrypto.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		6845FC0A24A50830007FF7BA /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				6845FC0B24A50831007FF7BA /* libcrypto.a */,
+				6845FC0C24A50831007FF7BA /* libssl.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		68A4653E24A42AD4002142D4 /* IAP */ = {
 			isa = PBXGroup;
 			children = (
 				688774F124A3C080006840A8 /* AppleIncRootCertificate.cer */,
 				68E05E3F24A2681800B6728D /* StoreKitTestCertificate.cer */,
+				6845FC0724A505DB007FF7BA /* IAPTestingDemo-Bridging-Header.h */,
 				688774EB24A3A2C3006840A8 /* IAPConfiguration.swift */,
+				6845FC0524A4F503007FF7BA /* IAPConfigurationError.swift */,
 				68A4653424A428A5002142D4 /* IAPConfigurationModel.swift */,
 				688774ED24A3BC98006840A8 /* IAPConstants.swift */,
 				688774E824A39F41006840A8 /* IAPError.swift */,
 				68E05E4124A269CD00B6728D /* IAPHelper.swift */,
+				6845FC0324A4F379007FF7BA /* IAPLog.swift */,
 				68E05E4224A269CD00B6728D /* IAPNotification.swift */,
 				68A4653A24A42A7F002142D4 /* IAPOpenSSL.swift */,
 				68A4653624A428FC002142D4 /* IAPPersistence.swift */,
+				6845FC0124A4D1EE007FF7BA /* IAPPersistenceProtocol.swift */,
 				68A4653824A429DB002142D4 /* IAPReceipt.swift */,
 				68A4653C24A42AA9002142D4 /* IAPReceiptValidator.swift */,
 			);
@@ -91,6 +118,7 @@
 				6811A5EE24A3D7DF00458F85 /* README.md */,
 				68E05E0D24A262C200B6728D /* IAPTestingDemo */,
 				68E05E0C24A262C200B6728D /* Products */,
+				6845FC0A24A50830007FF7BA /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -105,6 +133,7 @@
 		68E05E0D24A262C200B6728D /* IAPTestingDemo */ = {
 			isa = PBXGroup;
 			children = (
+				6845FC0824A50610007FF7BA /* openssl */,
 				68A4653E24A42AD4002142D4 /* IAP */,
 				68E05E0E24A262C200B6728D /* AppDelegate.swift */,
 				68E05E1724A262C300B6728D /* Assets.xcassets */,
@@ -195,16 +224,19 @@
 			files = (
 				68E05E4524A269CD00B6728D /* IAPNotification.swift in Sources */,
 				68A4653D24A42AA9002142D4 /* IAPReceiptValidator.swift in Sources */,
+				6845FC0624A4F503007FF7BA /* IAPConfigurationError.swift in Sources */,
 				68E05E4424A269CD00B6728D /* IAPHelper.swift in Sources */,
 				68A4653724A428FC002142D4 /* IAPPersistence.swift in Sources */,
 				68E05E1324A262C200B6728D /* ViewController.swift in Sources */,
 				688774EC24A3A2C3006840A8 /* IAPConfiguration.swift in Sources */,
 				68A4653B24A42A7F002142D4 /* IAPOpenSSL.swift in Sources */,
 				68A4653924A429DB002142D4 /* IAPReceipt.swift in Sources */,
+				6845FC0424A4F379007FF7BA /* IAPLog.swift in Sources */,
 				68A4653524A428A5002142D4 /* IAPConfigurationModel.swift in Sources */,
 				68E05E0F24A262C200B6728D /* AppDelegate.swift in Sources */,
 				688774EE24A3BC98006840A8 /* IAPConstants.swift in Sources */,
 				688774E924A39F41006840A8 /* IAPError.swift in Sources */,
+				6845FC0224A4D1EE007FF7BA /* IAPPersistenceProtocol.swift in Sources */,
 				68E05E1124A262C200B6728D /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -354,13 +386,19 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = R6BE99W3FU;
+				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/IAPTestingDemo/openssl/include";
 				INFOPLIST_FILE = IAPTestingDemo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/IAPTestingDemo/openssl/lib",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.rarcher.IAPTestingDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "$(PROJECT_DIR)/IAPTestingDemo/IAP/IAPTestingDemo-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -373,13 +411,19 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = R6BE99W3FU;
+				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/IAPTestingDemo/openssl/include";
 				INFOPLIST_FILE = IAPTestingDemo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/IAPTestingDemo/openssl/lib",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.rarcher.IAPTestingDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "$(PROJECT_DIR)/IAPTestingDemo/IAP/IAPTestingDemo-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

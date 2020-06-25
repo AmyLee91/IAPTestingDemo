@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// Helper functions used when working with OpenSSL to validate the App Store receipt
 public struct IAPOpenSSL {
     
 }

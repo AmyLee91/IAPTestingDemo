@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// Error struct used by IAPHelper
 public struct IAPError {
     public var productIdentifier: ProductId
     public var wasCancelled: Bool
@@ -20,4 +21,5 @@ public struct IAPError {
         self.error = error
     }
 }
+
 
