@@ -7,14 +7,29 @@
 
 import UIKit
 
+/*
+ 
+ Order of init events:
+ 
+ * Load fallback list of purchased product ids from user defaults - need an IAPPersistence class
+ * Read appropriate .storekit config file to get list of product ids of available products - need IAPConfiguration class
+   (will be used to query App Store for localized details)
+ * Host calls IAPHelper to requestProducts details from app store
+ 
+ When making purchase:
+ * Save purchased product id to user defaults
+ :
+ :
+ 
+ */
+
 class ViewController: UIViewController {
-    var iap = IAPHelper.shared
     var productIds: Set<ProductId>?
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        let result = IAPConfigurationReader.read(filename: "Configuration", ext: "storekit")
+        let result = IAPConfiguration.read(filename: IAPConstants.File(), ext: IAPConstants.FileExt())
         switch result {
             case .failure(let error):
                 print(error)
@@ -28,7 +43,7 @@ class ViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         // Subscribe to IAPHelper notifications
-        iap.addObserverForNotifications(observer: self, selector: #selector(self.handleIAPNotification(_:)))
+        IAPHelper.shared.addObserverForNotifications(observer: self, selector: #selector(self.handleIAPNotification(_:)))
 
         // Get localized info about our available in-app purchase products from the app store
         guard let pids = productIds else {
@@ -36,29 +51,29 @@ class ViewController: UIViewController {
             return
         }
         
-        iap.requestProducts(productIds: pids)
+        IAPHelper.shared.requestProducts(productIds: pids)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
-        iap.removeObserverForNotifications(observer: self)
+        IAPHelper.shared.removeObserverForNotifications(observer: self)
     }
     
     @IBAction func purchaseLargeFlowersTapped(_ sender: Any) {
-        guard let product = iap.getStoreProductFrom(id: "com.rarcher.flowers-large") else {
+        guard let product = IAPHelper.shared.getStoreProductFrom(id: "com.rarcher.flowers-large") else {
             print("Couldn't get SKProduct for large flowers")
             return
         }
         
-        iap.buyProduct(product)
+        IAPHelper.shared.buyProduct(product)
     }
     
     @IBAction func purchaseSmallFlowersTapped(_ sender: Any) {
-        guard let product = iap.getStoreProductFrom(id: "com.rarcher.flowers-small") else {
+        guard let product = IAPHelper.shared.getStoreProductFrom(id: "com.rarcher.flowers-small") else {
             print("Couldn't get SKProduct for small flowers")
             return
         }
         
-        iap.buyProduct(product)
+        IAPHelper.shared.buyProduct(product)
     }
     
     @objc func handleIAPNotification(_ notification: Notification) {
@@ -66,13 +81,13 @@ class ViewController: UIViewController {
         switch notification.name.rawValue {
         case IAPNotificaton.requestProductsCompleted.key():
             print(IAPNotificaton.requestProductsCompleted.shortDescription())
-            guard iap.isStoreProductInfoAvailable else {
+            guard IAPHelper.shared.isStoreProductInfoAvailable else {
                 print("No products available")
                 return
             }
             
             print("Available products:")
-            iap.products?.forEach { product in
+            IAPHelper.shared.products?.forEach { product in
                 print("\(product.productIdentifier) : \(product.localizedTitle)")
             }
             break

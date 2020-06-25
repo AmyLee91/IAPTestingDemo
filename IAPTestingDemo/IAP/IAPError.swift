@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class IAPError {
+public struct IAPError {
     public var productIdentifier: ProductId
     public var wasCancelled: Bool
     public var localizedDescription: String?

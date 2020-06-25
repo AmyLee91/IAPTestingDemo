@@ -24,7 +24,7 @@ public enum IAPNotificaton {
     case requestProductsCompleted
     case requestProductsFailed
 
-    func key() -> String {
+    public func key() -> String {
         switch self {
         case .purchaseStarted:              return "purchaseStarted"
         case .purchaseInProgress:           return "purchaseInProgress"
@@ -43,7 +43,7 @@ public enum IAPNotificaton {
         }
     }
     
-    func shortDescription() -> String {
+    public func shortDescription() -> String {
         switch self {
         case .purchaseStarted:              return "Purchase Started"
         case .purchaseInProgress:           return "Purchase In Progress"
@@ -62,7 +62,7 @@ public enum IAPNotificaton {
         }
     }
 
-    func description() -> String {
+    public func description() -> String {
         switch self {
         case .purchaseStarted:              return "Purchase started"
         case .purchaseInProgress:           return "Purchase in progress"
@@ -81,7 +81,7 @@ public enum IAPNotificaton {
         }
     }
 
-    static func keys() -> [String] {
+    public static func keys() -> [String] {
         return ["purchaseStarted",
                 "purchaseInProgress",
                 "purchaseDeferred",

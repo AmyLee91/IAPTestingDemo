@@ -16,13 +16,51 @@ public class IAPHelper: NSObject  {
     /// Singleton access
     public static let shared: IAPHelper = IAPHelper()
 
-    public var haveValidated: Bool = false   // We normally only validate the receipt once
-    public var isReceiptValid: Bool = false  // True if validated
-    public var isPurchasing: Bool = false    // True if a purchase is in progress (excluding a deferred)
+    /// True if receipt has been validated. We normally only validate the receipt once
+    public var haveValidated: Bool  = false
+    
+    /// True if receipt is valid
+    public var isReceiptValid: Bool = false
+    
+    /// True if a purchase is in progress (excluding a deferred)
+    public var isPurchasing: Bool   = false
 
-    /// List of products available for purchase. See isStoreProductInfoAvailable
+    /// List of products retrieved from the App Store and available for purchase
     public var products: [SKProduct]?
+    
+    /// This property is set automatically when IAPHelper is initialized.
+    /// All products purchased by the user. The collection is not persisted but is rebuilt from the
+    /// product identifiers of purchased products stored individually in user defaults (see IAPPersistence).
+    /// This is a fall-back collection of purchases designed to allow the user access to purchases
+    /// in the event that the app receipt is missing and we can't contact the App Store to refresh it.
+    public var fallbackPurchasedProductIdentifiers: Set<ProductId>?
 
+    /// The set of purchased product ids validated against the app's App Store receipt.
+    /// If the set of purchasedProductIdentifiers is not the same as validatedPurchasedProductIdentifiers
+    /// then there's potentially fraud going on and purchasesValid is set to false.
+    /// Note that receipt validation happens during applicationDidBecomeActive(_:) when AppDelegate
+    /// calls our validateReceiptAndGetProductsIds() method.
+    public var validatedPurchasedProductIdentifiers: Set<ProductId>?
+    
+    /// True if we have a list of purchased product IDs validated against the App Store receipt. See validatedPurchasedProductIdentifiers
+    public var haveValidatedPurchasedProductIdentifiers: Bool {
+        guard validatedPurchasedProductIdentifiers != nil else { return false }
+        return validatedPurchasedProductIdentifiers!.count > 0 ? true : false
+    }
+    
+    /// True if we have a list of unvalidated purchased product IDs. See fallbackPurchasedProductIdentifiers
+    public var haveFallbackPurchasedProductIdentifiers: Bool {
+        guard fallbackPurchasedProductIdentifiers != nil else { return false }
+        return fallbackPurchasedProductIdentifiers!.count > 0 ? true : false
+    }
+    
+    /// True if the user has purchased any products (validated or not)
+    public var hasMadePurchases: Bool {
+        if haveValidatedPurchasedProductIdentifiers { return true }
+        if haveFallbackPurchasedProductIdentifiers  { return true }
+        return false
+    }
+    
     /// True if app store product info has been retrieved via requestProducts()
     public var isStoreProductInfoAvailable: Bool {
         guard products != nil else { return false }
@@ -32,7 +70,7 @@ public class IAPHelper: NSObject  {
     
     fileprivate var productsRequest: SKProductsRequest?
     fileprivate var receiptRequest: SKRequest?
-
+    
     /// Private initializer prevents more than a single instance of this class being created.
     /// See the public static shared property
     private override init() {

@@ -1,5 +1,5 @@
 //
-//  IAPConfiguration.swift
+//  IAPConfigurationConstants.swift
 //  IAPTestingDemo
 //
 //  Created by Russell Archer on 24/06/2020.
@@ -7,17 +7,19 @@
 
 import Foundation
 
-struct IAPConfiguration {
+public struct IAPConstants {
     
-    static func File() -> String {
+    public static func File() -> String {
         #if DEBUG
-        return "Configuration.storekit"
+        return "Configuration"
         #else
-        return "ConfigurationRelease.storekit"
+        return "ConfigurationRelease"
         #endif
     }
     
-    static func Certificate() -> String {
+    public static func FileExt() -> String { "storekit" }
+    
+    public static func Certificate() -> String {
         #if DEBUG
         return "StoreKitTestCertificate.cer"
         #else
