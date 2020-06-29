@@ -10,7 +10,7 @@ import UIKit
 public struct IAPConfiguration {
 
     /// Read the .storekit file appropriate for the build and extract the configuration data (which includes the list of Product IDs)
-    public static func read(filename: String, ext: String) -> Result<IAPConfigurationModel, IAPConfigurationError> {
+    public static func read(filename: String, ext: String) -> Result<IAPConfigurationModel, IAPError> {
         
         guard let url = Bundle.main.url(forResource: filename, withExtension: ext) else { return .failure(.cantFindInBundle) }
         guard let data = try? Data(contentsOf: url) else { return .failure(.cantReadData) }

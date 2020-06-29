@@ -20,8 +20,9 @@ public enum IAPNotificaton {
     case purchaseRestoreFailed
     case purchaseValidationCompleted
     case purchaseValidationFailed
+    case receiptValidationFailed
     case receiptValid
-    case receiptCannotBeValidated
+    case requestProductsInitiated
     case requestProductsCompleted
     case requestProductsFailed
 
@@ -37,8 +38,9 @@ public enum IAPNotificaton {
         case .purchaseRestoreFailed:        return "purchaseRestoreFailed"
         case .purchaseValidationCompleted:  return "purchaseValidationCompleted"
         case .purchaseValidationFailed:     return "purchaseValidationFailed"
+        case .receiptValidationFailed:      return "receiptValidationFailed"
         case .receiptValid:                 return "receiptValid"
-        case .receiptCannotBeValidated:     return "receiptCannotBeValidated"
+        case .requestProductsInitiated:     return "requestProductsInitiated"
         case .requestProductsCompleted:     return "requestProductsCompleted"
         case .requestProductsFailed:        return "requestProductsFailed"
         }
@@ -56,8 +58,9 @@ public enum IAPNotificaton {
         case .purchaseRestoreFailed:        return "Purchase Restore Failed"
         case .purchaseValidationCompleted:  return "Purchase Validation Completed"
         case .purchaseValidationFailed:     return "Purchase Validation Failed"
+        case .receiptValidationFailed:      return "Receipt Validation Failed"
         case .receiptValid:                 return "Receipt Valid"
-        case .receiptCannotBeValidated:     return "Receipt Cannot Be Validated"
+        case .requestProductsInitiated:     return "Request Products Initiated"
         case .requestProductsCompleted:     return "Request Products Completed"
         case .requestProductsFailed:        return "Request Products Failed"
         }
@@ -75,8 +78,9 @@ public enum IAPNotificaton {
         case .purchaseRestoreFailed:        return "Purchase restore failed"
         case .purchaseValidationCompleted:  return "Purchases validated against App Store receipt"
         case .purchaseValidationFailed:     return "Purchases could not be validated against App Store receipt"
-        case .receiptValid:                 return "App Store Receipt is valid"
-        case .receiptCannotBeValidated:     return "App Store Receipt cannot be validated at this time"
+        case .receiptValidationFailed:      return "App Store receipt validation failed"
+        case .receiptValid:                 return "App Store receipt is valid"
+        case .requestProductsInitiated:     return "Requested product information from the App Store"
         case .requestProductsCompleted:     return "Products retrieved from App Store"
         case .requestProductsFailed:        return "Unable to retrieve products from App Store"
         }
@@ -93,8 +97,9 @@ public enum IAPNotificaton {
                 "purchaseRestoreFailed",
                 "purchaseValidationCompleted",
                 "purchaseValidationFailed",
+                "receiptValidationFailed",
                 "receiptValid",
-                "receiptCannotBeValidated",
+                "requestProductsInitiated",
                 "requestProductsCompleted",
                 "requestProductsFailed"]
     }

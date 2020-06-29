@@ -9,38 +9,39 @@ import Foundation
 
 public struct IAPLog {
   
-    public static func event(error: IAPConfigurationError) {
+    public static func event(error: IAPError) {
         #if DEBUG
-        print("IAP configuration error: \(0)")
+        print("IAP error: \(error.shortDescription())")
         #endif
     }
     
-//    public static func event(product: SKProduct?, event: IAPNotificaton, message: String? = nil) {
-//        #if DEBUG
-//        print("\(event.shortDescription())")
-//
-//        if let prod = product {
-//            print("  Product ID : \(prod.productIdentifier)")
-//            print("  Title      : \(prod.localizedTitle)")
-//            print("  Value      : \(prod.price)")
-//            print("  Currency   : \(prod.priceLocale.currencyCode ?? "Unknown")")
-//        }
-//
-//        if let msg = message {
-//            print("  Message    : \(msg)")
-//        }
-//        #endif
-//    }
+    public static func event(error: IAPError, message: String) {
+        #if DEBUG
+        print("IAP error: \(error.shortDescription())\n\(message)")
+        #endif
+    }
     
     public static func event(event: IAPNotificaton) {
-//        IAPLog.event(product: nil, event:  event)
+        #if DEBUG
+        print("IAP notification: \(event.shortDescription())")
+        #endif
+    }
+    
+    public static func event(event: IAPNotificaton, message: String) {
+        #if DEBUG
+        print("IAP notification: \(event.shortDescription())\n\(message)")
+        #endif
     }
     
     public static func event(productId: String, event: IAPNotificaton) {
-//        IAPLog.event(product: NavUtils.appDelegate.iap.getStoreProductFrom(id: productId), event:  event)
+        #if DEBUG
+        print("IAP notification for ProductId \(productId): \(event.shortDescription())")
+        #endif
     }
     
     public static func event(productId: String, event: IAPNotificaton, message: String) {
-//        IAPLog.event(product: NavUtils.appDelegate.iap.getStoreProductFrom(id: productId), event: event, message: message)
+        #if DEBUG
+        print("IAP notification for ProductId \(productId): \(event.shortDescription())\n\(message)")
+        #endif
     }
 }

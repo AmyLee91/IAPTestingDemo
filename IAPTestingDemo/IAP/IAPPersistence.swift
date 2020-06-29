@@ -7,41 +7,43 @@
 
 import Foundation
 
-/// IAPPersistence contains static methods to load and save 'fallback' purchase information.
+/// Contains static methods to load and save 'fallback' purchase information.
 /// If a product is purchased a Bool is created in UserDefaults. Its key will be the ProductId.
 public struct IAPPersistence: IAPPersistenceProtocol {
     
+    /// Save the purchased state for a ProductId. A Bool is created in UserDefaults where the key is the ProductId.
+    /// - Parameters:
+    ///   - productId: ProductId for an in-app purchase that this app supports
+    ///   - purchased: True if the product has been purchased, false otherwise
     public static func savePurchasedState(for productId: ProductId, purchased: Bool = true) {
-        print("Saving purchased state for ProductId \(productId)")
         UserDefaults.standard.set(purchased, forKey: productId)
     }
     
+    /// Save the purchased state for a set of ProductIds. For each ProductId a Bool is created in
+    /// UserDefaults where the key is the ProductId.
+    /// - Parameters:
+    ///   - productIds: Set of ProductIds for all in-app purchases that this app supports
+    ///   - purchased: True if the products have been purchased, false otherwise
+    public static func savePurchasedState(for productIds: Set<ProductId>, purchased: Bool = true) {
+        productIds.forEach { productId in UserDefaults.standard.set(purchased, forKey: productId) }
+    }
+    
+    /// Returns a Bool indicating if the ProductId has been purchased.
+    /// - Parameter productId: ProductId for an in-app purchase that this app supports
+    /// - Returns: A Bool indicating if the ProductId has been purchased
     public static func loadPurchasedState(for productId: ProductId) -> Bool {
-        print("Attempting to load purchased ProductId \(productId)...")
         return UserDefaults.standard.bool(forKey: productId)
     }
     
-    public static func loadPurchasedState(for productIds: Set<ProductId>) -> [(productId: ProductId, purchased: Bool)]? {
-        print("Attempting to load purchased state for list of ProductIds...")
-
-        var purchasedProductIds = [(productId: ProductId, purchased: Bool)]()
-        productIds.forEach { productId in
-            let p = UserDefaults.standard.bool(forKey: productId)
-            print("\(productId) was purchased: \(p)")
-            purchasedProductIds.append((productId: productId, purchased: UserDefaults.standard.bool(forKey: productId)))
-        }
-        
-        return purchasedProductIds.count > 0 ? purchasedProductIds : nil
-    }
-    
+    /// Returns the set of ProductIds that have been persisted to UserDefaults. The set will be nil
+    /// if no products have been purchased previously. This 'fallback' set of ProductIds will be compared
+    /// to the list of purchased products held in the App Store receipt and updated if necessary.
+    /// - Parameter productIds: Set of all possible ProductIds that this app supports
+    /// - Returns: Returns the set of ProductIds that have been persisted to UserDefaults.
     public static func loadPurchasedProductIds(for productIds: Set<ProductId>) -> Set<ProductId>? {
-        print("Attempting to load purchased ProductIds...")
-
         var purchasedProductIds = Set<ProductId>()
         productIds.forEach { productId in
             let purchased = UserDefaults.standard.bool(forKey: productId)
-            print("\(productId) was purchased: \(purchased)")
-            
             if purchased { purchasedProductIds.insert(productId) }
         }
         
