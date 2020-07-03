@@ -4,13 +4,39 @@
 //
 //  Created by Russell Archer on 25/06/2020.
 //
+//  This class contains highly modified portions of code based on original Objective-C code
+//  created by Hermes copyright (c) 2013 Robot Media. It also contains modified portions of
+//  Swift code created by Bill Morefield copyright (c) 2018 Razeware LLC. 
 
 import UIKit
 
+/// IAPReceipt encasulates an Apple App Store-issued receipt. App Store receipts are a complete
+/// record of a user's in-app purchase history. The receipt will contain a list of any in-app
+/// purchases the user has made. This list can be used to validate a locally stored fall-back
+/// list of purchased products. The fall-back list should be used when a connection to the App
+/// Store is not possible (i.e. no network connectivity).
+///
+/// Note that:
+///
+/// - The receipt is a single encrypted file stored locally on the device and is accessible
+///   through the main bundle (Bundle.main.appStoreReceiptURL)
+/// - We use OpenSSL to access data in the receipt
+/// - A new receipt is issued automatically (and to IAPHelper it appears as a refresh event)
+///   by the App Store each time:
+///     * an in-app purchase succeeds
+///     * the app is re-installed
+///     * an app update happens
+///     * when previous in-app purchases are restored
 public class IAPReceipt {
         
-    /// True if the receipt has been loaded and its data cached
-    public var dataIsLoaded: Bool { return receiptData == nil ? false : true }
+    // MARK:- Public properties
+    
+    /// The set of purchased ProductIds validated against the app's App Store receipt.
+    /// The set of fallbackPurchasedProductIdentifiers held by IAPHelper should always
+    /// be the same as validatedPurchasedProductIdentifiers. If they differ,
+    /// fallbackPurchasedProductIdentifiers should be updated to be a copy of
+    /// validatedPurchasedProductIdentifiers and persisted.
+    public var validatedPurchasedProductIdentifiers = Set<ProductId>()
     
     /// Check to see if the receipt's URL is present and the receipt file itself is reachable.
     /// True if the receipt is available in the main bundle, false otherwise.
@@ -21,42 +47,49 @@ public class IAPReceipt {
         return available == nil ? false : true
     }
     
-    // Cache of internal receipt data loaded via the load() method.
-    public var receiptData: UnsafeMutablePointer<PKCS7>?
-    public var bundleIdString: String?
-    public var bundleVersionString: String?
-    public var bundleIdData: Data?
-    public var hashData: Data?
-    public var opaqueData: Data?
-    public var expirationDate: Date?
-    public var receiptCreationDate: Date?
-    public var originalAppVersion: String?
-    private var inAppReceipts: [IAPReceiptEntity] = []  // Property cannot be declared public because its type uses an internal type
+    /// True if the receipt has been loaded and its data cached.
+    public var isLoaded: Bool { receiptData == nil ? false : true }
     
-    public func iapProducts() -> [String]? {
-        var prods = [String]()
-        for p in inAppReceipts {
-            print("Product ID: \(p.productIdentifier ?? "unknown")")
-            prods.append(p.productIdentifier ?? "?")
-        }
-        return prods
-    }
+    /// True if we have a list of purchased product IDs validated against the App Store receipt.
+    public var haveValidatedPurchasedProductIdentifiers: Bool { validatedPurchasedProductIdentifiers.count > 0 }
+    
+    /// True if valid. If false then the host app should call refreshReceipt(completion:).
+    public var isValid = false
+    
+    /// True if the receipt has been signed with a valid Apple X509 certificate.
+    public var isValidSignature = false
+    
+    /// True if the receipt has been read and its metadata cached.
+    public var hasBeenRead = false
+    
+    /// Keeps track of the most recent error condition.
+    public var mostRecentError: IAPReceiptError = .noError
+    
+    // MARK:- Private properties
+
+    private var inAppReceipts: [IAPReceiptProductInfo] = []  // Array of purchased product info stored in the receipt
+    private var receiptData: UnsafeMutablePointer<PKCS7>?    // The receipt's cached data
+    
+    // Data read from the receipt:
+    private var bundleIdString: String?
+    private var bundleVersionString: String?
+    private var bundleIdData: Data?
+    private var hashData: Data?
+    private var opaqueData: Data?
+    private var expirationDate: Date?
+    private var receiptCreationDate: Date?
+    private var originalAppVersion: String?
+    
+    // MARK:- Public methods
     
     /// Load the receipt data from the main bundle and cache it. Basic validation of the receipt is done:
     /// We check its format, if it has a signature and if contains data. After loading the receipt you
     /// should call validateSigning() to check the receipt has been correctly signed, then read its IAP
     /// data using read(). You can then validate() the receipt.
-    /// - Returns: Returns true if loaded, false if not found or an error occurs.
+    /// - Returns: Returns true if loaded correctly, false otherwise
     public func load() -> Bool {
-        guard let receiptUrl = Bundle.main.appStoreReceiptURL else {
-            IAPLog.event(error: .receiptMissing)
-            return false
-        }
-        
-        guard let data = try? Data(contentsOf: receiptUrl) else {
-            IAPLog.event(error: .receiptMissing)
-            return false
-        }
+        guard let receiptUrl = Bundle.main.appStoreReceiptURL else { mostRecentError = .missing; return false}
+        guard let data = try? Data(contentsOf: receiptUrl) else { mostRecentError = .badUrl; return false }
         
         let receiptBIO = BIO_new(BIO_s_mem())
         let receiptBytes: [UInt8] = .init(data)
@@ -65,42 +98,26 @@ public class IAPReceipt {
         let receiptPKCS7 = d2i_PKCS7_bio(receiptBIO, nil)
         BIO_free(receiptBIO)
 
-        guard receiptPKCS7 != nil else {
-            print("Receipt bad format")
-            return false
-        }
+        guard receiptPKCS7 != nil else { mostRecentError = .badFormat; return false }
+        guard OBJ_obj2nid(receiptPKCS7!.pointee.type) == NID_pkcs7_signed else { mostRecentError = .badPKCS7Signature; return false }
         
-        // Check that the container has a signature
-        guard OBJ_obj2nid(receiptPKCS7!.pointee.type) == NID_pkcs7_signed else {
-            print("Receipt bad PKCS7 signature")
-            return false
-        }
-        
-        // Check that the container contains data
         let receiptContents = receiptPKCS7!.pointee.d.sign.pointee.contents
-        guard OBJ_obj2nid(receiptContents?.pointee.type) == NID_pkcs7_data else {
-            print("Receipt bad PKCS7 type")
-          return false
-        }
+        guard OBJ_obj2nid(receiptContents?.pointee.type) == NID_pkcs7_data else { mostRecentError = .badPKCS7Type; return false }
         
         receiptData = receiptPKCS7
-        
-        print("Receipt loaded OK")
+        mostRecentError = .noError
         return true
     }
     
     /// Check the receipt has been correctly signed with a valid Apple X509 certificate.
     /// - Returns: Returns true if correctly signed, false otherwise.
     public func validateSigning() -> Bool {
-        guard receiptData != nil else {
-            print("No receipt data")
-            return false
-        }
+        guard receiptData != nil else { mostRecentError = .noData; return false }
         
-        guard let rootCertUrl = Bundle.main.url(forResource: IAPConstants.File(), withExtension: IAPConstants.FileExt()),
-              let rootCertData = try? Data(contentsOf: rootCertUrl)
-        else {
-            print("invalidAppleRootCertificate")
+        guard let rootCertUrl = Bundle.main.url(forResource: IAPConstants.Certificate(), withExtension: IAPConstants.CertificateExt()),
+              let rootCertData = try? Data(contentsOf: rootCertUrl) else {
+            
+            mostRecentError = .invalidAppleRootCertificate
             return false
         }
         
@@ -124,111 +141,154 @@ public class IAPReceipt {
         let verificationResult = PKCS7_verify(receiptData, nil, store, nil, nil, 0)
         #endif
         
-        guard verificationResult == 1  else {
-            print("failedAppleSignature")
-            return false
-        }
+        guard verificationResult == 1  else { mostRecentError = .failedAppleSignature; return false }
         
-        print("Receipt signing validated OK")
+        isValidSignature = true
+        mostRecentError = .noError
         return true
     }
     
+    /// Read internal receipt data into a cache.
+    /// - Returns: Returns true if all expected data was present and correctly read from the receipt, false otherwise.
     public func read() -> Bool {
         // Get a pointer to the start and end of the ASN.1 payload
         let receiptSign = receiptData?.pointee.d.sign
         let octets = receiptSign?.pointee.contents.pointee.d.data
-        var ptr = UnsafePointer(octets?.pointee.data)
-        let end = ptr!.advanced(by: Int(octets!.pointee.length))
+        var pointer = UnsafePointer(octets?.pointee.data)
+        let end = pointer!.advanced(by: Int(octets!.pointee.length))
         
         var type: Int32 = 0
         var xclass: Int32 = 0
         var length: Int = 0
         
-        ASN1_get_object(&ptr, &length, &type, &xclass, ptr!.distance(to: end))
-        guard type == V_ASN1_SET else {
-            print("unexpectedASN1Type")
-            return false
-        }
+        ASN1_get_object(&pointer, &length, &type, &xclass, pointer!.distance(to: end))
+        guard type == V_ASN1_SET else { mostRecentError = .unexpectedASN1Type; return false }
         
-        // 1
-        while ptr! < end {
-            // 2
-            ASN1_get_object(&ptr, &length, &type, &xclass, ptr!.distance(to: end))
-            guard type == V_ASN1_SEQUENCE else {
-                print("unexpectedASN1Type")
-                return false
-            }
+        while pointer! < end {
+            ASN1_get_object(&pointer, &length, &type, &xclass, pointer!.distance(to: end))
+            guard type == V_ASN1_SEQUENCE else { mostRecentError = .unexpectedASN1Type; return false }
+            guard let attributeType = IAPOpenSSL.asn1Int(p: &pointer, expectedLength: length) else { mostRecentError = .unexpectedASN1Type; return false }
+            guard let _ = IAPOpenSSL.asn1Int(p: &pointer, expectedLength: pointer!.distance(to: end)) else { mostRecentError = .unexpectedASN1Type; return false }
             
-            // 3
-            guard let attributeType = IAPOpenSSL.readASN1Integer(ptr: &ptr, maxLength: length) else {
-                print("unexpectedASN1Type")
-                return false
-            }
+            ASN1_get_object(&pointer, &length, &type, &xclass, pointer!.distance(to: end))
+            guard type == V_ASN1_OCTET_STRING else { mostRecentError = .unexpectedASN1Type; return false }
             
-            // 4
-            guard let _ = IAPOpenSSL.readASN1Integer(ptr: &ptr, maxLength: ptr!.distance(to: end)) else {
-                print("unexpectedASN1Type")
-                return false
-            }
-            
-            // 5
-            ASN1_get_object(&ptr, &length, &type, &xclass, ptr!.distance(to: end))
-            guard type == V_ASN1_OCTET_STRING else {
-                print("unexpectedASN1Type")
-                return false
-            }
-            
-            switch attributeType {
-                case 2: // The bundle identifier
-                    var stringStartPtr = ptr
-                    bundleIdString = IAPOpenSSL.readASN1String(ptr: &stringStartPtr, maxLength: length)
-                    bundleIdData = IAPOpenSSL.readASN1Data(ptr: ptr!, length: length)
+            var p = pointer
+            switch IAPOpenSSLAttributeType(rawValue: attributeType) {
                     
-                case 3: // Bundle version
-                    var stringStartPtr = ptr
-                    bundleVersionString = IAPOpenSSL.readASN1String(ptr: &stringStartPtr, maxLength: length)
+                case .BudleVersion: bundleVersionString         = IAPOpenSSL.asn1String(p: &p, expectedLength: length)
+                case .ReceiptCreationDate: receiptCreationDate  = IAPOpenSSL.asn1Date(p: &p, expectedLength: length)
+                case .OriginalAppVersion: originalAppVersion    = IAPOpenSSL.asn1String(p: &p, expectedLength: length)
+                case .ExpirationDate: expirationDate            = IAPOpenSSL.asn1Date(p: &p, expectedLength: length)
+                case .OpaqueValue: opaqueData                   = IAPOpenSSL.asn1Data(p: p!, expectedLength: length)
+                case .ComputedGuid: hashData                    = IAPOpenSSL.asn1Data(p: p!, expectedLength: length)
                     
-                case 4: // Opaque value
-                    let dataStartPtr = ptr!
-                    opaqueData = IAPOpenSSL.readASN1Data(ptr: dataStartPtr, length: length)
+                case .BundleIdentifier:
+                    bundleIdString                              = IAPOpenSSL.asn1String(p: &pointer, expectedLength: length)
+                    bundleIdData                                = IAPOpenSSL.asn1Data(p: pointer!, expectedLength: length)
                     
-                case 5: // Computed GUID (SHA-1 Hash)
-                    let dataStartPtr = ptr!
-                    hashData = IAPOpenSSL.readASN1Data(ptr: dataStartPtr, length: length)
-                    
-                case 12: // Receipt Creation Date
-                    var dateStartPtr = ptr
-                    receiptCreationDate = IAPOpenSSL.readASN1Date(ptr: &dateStartPtr, maxLength: length)
-                    
-                case 17: // IAP Receipt
-                    var iapStartPtr = ptr
-                    let parsedReceipt = IAPReceiptEntity(with: &iapStartPtr, payloadLength: length)
-                    if let newReceipt = parsedReceipt {
-                        inAppReceipts.append(newReceipt)
-                        print("Found purchased product in receipt: \(newReceipt.productIdentifier ?? "unknown pid")")
+                case .IAPReceipt:
+                    var iapStartPtr = pointer
+                    let receiptProductInfo = IAPReceiptProductInfo(with: &iapStartPtr, payloadLength: length)
+                    if let rpi = receiptProductInfo {
+                        inAppReceipts.append(rpi)
+                        if let pid = rpi.productIdentifier { validatedPurchasedProductIdentifiers.insert(pid) }
                     }
                     
-                case 19: // Original App Version
-                    var stringStartPtr = ptr
-                    originalAppVersion = IAPOpenSSL.readASN1String(ptr: &stringStartPtr, maxLength: length)
-                    
-                case 21: // Expiration Date
-                    var dateStartPtr = ptr
-                    expirationDate = IAPOpenSSL.readASN1Date(ptr: &dateStartPtr, maxLength: length)
-                    
-                default: // Ignore other attributes in receipt
-                    break
+                default: break  // Ignore other attributes in receipt
             }
             
             // Advance pointer to the next item
-            ptr = ptr!.advanced(by: length)
+            pointer = pointer!.advanced(by: length)
         }
         
+        hasBeenRead = true
+        mostRecentError = .noError
         return true
     }
     
+    /// Perform on-device (no network connection required) validation of the app's receipt.
+    /// Returns false if the receipt is invalid or missing, in which case your app should call
+    /// refreshReceipt(completion:) to request an updated receipt from the app store. This will
+    /// result in the user being prompted for their App Store credentials.
+    ///
+    /// We validate the receipt to ensure that it was:
+    ///
+    /// - Created and signed using the Apple x509 root certificate via the App Store
+    /// - Issued for the same version of this app and the user's device
+    ///
+    /// At this point a list of locally stored purchased product ids should have been loaded from the UserDefaults
+    /// dictionary. We need to validate these product ids against the App Store receipt's collection of purchased
+    /// product ids to see that they match. If there are no locally stored purchased product ids (i.e. the user
+    /// hasn't purchased anything) then we don't attempt to validate the receipt as this would trigger a prompt
+    /// for the user to provide their App Store credentials (and this isn't a good experience for a new user of
+    /// the app to immediately be asked to sign-in). Note that if the user has previously purchased products
+    /// then either using the Restore feature or attempting to re-purchase the product will result in a refreshed
+    /// receipt and the product id of the product will be stored locally in the UserDefaults dictionary.
+    /// - Returns: Returns true if the receipt is valid; false otherwise.
     public func validate() -> Bool {
+        guard let idString = bundleIdString,
+              let version = bundleVersionString,
+              let _ = opaqueData,
+              let hash = hashData else { mostRecentError = .missingComponent; return false }
+        
+        guard let appBundleId = Bundle.main.bundleIdentifier else { mostRecentError = .unknownFailure; return false }
+        guard idString == appBundleId else { mostRecentError = .invalidBundleIdentifier; return false }
+        guard let appVersionString = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String else {
+            mostRecentError = .unknownFailure
+            return false
+        }
+        
+        guard version == appVersionString else { mostRecentError = .invalidVersionIdentifier; return false }
+        guard hash == computeHash() else { mostRecentError = .invalidHash; return false }
+        
+        if let expirationDate = expirationDate {
+            if expirationDate < Date() { mostRecentError = .expired; return false }
+        }
+        
+        isValid = true
+        mostRecentError = .noError
         return true
     }
+    
+    /// Compare the set of fallback ProductIds with the receipt's validatedPurchasedProductIdentifiers
+    /// - Parameter fallbackPids: Set of locally stored fallback ProductIds
+    /// - Returns: Returns true if both sets are the same, false otherwise
+    public func validateFallbackProductIds(fallbackPids: Set<ProductId>) -> Bool {
+        fallbackPids == validatedPurchasedProductIdentifiers
+    }
+    
+    // MARK:- Private methods
+    
+    private func getDeviceIdentifier() -> Data {
+        let device = UIDevice.current
+        var uuid = device.identifierForVendor!.uuid
+        let addr = withUnsafePointer(to: &uuid) { (p) -> UnsafeRawPointer in
+            UnsafeRawPointer(p)
+        }
+        let data = Data(bytes: addr, count: 16)
+        return data
+    }
+    
+    private func computeHash() -> Data {
+        let identifierData = getDeviceIdentifier()
+        var ctx = SHA_CTX()
+        SHA1_Init(&ctx)
+        
+        let identifierBytes: [UInt8] = .init(identifierData)
+        SHA1_Update(&ctx, identifierBytes, identifierData.count)
+        
+        let opaqueBytes: [UInt8] = .init(opaqueData!)
+        SHA1_Update(&ctx, opaqueBytes, opaqueData!.count)
+        
+        let bundleBytes: [UInt8] = .init(bundleIdData!)
+        SHA1_Update(&ctx, bundleBytes, bundleIdData!.count)
+        
+        var hash: [UInt8] = .init(repeating: 0, count: 20)
+        SHA1_Final(&hash, &ctx)
+        return Data(bytes: hash, count: 20)
+    }
 }
+
+
 

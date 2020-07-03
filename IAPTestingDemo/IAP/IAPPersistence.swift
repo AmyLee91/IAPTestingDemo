@@ -9,6 +9,7 @@ import Foundation
 
 /// Contains static methods to load and save 'fallback' purchase information.
 /// If a product is purchased a Bool is created in UserDefaults. Its key will be the ProductId.
+/// The 'true' set of purchased ProductIds should be obtained from the App Store receipt.
 public struct IAPPersistence: IAPPersistenceProtocol {
     
     /// Save the purchased state for a ProductId. A Bool is created in UserDefaults where the key is the ProductId.
@@ -48,5 +49,14 @@ public struct IAPPersistence: IAPPersistenceProtocol {
         }
         
         return purchasedProductIds.count > 0 ? purchasedProductIds : nil
+    }
+    
+    public static func resetPurchasedProductIds(from oldProductIds: Set<ProductId>, to productIds: Set<ProductId>, purchased: Bool = true) {
+        clearAllPurchasedProductIds(productIds: oldProductIds)
+        savePurchasedState(for: productIds, purchased: purchased)
+    }
+    
+    public static func clearAllPurchasedProductIds(productIds: Set<ProductId>) {
+        productIds.forEach { pid in UserDefaults.standard.removeObject(forKey: pid) }
     }
 }

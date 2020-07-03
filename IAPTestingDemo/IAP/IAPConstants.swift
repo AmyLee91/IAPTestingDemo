@@ -25,9 +25,12 @@ public struct IAPConstants {
     /// Returns the appropriate certificate to use for DEBUG and RELEASE builds. Used in receipt validation
     public static func Certificate() -> String {
         #if DEBUG
-        return "StoreKitTestCertificate.cer"  // This is issued by StoreKit for local testing
+        return "StoreKitTestCertificate"  // This is issued by StoreKit for local testing
         #else
-        return "AppleIncRootCertificate.cer"  // This is a Apple root certificate used when working in release with the real App Store
+        return "AppleIncRootCertificate"  // This is a Apple root certificate used when working in release with the real App Store
         #endif
     }
+    
+    /// Returns the file extension for the Apple certificate
+    public static func CertificateExt() -> String { "cer" }
 }

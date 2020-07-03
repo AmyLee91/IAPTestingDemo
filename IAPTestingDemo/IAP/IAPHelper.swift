@@ -20,7 +20,6 @@ public class IAPHelper: NSObject  {
     /// Singleton access
     public static let shared: IAPHelper = IAPHelper()
 
-    public var isReceiptValid       = false  // True if valid. If false then the host app should call refreshReceipt(completion:)
     public var purchasesValid       = false  // True if the fallback and receipt purchases agree
     public var isPurchasing         = false  // True if a purchase is in progress (excluding a deferred)
     public var addedToPaymentQueue  = false  // True if we've added ourselves to the SKPaymentQueue
@@ -31,31 +30,12 @@ public class IAPHelper: NSObject  {
     /// List of ProductIds that are read from the .storekit configuration file
     public var configuredProductIdentifiers: Set<ProductId>?
     
-    /// This property is set automatically when IAPHelper is initialized.
-    /// All products purchased by the user. The collection is not persisted but is rebuilt from the
+    /// This property is set automatically when IAPHelper is initialized and contains the set of
+    /// all products purchased by the user. The collection is not persisted but is rebuilt from the
     /// product identifiers of purchased products stored individually in user defaults (see IAPPersistence).
     /// This is a fall-back collection of purchases designed to allow the user access to purchases
     /// in the event that the app receipt is missing and we can't contact the App Store to refresh it.
     public var fallbackPurchasedProductIdentifiers: Set<ProductId>?
-
-    /// The set of purchased product ids validated against the app's App Store receipt.
-    /// If the set of purchasedProductIdentifiers is not the same as validatedPurchasedProductIdentifiers
-    /// then there's potentially fraud going on and purchasesValid is set to false.
-    /// Note that receipt validation happens during applicationDidBecomeActive(_:) when AppDelegate
-    /// calls our validateReceiptAndGetProductsIds() method.
-    public var validatedPurchasedProductIdentifiers: Set<ProductId>?
-    
-    /// True if we have a list of ProductIds read from the .storekit configuration file. See configuredProductIdentifiers
-    public var haveConfiguredProductIdentifiers: Bool {
-        guard configuredProductIdentifiers != nil else { return false }
-        return configuredProductIdentifiers!.count > 0 ? true : false
-    }
-    
-    /// True if we have a list of purchased product IDs validated against the App Store receipt. See validatedPurchasedProductIdentifiers
-    public var haveValidatedPurchasedProductIdentifiers: Bool {
-        guard validatedPurchasedProductIdentifiers != nil else { return false }
-        return validatedPurchasedProductIdentifiers!.count > 0 ? true : false
-    }
     
     /// True if we have a list of unvalidated purchased product IDs. See fallbackPurchasedProductIdentifiers
     public var haveFallbackPurchasedProductIdentifiers: Bool {
@@ -63,15 +43,14 @@ public class IAPHelper: NSObject  {
         return fallbackPurchasedProductIdentifiers!.count > 0 ? true : false
     }
     
-    /// True if the user has purchased any products (validated or not)
-    public var haveMadePurchases: Bool {
-        if haveValidatedPurchasedProductIdentifiers { return true }
-        if haveFallbackPurchasedProductIdentifiers  { return true }
-        return false
+    /// True if we have a list of ProductIds read from the .storekit configuration file. See configuredProductIdentifiers
+    public var haveConfiguredProductIdentifiers: Bool {
+        guard configuredProductIdentifiers != nil else { return false }
+        return configuredProductIdentifiers!.count > 0 ? true : false
     }
     
     /// True if app store product info has been retrieved via requestProducts()
-    public var isStoreProductInfoAvailable: Bool {
+    public var isAppStoreProductInfoAvailable: Bool {
         guard products != nil else { return false }
         guard products!.count > 0 else { return false }
         return true
@@ -92,30 +71,6 @@ public class IAPHelper: NSObject  {
     private override init() {
         super.init()
         setup()
-        /*
-         
-        Writerly:
-            SKPaymentQueue add (in IAPHelper init)
-            Get list of all product ids (from applicationDidBecomeActive())
-            Load the fallback list of purchasedProductIdentifiers (from applicationDidBecomeActive())
-            iap.validateReceiptAndGetProductsIds() (from applicationDidBecomeActive())
-            
-        IAPTestingDemo:
-            DONE: SKPaymentQueue add (init)
-            DONE: Get list of all product ids (readConfigFile()) (init)
-            DONE: Load the fallback list of purchasedProductIdentifiers (loadFallbackProductIds()) (init)
-            * iap.validateReceiptAndGetProductsIds()
-                Split validateReceiptAndGetProductsIds() so that we have:
-                    DONE: validateReceipt() - sync, return an error condition if the receipt needs refreshing (which must be done async)
-                    DONE: refreshReceipt()  - async as it requires call to app store
-                    createValidatedPurchasedProductIds() - sync
-         
-            * requestProductsFromAppStore(): -> async productsRequest(_:didReceive:) - this is different from Writerly which only gets products from the app store when showing the IAPViewController
-              Move this out of the init/setup chain
-              Getting localized product info the app store is only required when displaying
-        
-        */
-
     }
     
     // MARK:- Configuration
@@ -127,11 +82,19 @@ public class IAPHelper: NSObject  {
         readConfigFile()
         loadFallbackProductIds()
         
-        guard receipt.isReachable else { return }
-        guard receipt.load() else { return }
-        guard receipt.validateSigning() else { return }
-        guard receipt.read() else { return }
-        guard receipt.validate() else { return }
+        guard receipt.isReachable,
+              receipt.load(),
+              receipt.validateSigning(),
+              receipt.read(),
+              receipt.validate() else {
+            
+            IAPLog.event(error: receipt.mostRecentError)
+            sendNotification(notification: .receiptValidationFailed)
+            return
+        }
+        
+        sendNotification(notification: .receiptValid)
+        createValidatedFallbackProductIds()
     }
     
     internal func addToPaymentQueue() {
@@ -172,56 +135,6 @@ public class IAPHelper: NSObject  {
     
     // MARK:- Receipt
     
-    /// Perform on-device (no network connection required) validation of the app's receipt.
-    /// Returns nil if the receipt is invalid or missing in which case your app should call
-    /// refreshReceipt(completion:) to request an updated receipt from the app store.
-    ///
-    /// We validate the receipt to ensure that it was:
-    ///
-    /// - Created and signed using the Apple x509 root certificate via the App Store
-    /// - Issued for the same version of this app and the user's device
-    ///
-    /// App Store receipts are a complete record of a user's in-app purchase history.
-    /// The receipt will contain a list of any in-app purchases the user has made. This list will
-    /// be used to validate the fall-back list of purchased products which is stored locally in the
-    /// UserDefaults dictionary. The fall-back list is used when a connection to the App Store is not
-    /// possible (i.e. no network connectivity).
-    ///
-    /// If the receipt is missing the App Store will be requested to issue a new one. This will result in
-    /// the user being prompted for their App Store credentials.
-    ///
-    /// Note that:
-    ///
-    /// - The receipt is a single encrypted file stored locally on the device and is accessible
-    ///   through the main bundle (Bundle.main.appStoreReceiptURL)
-    /// - We use OpenSSL to access data in the receipt
-    /// - A receipt is issued each time an installation or an update happens
-    /// - When the app is updated a receipt for the new version is issued automatically by the App Store
-    /// - The receipt is renewed each time an in-app purchase occurs
-    /// - When previous in-app purchases are restored, a new receipt is issued
-    ///
-    /// At this point a list of locally stored purchased product ids should have been loaded from the UserDefaults
-    /// dictionary. We need to validate these product ids against the App Store receipt's collection of purchased
-    /// product ids to see that they match. If there are no locally stored purchased product ids (i.e. the user
-    /// hasn't purchased anything) then we don't attempt to validate the receipt as this would trigger a prompt
-    /// for the user to provide their App Store credentials (and this isn't a good experience for a new user of
-    /// the app to immediately be asked to sign-in). Note that if the user has previously purchased products
-    /// then either using the Restore feature or attempting to re-purchase the product will result in a refreshed
-    /// receipt and the product id of the product will be stored locally in the UserDefaults dictionary.
-    internal func validateReceipt() -> IAPReceiptValidator? {
-        isReceiptValid = false
-        
-        let validator = IAPReceiptValidator()
-        guard validator.validate() else {
-            sendNotification(notification: .receiptValidationFailed)
-            return nil
-        }
-        
-        sendNotification(notification: .receiptValid)
-        isReceiptValid = true
-        return validator
-    }
-    
     /// Should be used only when the receipt is not present at the appStoreReceiptURL or when
     /// it cannot be successfully validated. The app store is requested to provide a new receipt,
     /// which will result in the user being asked to provide their App Store credentials.
@@ -233,83 +146,11 @@ public class IAPHelper: NSObject  {
         receiptRequest!.delegate = self
         receiptRequest!.start()  // Will notify through SKRequestDelegate requestDidFinish(_:)
     }
-
-    internal func createValidatedPurchasedProductIds()
-    {
-        // sync
-    }
-
     
-//    func validateReceiptAndGetProductsIds(refreshIfInvalid: Bool = true) {
-//        // Check that our App Store receipt is valid
-//        if haveValidated { return }
-//
-//        haveValidated = true
-//        isReceiptValid = false
-//        purchasesValid = false
-//
-//        let validator = validateReceipt()
-//        guard validator != nil else {
-//            if !refreshIfInvalid {
-//                // Receipt invalid or missing. Have already tried to refresh so fail. We will
-//                // try to get an updated receipt next time the app is activated. Don't treat this
-//                // as an error or indicator of fraudulent activity. It could be just that the
-//                // App Store's not reachable temporarily
-//                sendNotification(notification: IAPHelperNotificaton.receiptCannotBeValidated, object: nil)
-//                return
-//            }
-//
-//            // Receipt invalid or missing. Request a refresh
-//            refreshReceipt()
-//            return
-//        }
-//
-//        // Receipt validated OK
-//        isReceiptValid = true
-//        sendNotification(notification: IAPHelperNotificaton.receiptValid, object: nil)
-//
-//        // Get a list of product ids that have been purchased
-//        let vpid = getProductIdsFromReceipt(verifier: validator!)
-//        guard vpid != nil else {
-//            // No product ids in receipt. This is not an error, the user just hasn't purchased anything yet
-//            return
-//        }
-//
-//        // The receipt does have purchased product ids, cache them
-//        // todo
-//
-//        // See if the fallback list of product ids agrees with what was in the receipt
-//        purchasesValid = true
-//
-//        IAPLog.event(product: nil, event: IAPHelperNotificaton.purchaseValidationCompleted)
-//        sendNotification(notification: IAPHelperNotificaton.purchaseValidationCompleted, object: nil)
-//        return
-//    }
-
-    /// Get an array of purchased product ids
-//    fileprivate func getProductIdsFromReceipt(verifier: IAPReceiptVerifier) -> [ProductId]? {
-//        let iaps = verifier.inAppPurchases()
-//        guard iaps != nil else { return nil }
-//        guard iaps!.count > 0 else { return nil }
-//
-//        return iaps!.map({ p in p.productIdentifier })
-//    }
-//
-//    fileprivate func validateFallbackProductIdsAgainstReceipt(fallbackPids: Set<ProductId>, receiptPids: Set<ProductId>) -> Bool {
-//        for pid in fallbackPids {
-//            guard receiptPids.contains(pid) else {
-//                return false
-//            }
-//        }
-//
-//        return true
-//    }
-    
-    // MARK:- xxxxxx
+    // MARK:- APP Store
     
     internal func requestProductsFromAppStore(completion: @escaping (IAPError?) -> Void) {
         // Get localized info about our available in-app purchase products from the App Store
-        print("IAPHelper.requestProductsFromAppStore(): About to request products from app store....")
         requestProductsCompletion = completion  // Save the completion handler so it can be used in productsRequest(_:didReceive:)
         
         guard haveConfiguredProductIdentifiers else {
@@ -367,14 +208,14 @@ public class IAPHelper: NSObject  {
 
     /// Returns an SKProduct given a ProductId. Product info is only available if isStoreProductInfoAvailable is true
     public func getStoreProductFrom(id: ProductId) -> SKProduct? {
-        guard isStoreProductInfoAvailable else { return nil }
+        guard isAppStoreProductInfoAvailable else { return nil }
         for p in products! { if p.productIdentifier == id { return p } }
         return nil
     }
     
     /// Returns true if the product identified by the ProductId has been purchased
     public func isProductPurchased(id: ProductId) -> Bool {
-        guard isStoreProductInfoAvailable else { return false }
+        guard isAppStoreProductInfoAvailable else { return false }
         
         // There are two strategies we use to determine if a product has been successfully purchased:
         //
@@ -390,13 +231,27 @@ public class IAPHelper: NSObject  {
         //
         // When we validate the receipt we compare the fallback list of purchases with the more reliable
         // data from the receipt. If they disagree we re-write the list using info from the receipt.
-// TODO
+        //todo
         return false
     }
     
-    fileprivate func sendNotification(notification: IAPNotificaton, object: Any? = nil) {
+    private func sendNotification(notification: IAPNotificaton, object: Any? = nil) {
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: notification.key()), object: object)
         IAPLog.event(event: notification)
+    }
+    
+    private func createValidatedFallbackProductIds() {
+        guard haveFallbackPurchasedProductIdentifiers, receipt.haveValidatedPurchasedProductIdentifiers else { return }
+        
+        if !receipt.validateFallbackProductIds(fallbackPids: fallbackPurchasedProductIdentifiers!) {
+            IAPPersistence.resetPurchasedProductIds(
+                from: fallbackPurchasedProductIdentifiers!,
+                to: receipt.validatedPurchasedProductIdentifiers)
+            
+            fallbackPurchasedProductIdentifiers = receipt.validatedPurchasedProductIdentifiers
+        }
+        
+        purchasesValid = true
     }
 }
 
@@ -441,8 +296,6 @@ public extension IAPHelper {
 extension IAPHelper: SKProductsRequestDelegate {
 
     public func productsRequest(_ request: SKProductsRequest, didReceive response: SKProductsResponse) {
-        print("IAPHelper.productsRequest(_:didReceive:): Request to get products from the app store is complete")
-        
         if response.products.count == 0 {
             IAPLog.event(error: .noProductsReturnedByAppStore)
             requestProductsCompletion?(.noProductsReturnedByAppStore)
@@ -456,8 +309,6 @@ extension IAPHelper: SKProductsRequestDelegate {
         sendNotification(notification: .requestProductsCompleted)
         
         productsRequest = nil  // Destroy the request object
-        
-        print("productsRequest(_:didReceive:): Calling requestProductsCompletion completion handler")
         requestProductsCompletion?(nil)
     }
 
@@ -656,11 +507,15 @@ extension IAPHelper: SKRequestDelegate {
     /// Called when the app store provides us with a refreshed receipt.
     public func requestDidFinish(_ request: SKRequest) {
         receiptRequest = nil  // Destroy the request object
-        print("Receipt Refresh Completed")
 
-        // Re-validate the refreshed receipt
-        print("Re-validating the refreshed receipt")
-        if validateReceipt() == nil {
+        // Re-process the refreshed receipt
+        receipt = IAPReceipt()
+        guard receipt.isReachable,
+              receipt.load(),
+              receipt.validateSigning(),
+              receipt.read(),
+              receipt.validate() else {
+            
             refreshReceiptCompletion?(.cantRefreshReceipt)
             return
         }

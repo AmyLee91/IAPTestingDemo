@@ -4,77 +4,91 @@
 //
 //  Created by Russell Archer on 25/06/2020.
 //
+//  This class contains highly modified portions of code based on original Objective-C code
+//  created by Hermes copyright (c) 2013 Robot Media. It also contains modified portions of
+//  Swift code created by Bill Morefield copyright (c) 2018 Razeware LLC.
 
 import Foundation
 
-/// Helper functions used when working with OpenSSL to validate the App Store receipt
+/// Helper functions used when working with OpenSSL and the App Store ASN.1 receipt payload.
 public struct IAPOpenSSL {
     
-    static public func readASN1Data(ptr: UnsafePointer<UInt8>, length: Int) -> Data {
-        return Data(bytes: ptr, count: length)
+    /// Get an Int value from the ASN.1 receipt payload.
+    /// - Parameters:
+    ///   - p: Pointer to the location of the integer in the ASN.1 data.
+    ///   - expectedLength: The expected length of the integer.
+    /// - Returns: Returns an Int value, or nil if the integer value couldn't be read.
+    public static func asn1Int(p: inout UnsafePointer<UInt8>?, expectedLength: Int) -> Int? {
+        var tag: Int32          = 0
+        var asn1Class: Int32    = 0
+        var length: Int         = 0
+        var value: Int?         = nil
+        
+        ASN1_get_object(&p, &length, &tag, &asn1Class, expectedLength)
+        guard tag == V_ASN1_INTEGER else { return value }
+        guard let intObject = c2i_ASN1_INTEGER(nil, &p, length) else { return value }
+
+        value = ASN1_INTEGER_get(intObject)
+        ASN1_INTEGER_free(intObject)
+        
+        return value
     }
     
-    static public func readASN1Integer(ptr: inout UnsafePointer<UInt8>?, maxLength: Int) -> Int? {
-        var type: Int32 = 0
-        var xclass: Int32 = 0
-        var length: Int = 0
+    /// Get a String value from the ASN.1 receipt payload.
+    /// - Parameters:
+    ///   - p: Pointer to the location of the String in the ASN.1 data.
+    ///   - expectedLength: The expected length of the String.
+    /// - Returns: Returns a String value, or nil if the String couldn't be read.
+    public static func asn1String(p: inout UnsafePointer<UInt8>?, expectedLength: Int) -> String? {
+        var tag: Int32                  = 0
+        var asn1Class: Int32            = 0
+        var length: Int                 = 0
+        var p2s: UnsafePointer<UInt8>?  = p
         
-        ASN1_get_object(&ptr, &length, &type, &xclass, maxLength)
-        guard type == V_ASN1_INTEGER else {
-            return nil
+        ASN1_get_object(&p2s, &length, &tag, &asn1Class, expectedLength)
+        
+        switch tag {
+            case V_ASN1_UTF8STRING: return String(bytesNoCopy: UnsafeMutableRawPointer(mutating: p2s!), length: length, encoding: .utf8, freeWhenDone: false)
+            case V_ASN1_IA5STRING: return String(bytesNoCopy: UnsafeMutablePointer(mutating: p2s!), length: length, encoding: .ascii, freeWhenDone: false)
+            default: return nil
         }
-        let integerObject = c2i_ASN1_INTEGER(nil, &ptr, length)
-        let intValue = ASN1_INTEGER_get(integerObject)
-        ASN1_INTEGER_free(integerObject)
-        
-        return intValue
     }
     
-    static public func readASN1String(ptr: inout UnsafePointer<UInt8>?, maxLength: Int) -> String? {
-        var strClass: Int32 = 0
-        var strLength = 0
-        var strType: Int32 = 0
-        
-        var strPointer = ptr
-        ASN1_get_object(&strPointer, &strLength, &strType, &strClass, maxLength)
-        if strType == V_ASN1_UTF8STRING {
-            let p = UnsafeMutableRawPointer(mutating: strPointer!)
-            let utfString = String(bytesNoCopy: p, length: strLength, encoding: .utf8, freeWhenDone: false)
-            return utfString
-        }
-        
-        if strType == V_ASN1_IA5STRING {
-            let p = UnsafeMutablePointer(mutating: strPointer!)
-            let ia5String = String(bytesNoCopy: p, length: strLength, encoding: .ascii, freeWhenDone: false)
-            return ia5String
-        }
-        
-        return nil
+    /// Get a Data value from the ASN.1 receipt payload.
+    /// - Parameters:
+    ///   - p: Pointer to the location of the Data in the ASN.1 data.
+    ///   - expectedLength: The expected length of the data.
+    /// - Returns: Returns a Data value, or nil if the data couldn't be read.
+    public static func asn1Data(p: UnsafePointer<UInt8>, expectedLength: Int) -> Data {
+        Data(bytes: p, count: expectedLength)
     }
     
-    static public func readASN1Date(ptr: inout UnsafePointer<UInt8>?, maxLength: Int) -> Date? {
-        var str_xclass: Int32 = 0
-        var str_length = 0
-        var str_type: Int32 = 0
+    /// Get a Date value from the ASN.1 receipt payload.
+    /// - Parameters:
+    ///   - p: Pointer to the location of the Date in the ASN.1 data.
+    ///   - expectedLength: The expected length of the date.
+    /// - Returns: Returns a Date, or nil if the value couldn't be read.
+    public static func asn1Date(p: inout UnsafePointer<UInt8>?, expectedLength: Int) -> Date? {
+        var tag: Int32                  = 0
+        var asn1Class: Int32            = 0
+        var length: Int                 = 0
+        var p2s: UnsafePointer<UInt8>?  = p
+
+        ASN1_get_object(&p2s, &length, &tag, &asn1Class, expectedLength)
         
-        // A date formatter to handle RFC 3339 dates in the GMT time zone
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "en_US_POSIX")
-        formatter.dateFormat = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'"
-        formatter.timeZone = TimeZone(abbreviation: "GMT")
+        guard tag == V_ASN1_IA5STRING else { return nil }
+        guard let date = String(bytesNoCopy: UnsafeMutableRawPointer(mutating: p2s!), length: length, encoding: .ascii, freeWhenDone: false) else { return nil }
         
-        var strPointer = ptr
-        ASN1_get_object(&strPointer, &str_length, &str_type, &str_xclass, maxLength)
-        guard str_type == V_ASN1_IA5STRING else {
-            return nil
-        }
+        // The date should be in a fixed RFC3339 format that requires the use of the en_US_POSIX locale.
+        // See https://developer.apple.com/documentation/foundation/dateformatter
+        let rfc3339Formatter = DateFormatter()
+        rfc3339Formatter.locale = Locale(identifier: "en_US_POSIX")
+        rfc3339Formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZZZZZ"
+        rfc3339Formatter.timeZone = TimeZone(secondsFromGMT: 0)
         
-        let p = UnsafeMutableRawPointer(mutating: strPointer!)
-        if let dateString = String(bytesNoCopy: p, length: str_length, encoding: .ascii, freeWhenDone: false) {
-            return formatter.date(from: dateString)
-        }
-        
-        return nil
+        return rfc3339Formatter.date(from: date)
     }
-    
 }
+
+
+

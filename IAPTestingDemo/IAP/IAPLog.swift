@@ -21,6 +21,12 @@ public struct IAPLog {
         #endif
     }
     
+    public static func event(error: IAPReceiptError) {
+        #if DEBUG
+        print("IAP error: \(error.shortDescription())")
+        #endif
+    }
+    
     public static func event(event: IAPNotificaton) {
         #if DEBUG
         print("IAP notification: \(event.shortDescription())")

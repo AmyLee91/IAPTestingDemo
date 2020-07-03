@@ -17,7 +17,7 @@ class ViewController: UIViewController {
                 print(e!.shortDescription())
                 return
             }
-            
+
             print("Got available products from the App Store...")
             IAPHelper.shared.products?.forEach {
                 print($0.productIdentifier)
@@ -45,7 +45,7 @@ class ViewController: UIViewController {
     }
     
     @objc func handleIAPNotification(_ notification: Notification) {
-
+        
         switch notification.name.rawValue {
         case IAPNotificaton.requestProductsCompleted.key():
             break
