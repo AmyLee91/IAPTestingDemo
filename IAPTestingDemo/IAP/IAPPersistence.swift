@@ -41,14 +41,15 @@ public struct IAPPersistence: IAPPersistenceProtocol {
     /// to the list of purchased products held in the App Store receipt and updated if necessary.
     /// - Parameter productIds: Set of all possible ProductIds that this app supports
     /// - Returns: Returns the set of ProductIds that have been persisted to UserDefaults.
-    public static func loadPurchasedProductIds(for productIds: Set<ProductId>) -> Set<ProductId>? {
+    /// This will be an empty set if nothing has been purchased
+    public static func loadPurchasedProductIds(for productIds: Set<ProductId>) -> Set<ProductId> {
         var purchasedProductIds = Set<ProductId>()
         productIds.forEach { productId in
             let purchased = UserDefaults.standard.bool(forKey: productId)
-            if purchased { purchasedProductIds.insert(productId) }
+            if purchased { purchasedProductIds.insert(productId); print("Loaded purchased product: \(productId)") }
         }
         
-        return purchasedProductIds.count > 0 ? purchasedProductIds : nil
+        return purchasedProductIds
     }
     
     public static func resetPurchasedProductIds(from oldProductIds: Set<ProductId>, to productIds: Set<ProductId>, purchased: Bool = true) {

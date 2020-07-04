@@ -27,11 +27,26 @@ class ViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         // Subscribe to IAPHelper notifications
-        IAPHelper.shared.addObserverForNotifications(observer: self, selector: #selector(self.handleIAPNotification(_:)))
+        IAPHelper.shared.addObserverForNotifications(
+            notifications: [.requestProductsCompleted,
+                            .requestProductsFailed,
+                            .purchaseCompleted,
+                            .purchaseFailed,
+                            .purchaseRestored,
+                            .purchaseRestoreFailed],
+            observer: self,
+            selector: #selector(self.handleIAPNotification(_:)))
     }
     
     override func viewWillDisappear(_ animated: Bool) {
-        IAPHelper.shared.removeObserverForNotifications(observer: self)
+        IAPHelper.shared.removeObserverForNotifications(
+            notifications: [.requestProductsCompleted,
+                            .requestProductsFailed,
+                            .purchaseCompleted,
+                            .purchaseFailed,
+                            .purchaseRestored,
+                            .purchaseRestoreFailed],
+            observer: self)
     }
     
     @IBAction func purchaseLargeFlowersTapped(_ sender: Any) {
@@ -45,6 +60,7 @@ class ViewController: UIViewController {
     }
     
     @objc func handleIAPNotification(_ notification: Notification) {
+        print("ViewController Handler: \(notification.name.rawValue)")
         
         switch notification.name.rawValue {
         case IAPNotificaton.requestProductsCompleted.key():

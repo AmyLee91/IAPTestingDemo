@@ -11,43 +11,19 @@ public struct IAPLog {
   
     public static func event(error: IAPError) {
         #if DEBUG
-        print("IAP error: \(error.shortDescription())")
-        #endif
-    }
-    
-    public static func event(error: IAPError, message: String) {
-        #if DEBUG
-        print("IAP error: \(error.shortDescription())\n\(message)")
+        print(error.shortDescription())
         #endif
     }
     
     public static func event(error: IAPReceiptError) {
         #if DEBUG
-        print("IAP error: \(error.shortDescription())")
+        print(error.shortDescription())
         #endif
     }
     
     public static func event(event: IAPNotificaton) {
         #if DEBUG
-        print("IAP notification: \(event.shortDescription())")
-        #endif
-    }
-    
-    public static func event(event: IAPNotificaton, message: String) {
-        #if DEBUG
-        print("IAP notification: \(event.shortDescription())\n\(message)")
-        #endif
-    }
-    
-    public static func event(productId: String, event: IAPNotificaton) {
-        #if DEBUG
-        print("IAP notification for ProductId \(productId): \(event.shortDescription())")
-        #endif
-    }
-    
-    public static func event(productId: String, event: IAPNotificaton, message: String) {
-        #if DEBUG
-        print("IAP notification for ProductId \(productId): \(event.shortDescription())\n\(message)")
+        print(event.description())
         #endif
     }
 }

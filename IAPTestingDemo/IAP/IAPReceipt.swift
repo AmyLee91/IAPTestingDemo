@@ -10,6 +10,10 @@
 
 import UIKit
 
+public protocol IAPReceiptDelegate: class {
+    func requestSendNotification(notification: IAPNotificaton)
+}
+
 /// IAPReceipt encasulates an Apple App Store-issued receipt. App Store receipts are a complete
 /// record of a user's in-app purchase history. The receipt will contain a list of any in-app
 /// purchases the user has made. This list can be used to validate a locally stored fall-back
@@ -41,17 +45,25 @@ public class IAPReceipt {
     /// Check to see if the receipt's URL is present and the receipt file itself is reachable.
     /// True if the receipt is available in the main bundle, false otherwise.
     public var isReachable: Bool {
-        guard let receiptUrl = Bundle.main.appStoreReceiptURL else { return false }
-        let available = try? receiptUrl.checkResourceIsReachable()
+        guard let receiptUrl = Bundle.main.appStoreReceiptURL else {
+            mostRecentError = .badUrl
+            IAPLog.event(error: mostRecentError)
+            delegate?.requestSendNotification(notification: .receiptMissing)
+            return false
+        }
         
-        return available == nil ? false : true
+        guard let _ = try? receiptUrl.checkResourceIsReachable() else {
+            mostRecentError = .missing
+            IAPLog.event(error: mostRecentError)
+            delegate?.requestSendNotification(notification: .receiptMissing)
+            return false
+        }
+        
+        return true
     }
     
     /// True if the receipt has been loaded and its data cached.
     public var isLoaded: Bool { receiptData == nil ? false : true }
-    
-    /// True if we have a list of purchased product IDs validated against the App Store receipt.
-    public var haveValidatedPurchasedProductIdentifiers: Bool { validatedPurchasedProductIdentifiers.count > 0 }
     
     /// True if valid. If false then the host app should call refreshReceipt(completion:).
     public var isValid = false
@@ -64,6 +76,9 @@ public class IAPReceipt {
     
     /// Keeps track of the most recent error condition.
     public var mostRecentError: IAPReceiptError = .noError
+
+    /// IAPHelper delegate
+    public weak var delegate: IAPReceiptDelegate?
     
     // MARK:- Private properties
 
@@ -88,8 +103,19 @@ public class IAPReceipt {
     /// data using read(). You can then validate() the receipt.
     /// - Returns: Returns true if loaded correctly, false otherwise
     public func load() -> Bool {
-        guard let receiptUrl = Bundle.main.appStoreReceiptURL else { mostRecentError = .missing; return false}
-        guard let data = try? Data(contentsOf: receiptUrl) else { mostRecentError = .badUrl; return false }
+        guard let receiptUrl = Bundle.main.appStoreReceiptURL else {
+            mostRecentError = .missing
+            IAPLog.event(error: mostRecentError)
+            delegate?.requestSendNotification(notification: .receiptMissing)
+            return false
+        }
+        
+        guard let data = try? Data(contentsOf: receiptUrl) else {
+            mostRecentError = .badUrl
+            IAPLog.event(error: mostRecentError)
+            delegate?.requestSendNotification(notification: .receiptLoadFailed)
+            return false
+        }
         
         let receiptBIO = BIO_new(BIO_s_mem())
         let receiptBytes: [UInt8] = .init(data)
@@ -98,26 +124,51 @@ public class IAPReceipt {
         let receiptPKCS7 = d2i_PKCS7_bio(receiptBIO, nil)
         BIO_free(receiptBIO)
 
-        guard receiptPKCS7 != nil else { mostRecentError = .badFormat; return false }
-        guard OBJ_obj2nid(receiptPKCS7!.pointee.type) == NID_pkcs7_signed else { mostRecentError = .badPKCS7Signature; return false }
+        guard receiptPKCS7 != nil else {
+            mostRecentError = .badFormat
+            IAPLog.event(error: mostRecentError)
+            delegate?.requestSendNotification(notification: .receiptLoadFailed)
+            return false
+        }
+        
+        guard OBJ_obj2nid(receiptPKCS7!.pointee.type) == NID_pkcs7_signed else {
+            mostRecentError = .badPKCS7Signature
+            IAPLog.event(error: mostRecentError)
+            delegate?.requestSendNotification(notification: .receiptLoadFailed)
+            return false
+        }
         
         let receiptContents = receiptPKCS7!.pointee.d.sign.pointee.contents
-        guard OBJ_obj2nid(receiptContents?.pointee.type) == NID_pkcs7_data else { mostRecentError = .badPKCS7Type; return false }
+        guard OBJ_obj2nid(receiptContents?.pointee.type) == NID_pkcs7_data else {
+            mostRecentError = .badPKCS7Type
+            IAPLog.event(error: mostRecentError)
+            delegate?.requestSendNotification(notification: .receiptLoadFailed)
+            return false
+        }
         
         receiptData = receiptPKCS7
         mostRecentError = .noError
+        delegate?.requestSendNotification(notification: .receiptLoadCompleted)
+
         return true
     }
     
     /// Check the receipt has been correctly signed with a valid Apple X509 certificate.
     /// - Returns: Returns true if correctly signed, false otherwise.
     public func validateSigning() -> Bool {
-        guard receiptData != nil else { mostRecentError = .noData; return false }
+        guard receiptData != nil else {
+            mostRecentError = .noData
+            IAPLog.event(error: mostRecentError)
+            delegate?.requestSendNotification(notification: .receiptValidateSigningFailed)
+            return false
+        }
         
         guard let rootCertUrl = Bundle.main.url(forResource: IAPConstants.Certificate(), withExtension: IAPConstants.CertificateExt()),
               let rootCertData = try? Data(contentsOf: rootCertUrl) else {
             
             mostRecentError = .invalidAppleRootCertificate
+            IAPLog.event(error: mostRecentError)
+            delegate?.requestSendNotification(notification: .receiptValidateSigningFailed)
             return false
         }
         
@@ -141,10 +192,17 @@ public class IAPReceipt {
         let verificationResult = PKCS7_verify(receiptData, nil, store, nil, nil, 0)
         #endif
         
-        guard verificationResult == 1  else { mostRecentError = .failedAppleSignature; return false }
+        guard verificationResult == 1  else {
+            mostRecentError = .failedAppleSignature
+            IAPLog.event(error: mostRecentError)
+            delegate?.requestSendNotification(notification: .receiptValidateSigningFailed)
+            return false
+        }
         
         isValidSignature = true
         mostRecentError = .noError
+        delegate?.requestSendNotification(notification: .receiptValidateSigningCompleted)
+
         return true
     }
     
@@ -162,16 +220,43 @@ public class IAPReceipt {
         var length: Int = 0
         
         ASN1_get_object(&pointer, &length, &type, &xclass, pointer!.distance(to: end))
-        guard type == V_ASN1_SET else { mostRecentError = .unexpectedASN1Type; return false }
+        guard type == V_ASN1_SET else {
+            mostRecentError = .unexpectedASN1Type
+            IAPLog.event(error: mostRecentError)
+            delegate?.requestSendNotification(notification: .receiptReadFailed)
+            return false
+        }
         
         while pointer! < end {
             ASN1_get_object(&pointer, &length, &type, &xclass, pointer!.distance(to: end))
-            guard type == V_ASN1_SEQUENCE else { mostRecentError = .unexpectedASN1Type; return false }
-            guard let attributeType = IAPOpenSSL.asn1Int(p: &pointer, expectedLength: length) else { mostRecentError = .unexpectedASN1Type; return false }
-            guard let _ = IAPOpenSSL.asn1Int(p: &pointer, expectedLength: pointer!.distance(to: end)) else { mostRecentError = .unexpectedASN1Type; return false }
+            guard type == V_ASN1_SEQUENCE else {
+                mostRecentError = .unexpectedASN1Type
+                IAPLog.event(error: mostRecentError)
+                delegate?.requestSendNotification(notification: .receiptReadFailed)
+                return false
+            }
+            
+            guard let attributeType = IAPOpenSSL.asn1Int(p: &pointer, expectedLength: length) else {
+                mostRecentError = .unexpectedASN1Type
+                IAPLog.event(error: mostRecentError)
+                delegate?.requestSendNotification(notification: .receiptReadFailed)
+                return false
+            }
+            
+            guard let _ = IAPOpenSSL.asn1Int(p: &pointer, expectedLength: pointer!.distance(to: end)) else {
+                mostRecentError = .unexpectedASN1Type
+                IAPLog.event(error: mostRecentError)
+                delegate?.requestSendNotification(notification: .receiptReadFailed)
+                return false
+            }
             
             ASN1_get_object(&pointer, &length, &type, &xclass, pointer!.distance(to: end))
-            guard type == V_ASN1_OCTET_STRING else { mostRecentError = .unexpectedASN1Type; return false }
+            guard type == V_ASN1_OCTET_STRING else {
+                mostRecentError = .unexpectedASN1Type
+                IAPLog.event(error: mostRecentError)
+                delegate?.requestSendNotification(notification: .receiptReadFailed)
+                return false
+            }
             
             var p = pointer
             switch IAPOpenSSLAttributeType(rawValue: attributeType) {
@@ -204,6 +289,8 @@ public class IAPReceipt {
         
         hasBeenRead = true
         mostRecentError = .noError
+        delegate?.requestSendNotification(notification: .receiptReadCompleted)
+        
         return true
     }
     
@@ -230,24 +317,62 @@ public class IAPReceipt {
         guard let idString = bundleIdString,
               let version = bundleVersionString,
               let _ = opaqueData,
-              let hash = hashData else { mostRecentError = .missingComponent; return false }
-        
-        guard let appBundleId = Bundle.main.bundleIdentifier else { mostRecentError = .unknownFailure; return false }
-        guard idString == appBundleId else { mostRecentError = .invalidBundleIdentifier; return false }
-        guard let appVersionString = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String else {
-            mostRecentError = .unknownFailure
+              let hash = hashData else {
+            
+            mostRecentError = .missingComponent
+            IAPLog.event(error: mostRecentError)
+            delegate?.requestSendNotification(notification: .receiptValidationFailed)
             return false
         }
         
-        guard version == appVersionString else { mostRecentError = .invalidVersionIdentifier; return false }
-        guard hash == computeHash() else { mostRecentError = .invalidHash; return false }
+        guard let appBundleId = Bundle.main.bundleIdentifier else {
+            mostRecentError = .unknownFailure
+            IAPLog.event(error: mostRecentError)
+            delegate?.requestSendNotification(notification: .receiptValidationFailed)
+            return false
+        }
+        
+        guard idString == appBundleId else {
+            mostRecentError = .invalidBundleIdentifier
+            IAPLog.event(error: mostRecentError)
+            delegate?.requestSendNotification(notification: .receiptValidationFailed)
+            return false
+        }
+        
+        guard let appVersionString = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String else {
+            mostRecentError = .unknownFailure
+            IAPLog.event(error: mostRecentError)
+            delegate?.requestSendNotification(notification: .receiptValidationFailed)
+            return false
+        }
+        
+        guard version == appVersionString else {
+            mostRecentError = .invalidVersionIdentifier
+            IAPLog.event(error: mostRecentError)
+            delegate?.requestSendNotification(notification: .receiptValidationFailed)
+            return false
+        }
+        
+        guard hash == computeHash() else {
+            mostRecentError = .invalidHash
+            IAPLog.event(error: mostRecentError)
+            delegate?.requestSendNotification(notification: .receiptValidationFailed)
+            return false
+        }
         
         if let expirationDate = expirationDate {
-            if expirationDate < Date() { mostRecentError = .expired; return false }
+            if expirationDate < Date() {
+                mostRecentError = .expired
+                IAPLog.event(error: mostRecentError)
+                delegate?.requestSendNotification(notification: .receiptValidationFailed)
+                return false
+            }
         }
         
         isValid = true
         mostRecentError = .noError
+        delegate?.requestSendNotification(notification: .receiptValidationCompleted)
+        
         return true
     }
     
@@ -255,7 +380,7 @@ public class IAPReceipt {
     /// - Parameter fallbackPids: Set of locally stored fallback ProductIds
     /// - Returns: Returns true if both sets are the same, false otherwise
     public func validateFallbackProductIds(fallbackPids: Set<ProductId>) -> Bool {
-        fallbackPids == validatedPurchasedProductIdentifiers
+        return fallbackPids == validatedPurchasedProductIdentifiers
     }
     
     // MARK:- Private methods

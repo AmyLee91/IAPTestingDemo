@@ -12,6 +12,6 @@ protocol IAPPersistenceProtocol {
     static func savePurchasedState(for productId: ProductId, purchased: Bool)
     static func savePurchasedState(for productIds: Set<ProductId>, purchased: Bool)
     static func loadPurchasedState(for productId: ProductId) -> Bool
-    static func loadPurchasedProductIds(for productIds: Set<ProductId>) -> Set<ProductId>?
+    static func loadPurchasedProductIds(for productIds: Set<ProductId>) -> Set<ProductId>
 }
 

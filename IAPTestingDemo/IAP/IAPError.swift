@@ -13,7 +13,6 @@ public enum IAPError: Error {
     case cantReadData
     case cantDecode
     case cantGetProductsFromAppStore
-    case purchasedFallbackListMissingOrEmpty
     case noPreconfiguredProductIds
     case noProductsReturnedByAppStore
     case receiptUrlMissing
@@ -28,7 +27,6 @@ public enum IAPError: Error {
             case .cantReadData:                         return "Can't read in-app purchase data from .storekit configuration file."
             case .cantDecode:                           return "Can't decode in-app purchase data in the .storekit configuration file."
             case .cantGetProductsFromAppStore:          return "Can't get products from the App Store."
-            case .purchasedFallbackListMissingOrEmpty:  return "Can't find the fallback list of purchased ProductIds."
             case .noPreconfiguredProductIds:            return "No preconfigured ProductIds. They should be defined in the .storekit config file."
             case .noProductsReturnedByAppStore:         return "The App Store returned an empty list of products."
             case .receiptUrlMissing:                    return "The App Store receipt URL is missing."
