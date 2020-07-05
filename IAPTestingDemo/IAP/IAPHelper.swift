@@ -354,7 +354,36 @@ extension IAPHelper: SKProductsRequestDelegate {
 }
 
 // MARK:- SKPaymentTransactionObserver
+/*
+ 
+ // Sent when the transaction array has changed (additions or state changes).  Client should check state of transactions and finish as appropriate.
+ func paymentQueue(_ queue: SKPaymentQueue, updatedTransactions transactions: [SKPaymentTransaction])
+ 
+ // Sent when transactions are removed from the queue (via finishTransaction:).
+ func paymentQueue(_ queue: SKPaymentQueue, removedTransactions transactions: [SKPaymentTransaction])
 
+ // Sent when an error is encountered while adding transactions from the user's purchase history back to the queue.
+ func paymentQueue(_ queue: SKPaymentQueue, restoreCompletedTransactionsFailedWithError error: Error)
+
+ // Sent when all transactions from the user's purchase history have successfully been added back to the queue.
+ func paymentQueueRestoreCompletedTransactionsFinished(_ queue: SKPaymentQueue)
+
+ // Sent when the download state has changed.
+ func paymentQueue(_ queue: SKPaymentQueue, updatedDownloads downloads: [SKDownload])
+
+ // Sent when a user initiates an IAP buy from the App Store
+ @available(iOS 11.0, *)
+ optional func paymentQueue(_ queue: SKPaymentQueue, shouldAddStorePayment payment: SKPayment, for product: SKProduct) -> Bool
+ 
+ // YES: Tells the observer that the storefront for the payment queue has changed.
+ @available(iOS 13.0, *)
+ func paymentQueueDidChangeStorefront(_ queue: SKPaymentQueue)
+ 
+ // YES: Sent when entitlements for a user have changed and access to the specified IAPs has been revoked.
+ @available(iOS 14.0, *)
+ func paymentQueue(_ queue: SKPaymentQueue, didRevokeEntitlementsForProductIdentifiers productIdentifiers: [String])
+ 
+ */
 extension IAPHelper: SKPaymentTransactionObserver {
     
     /// This delegate allows us to receive notifications from the App Store when payments are successful, fail or are restored.
@@ -378,9 +407,9 @@ extension IAPHelper: SKPaymentTransactionObserver {
     /// (rather than via the app itself).
     /// - Parameters:
     ///   - queue: Payment queue object.
-    ///   - payment:
-    ///   - product: <#product description#>
-    /// - Returns: <#description#>
+    ///   - payment: Payment info.
+    ///   - product: The product purchased.
+    /// - Returns: Return true to continue the transaction (will result in normal processing via paymentQueue(_:updatedTransactions:).
     public func paymentQueue(_ queue: SKPaymentQueue, shouldAddStorePayment payment: SKPayment, for product: SKProduct) -> Bool {
         
         /*
@@ -447,7 +476,7 @@ extension IAPHelper: SKPaymentTransactionObserver {
         return true  // Return true to continue the transaction (will result in normal processing via paymentQueue(_:updatedTransactions:)
     }
 
-    fileprivate func purchaseCompleted(transaction: SKPaymentTransaction, restore: Bool = false) {
+    public func purchaseCompleted(transaction: SKPaymentTransaction, restore: Bool = false) {
         // The purchase was successful. Allow the user access to the product
 
         isPurchasing = false
@@ -473,7 +502,7 @@ extension IAPHelper: SKPaymentTransactionObserver {
         // Note that we do not present a confirmation alert to the user as StoreKit will have already done so
     }
 
-    fileprivate func purchaseFailed(transaction: SKPaymentTransaction) {
+    public func purchaseFailed(transaction: SKPaymentTransaction) {
         // The purchase failed. Don't allow the user access to the product
 
         defer {
@@ -508,7 +537,7 @@ extension IAPHelper: SKPaymentTransactionObserver {
         if iapHelperError.wasCancelled { return }  // Cancellations aren't failures
     }
 
-    fileprivate func purchaseDeferred(transaction: SKPaymentTransaction) {
+    public func purchaseDeferred(transaction: SKPaymentTransaction) {
         // The purchase is in the deferred state. This happens when a device has parental restrictions enabled such
         // that in-app purchases require authorization from a parent. Do not allow access to the product at this point
         // Apple recommeds that there be no spinners or blocking while in this state as it could be hours or days 
@@ -520,12 +549,26 @@ extension IAPHelper: SKPaymentTransactionObserver {
         // Do NOT call SKPaymentQueue.default().finishTransaction() for .deferred status
     }
 
-    fileprivate func purchaseInProgress(transaction: SKPaymentTransaction) {
+    public func purchaseInProgress(transaction: SKPaymentTransaction) {
         // The product purchase transaction has started. Do not allow access to the product yet
 
         sendNotification(notification: .purchaseInProgress, object: transaction.payment.productIdentifier)
 
         // Do NOT call SKPaymentQueue.default().finishTransaction() for .purchasing status
+    }
+    
+    @available(iOS 13.0, *)
+    func paymentQueueDidChangeStorefront(_ queue: SKPaymentQueue) {
+        
+    }
+    
+    /// Sent when entitlements for a user have changed and access to the specified IAPs has been revoked.
+    /// - Parameters:
+    ///   - queue: Payment queue.
+    ///   - productIdentifiers: ProductId which should have user access revoked.
+    @available(iOS 14.0, *)
+    public func paymentQueue(_ queue: SKPaymentQueue, didRevokeEntitlementsForProductIdentifiers productIdentifiers: [String]) {
+        // TODO
     }
 }
 
