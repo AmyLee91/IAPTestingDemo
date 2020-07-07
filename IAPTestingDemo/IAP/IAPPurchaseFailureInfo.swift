@@ -7,7 +7,7 @@
 
 import Foundation
 
-/// Error struct used by IAPHelper to provide additional information when a purchase does not succeed
+/// Error struct used by IAPHelper to provide additional information when a purchase does not succeed.
 public struct IAPPurchaseFailureInfo {
     public var productIdentifier: ProductId
     public var wasCancelled: Bool

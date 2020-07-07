@@ -8,7 +8,7 @@
 import Foundation
 
 /// Model for the the .storekit configuration file. This model is used to decode the JSON data in the configuration file.
-/// See also IAPConfiguration
+/// See also IAPConfiguration.
 public struct IAPConfigurationModel: Decodable {
     let products: [IAPConfigurationModelProducts]?
     let settings: IAPConfigurationModelSettings?

@@ -8,6 +8,7 @@
 import UIKit
 
 public class IAPUtils {
+    
     /// Show an alert presented on the current view controller
     internal class func showMessage(msg: String, title: String) {
         let alert = UIAlertController(
@@ -23,7 +24,7 @@ public class IAPUtils {
     }
     
     @available(iOS 13, *)
-    internal class func currentViewController() -> UIViewController? {
+    fileprivate class func currentViewController() -> UIViewController? {
         guard let scene = UIApplication.shared.connectedScenes.first,
               let sceneDelegate = scene.delegate as? SceneDelegate,
               let window = sceneDelegate.window,

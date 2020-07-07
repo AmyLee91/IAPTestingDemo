@@ -58,7 +58,7 @@ struct IAPReceiptProductInfo {
     }
 }
 
-public enum IAPReceiptAttributeType: Int {
+fileprivate enum IAPReceiptAttributeType: Int {
     
     case Quantity                       = 1701
     case ProductIdentifier              = 1702

@@ -28,6 +28,15 @@
 		68A4653924A429DB002142D4 /* IAPReceipt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68A4653824A429DB002142D4 /* IAPReceipt.swift */; };
 		68A4653B24A42A7F002142D4 /* IAPOpenSSL.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68A4653A24A42A7F002142D4 /* IAPOpenSSL.swift */; };
 		68AA839D24AA4165003A27AE /* IAPReceiptProductInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68AA839C24AA4165003A27AE /* IAPReceiptProductInfo.swift */; };
+		68D5B24324B2ABB00092F570 /* IAPHelper+SKPaymentTransactionObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68D5B24224B2ABB00092F570 /* IAPHelper+SKPaymentTransactionObserver.swift */; };
+		68D5B24524B2AD5A0092F570 /* IAPHelper+SKProductsRequestDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68D5B24424B2AD5A0092F570 /* IAPHelper+SKProductsRequestDelegate.swift */; };
+		68D5B24724B2AE630092F570 /* IAPHelper+AppStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68D5B24624B2AE630092F570 /* IAPHelper+AppStore.swift */; };
+		68D5B24924B2AED80092F570 /* IAPHelper+StoreKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68D5B24824B2AED80092F570 /* IAPHelper+StoreKit.swift */; };
+		68D5B24B24B2AF720092F570 /* IAPReceiptDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68D5B24A24B2AF720092F570 /* IAPReceiptDelegate.swift */; };
+		68D5B24D24B2AFDA0092F570 /* IAPReceipt+Load.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68D5B24C24B2AFDA0092F570 /* IAPReceipt+Load.swift */; };
+		68D5B24F24B2B02E0092F570 /* IAPReceipt+ValidateSigning.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68D5B24E24B2B02E0092F570 /* IAPReceipt+ValidateSigning.swift */; };
+		68D5B25124B2B0630092F570 /* IAPReceipt+Read.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68D5B25024B2B0630092F570 /* IAPReceipt+Read.swift */; };
+		68D5B25324B2B0A40092F570 /* IAPReceipt+Validate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68D5B25224B2B0A40092F570 /* IAPReceipt+Validate.swift */; };
 		68E05E0F24A262C200B6728D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68E05E0E24A262C200B6728D /* AppDelegate.swift */; };
 		68E05E1124A262C200B6728D /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68E05E1024A262C200B6728D /* SceneDelegate.swift */; };
 		68E05E1324A262C200B6728D /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68E05E1224A262C200B6728D /* ViewController.swift */; };
@@ -75,6 +84,15 @@
 		68A4653824A429DB002142D4 /* IAPReceipt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IAPReceipt.swift; sourceTree = "<group>"; };
 		68A4653A24A42A7F002142D4 /* IAPOpenSSL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IAPOpenSSL.swift; sourceTree = "<group>"; };
 		68AA839C24AA4165003A27AE /* IAPReceiptProductInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IAPReceiptProductInfo.swift; sourceTree = "<group>"; };
+		68D5B24224B2ABB00092F570 /* IAPHelper+SKPaymentTransactionObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "IAPHelper+SKPaymentTransactionObserver.swift"; sourceTree = "<group>"; };
+		68D5B24424B2AD5A0092F570 /* IAPHelper+SKProductsRequestDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "IAPHelper+SKProductsRequestDelegate.swift"; sourceTree = "<group>"; };
+		68D5B24624B2AE630092F570 /* IAPHelper+AppStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "IAPHelper+AppStore.swift"; sourceTree = "<group>"; };
+		68D5B24824B2AED80092F570 /* IAPHelper+StoreKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "IAPHelper+StoreKit.swift"; sourceTree = "<group>"; };
+		68D5B24A24B2AF720092F570 /* IAPReceiptDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IAPReceiptDelegate.swift; sourceTree = "<group>"; };
+		68D5B24C24B2AFDA0092F570 /* IAPReceipt+Load.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "IAPReceipt+Load.swift"; sourceTree = "<group>"; };
+		68D5B24E24B2B02E0092F570 /* IAPReceipt+ValidateSigning.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "IAPReceipt+ValidateSigning.swift"; sourceTree = "<group>"; };
+		68D5B25024B2B0630092F570 /* IAPReceipt+Read.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "IAPReceipt+Read.swift"; sourceTree = "<group>"; };
+		68D5B25224B2B0A40092F570 /* IAPReceipt+Validate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "IAPReceipt+Validate.swift"; sourceTree = "<group>"; };
 		68E05E0B24A262C200B6728D /* IAPTestingDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = IAPTestingDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		68E05E0E24A262C200B6728D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		68E05E1024A262C200B6728D /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -139,6 +157,10 @@
 				688774ED24A3BC98006840A8 /* IAPConstants.swift */,
 				6845FC0524A4F503007FF7BA /* IAPError.swift */,
 				68E05E4124A269CD00B6728D /* IAPHelper.swift */,
+				68D5B24624B2AE630092F570 /* IAPHelper+AppStore.swift */,
+				68D5B24424B2AD5A0092F570 /* IAPHelper+SKProductsRequestDelegate.swift */,
+				68D5B24824B2AED80092F570 /* IAPHelper+StoreKit.swift */,
+				68D5B24224B2ABB00092F570 /* IAPHelper+SKPaymentTransactionObserver.swift */,
 				6845FC0324A4F379007FF7BA /* IAPLog.swift */,
 				68E05E4224A269CD00B6728D /* IAPNotification.swift */,
 				68A4653A24A42A7F002142D4 /* IAPOpenSSL.swift */,
@@ -147,6 +169,11 @@
 				6845FC0124A4D1EE007FF7BA /* IAPPersistenceProtocol.swift */,
 				688774E824A39F41006840A8 /* IAPPurchaseFailureInfo.swift */,
 				68A4653824A429DB002142D4 /* IAPReceipt.swift */,
+				68D5B25224B2B0A40092F570 /* IAPReceipt+Validate.swift */,
+				68D5B25024B2B0630092F570 /* IAPReceipt+Read.swift */,
+				68D5B24E24B2B02E0092F570 /* IAPReceipt+ValidateSigning.swift */,
+				68D5B24C24B2AFDA0092F570 /* IAPReceipt+Load.swift */,
+				68D5B24A24B2AF720092F570 /* IAPReceiptDelegate.swift */,
 				68572E5224AE9EF200965618 /* IAPReceiptError.swift */,
 				68AA839C24AA4165003A27AE /* IAPReceiptProductInfo.swift */,
 				68909B8C24B0D1CE00448F24 /* IAPUtils.swift */,
@@ -307,19 +334,28 @@
 			files = (
 				68E05E4524A269CD00B6728D /* IAPNotification.swift in Sources */,
 				68572E5324AE9EF200965618 /* IAPReceiptError.swift in Sources */,
+				68D5B24724B2AE630092F570 /* IAPHelper+AppStore.swift in Sources */,
 				6845FC0624A4F503007FF7BA /* IAPError.swift in Sources */,
 				68E05E4424A269CD00B6728D /* IAPHelper.swift in Sources */,
+				68D5B24D24B2AFDA0092F570 /* IAPReceipt+Load.swift in Sources */,
 				68909B8D24B0D1CE00448F24 /* IAPUtils.swift in Sources */,
 				68A4653724A428FC002142D4 /* IAPPersistence.swift in Sources */,
+				68D5B24324B2ABB00092F570 /* IAPHelper+SKPaymentTransactionObserver.swift in Sources */,
 				68E05E1324A262C200B6728D /* ViewController.swift in Sources */,
 				688774EC24A3A2C3006840A8 /* IAPConfiguration.swift in Sources */,
+				68D5B25324B2B0A40092F570 /* IAPReceipt+Validate.swift in Sources */,
 				68A4653B24A42A7F002142D4 /* IAPOpenSSL.swift in Sources */,
+				68D5B24F24B2B02E0092F570 /* IAPReceipt+ValidateSigning.swift in Sources */,
+				68D5B24924B2AED80092F570 /* IAPHelper+StoreKit.swift in Sources */,
+				68D5B24B24B2AF720092F570 /* IAPReceiptDelegate.swift in Sources */,
 				68A4653924A429DB002142D4 /* IAPReceipt.swift in Sources */,
 				6845FC0424A4F379007FF7BA /* IAPLog.swift in Sources */,
 				68A4653524A428A5002142D4 /* IAPConfigurationModel.swift in Sources */,
+				68D5B24524B2AD5A0092F570 /* IAPHelper+SKProductsRequestDelegate.swift in Sources */,
 				68572E5524AE9F6800965618 /* IAPOpenSSLAttributeType.swift in Sources */,
 				68E05E0F24A262C200B6728D /* AppDelegate.swift in Sources */,
 				688774EE24A3BC98006840A8 /* IAPConstants.swift in Sources */,
+				68D5B25124B2B0630092F570 /* IAPReceipt+Read.swift in Sources */,
 				688774E924A39F41006840A8 /* IAPPurchaseFailureInfo.swift in Sources */,
 				68AA839D24AA4165003A27AE /* IAPReceiptProductInfo.swift in Sources */,
 				6845FC0224A4D1EE007FF7BA /* IAPPersistenceProtocol.swift in Sources */,
