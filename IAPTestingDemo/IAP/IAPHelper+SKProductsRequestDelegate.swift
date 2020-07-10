@@ -17,7 +17,7 @@ extension IAPHelper: SKProductsRequestDelegate {
     public func productsRequest(_ request: SKProductsRequest, didReceive response: SKProductsResponse) {
         if response.products.count == 0 {
             IAPLog.event(error: .noProductsReturnedByAppStore)
-            requestProductsCompletion?(.noProductsReturnedByAppStore)
+            DispatchQueue.main.async { self.requestProductsCompletion?(.noProductsReturnedByAppStore) }
             return
         }
 
@@ -28,7 +28,7 @@ extension IAPHelper: SKProductsRequestDelegate {
         sendNotification(notification: .requestProductsCompleted)
         
         productsRequest = nil  // Destroy the request object
-        requestProductsCompletion?(nil)
+        DispatchQueue.main.async { self.requestProductsCompletion?(nil) }
     }
     
     /// Called by the App Store if a request fails.

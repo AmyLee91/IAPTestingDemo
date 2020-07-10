@@ -210,10 +210,21 @@ public class IAPHelper: NSObject  {
         return fallbackPurchasedProductIdentifiers.contains(id)
     }
     
+    /// Get a localized price for a product.
+    /// - Parameter product: SKProduct for which you want the local price.
+    /// - Returns: Returns a localized price String for a product.
+    public class func getLocalizedPriceFor(product: SKProduct) -> String? {
+        let priceFormatter = NumberFormatter()
+        priceFormatter.formatterBehavior = .behavior10_4
+        priceFormatter.numberStyle = .currency
+        priceFormatter.locale = product.priceLocale
+        return priceFormatter.string(from: product.price)
+    }
+    
     // MARK:- Internal Helpers
     
     internal func sendNotification(notification: IAPNotificaton, object: Any? = nil) {
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: notification.key()), object: object)
+        DispatchQueue.main.async { NotificationCenter.default.post(name: NSNotification.Name(rawValue: notification.key()), object: object) }
         IAPLog.event(event: notification)
     }
     

@@ -32,14 +32,14 @@ extension IAPHelper {
         requestProductsCompletion = completion  // Save the completion handler so it can be used in productsRequest(_:didReceive:)
         
         guard haveConfiguredProductIdentifiers else {
-            completion(.noPreconfiguredProductIds)
+            DispatchQueue.main.async { completion(.noPreconfiguredProductIds) }
             return
         }
         
         if products != nil {
             // We already have a product list supplied by the App Store. Tell observers it's available
             sendNotification(notification: .requestProductsCompleted)
-            completion(nil)
+            DispatchQueue.main.async { completion(nil) }
             return  // No need to refresh the list
         }
         

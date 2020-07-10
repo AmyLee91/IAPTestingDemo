@@ -46,7 +46,10 @@ public struct IAPPersistence: IAPPersistenceProtocol {
         var purchasedProductIds = Set<ProductId>()
         productIds.forEach { productId in
             let purchased = UserDefaults.standard.bool(forKey: productId)
-            if purchased { purchasedProductIds.insert(productId); print("Loaded purchased product: \(productId)") }
+            if purchased {
+                purchasedProductIds.insert(productId)
+                IAPLog.event(message: "Loaded purchased product: \(productId)")
+            }
         }
         
         return purchasedProductIds

@@ -84,44 +84,6 @@ public enum IAPNotificaton {
     
     public func shortDescription() -> String {
         switch self {
-        case .configurationLoadCompleted:           return "Configuration Load Completed"
-        case .configurationLoadFailed:              return "Configuration Load Failed"
-        case .configurationEmpty:                   return "Configuration Empty"
-        case .purchaseStarted:                      return "Purchase Started"
-        case .purchaseInProgress:                   return "Purchase In Progress"
-        case .purchaseDeferred:                     return "Purchase Deferred"
-        case .purchaseCompleted:                    return "Purchase Completed"
-        case .purchaseFailed:                       return "Purchase Failed"
-        case .purchaseCancelled:                    return "Purchase Cancelled"
-        case .purchaseRestored:                     return "Purchase Restored"
-        case .purchaseRestoreFailed:                return "Purchase Restore Failed"
-        case .purchaseValidationCompleted:          return "Purchase Validation Completed"
-        case .purchaseValidationFailed:             return "Purchase Validation Failed"
-        case .receiptFallbackLoadCompleted:         return "Receipt Fallback Load Completed"
-        case .receiptFallbackValidationFailed:      return "Receipt Fallback Validation Failed"
-        case .receiptFallbackValidationCompleted:   return "Receipt Fallback Validation Completed"
-        case .receiptFallbackReset:                 return "Receipt Fallback Reset"
-        case .receiptMissing:                       return "Receipt Missing"
-        case .receiptLoadCompleted:                 return "Receipt Load Completed"
-        case .receiptLoadFailed:                    return "Receipt Load Failed"
-        case .receiptValidateSigningCompleted:      return "Receipt Validate Signing Completed"
-        case .receiptValidateSigningFailed:         return "Receipt Validate Signing Failed"
-        case .receiptReadCompleted:                 return "Receipt Read Completed"
-        case .receiptReadFailed:                    return "Receipt Read Failed"
-        case .receiptValidationCompleted:           return "Receipt Validation Completed"
-        case .receiptValidationFailed:              return "Receipt Validation Failed"
-        case .receiptRefreshInitiated:              return "Receipt Refresh Initiated"
-        case .receiptRefreshPushedByAppStore:       return "Receipt Refresh Pushed By App Store"
-        case .receiptRefreshCompleted:              return "Receipt Refresh Completed"
-        case .receiptRefreshFailed:                 return "Receipt Refresh Failed"
-        case .requestProductsInitiated:             return "Request Products Initiated"
-        case .requestProductsCompleted:             return "Request Products Completed"
-        case .requestProductsFailed:                return "Request Products Failed"
-        }
-    }
-
-    public func description() -> String {
-        switch self {
         case .configurationLoadCompleted:           return "Configuration load of .storekit file completed"
         case .configurationLoadFailed:              return "Configuration load of .storekit file failed"
         case .configurationEmpty:                   return "Configuration does not contain any product definitions"
