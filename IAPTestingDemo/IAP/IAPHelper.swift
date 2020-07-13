@@ -59,11 +59,14 @@ public class IAPHelper: NSObject  {
     
     // MARK:- Internal Properties
 
-    internal var receipt: IAPReceipt!                                     // Represents the app store receipt located in the main bundle
-    internal var productsRequest: SKProductsRequest?                      // Used to request product info async from the App Store
-    internal var receiptRequest: SKRequest?                               // Used to request a receipt refresh async from the App Store
-    internal var refreshReceiptCompletion: ((IAPError?) -> Void)? = nil   // Used when requesting a refreshed receipt from the app store
-    internal var requestProductsCompletion: ((IAPError?) -> Void)? = nil  // Used when requesting products from the app store
+    internal var receipt:                       IAPReceipt!                          // Represents the app store receipt located in the main bundle
+    internal var productsRequest:               SKProductsRequest?                   // Used to request product info async from the App Store
+    internal var receiptRequest:                SKRequest?                           // Used to request a receipt refresh async from the App Store
+    internal var refreshReceiptCompletion:      ((IAPNotification?) -> Void)? = nil  // Used when requesting a refreshed receipt from the app store
+    internal var requestProductsCompletion:     ((IAPNotification?) -> Void)? = nil  // Used when requesting products from the app store
+    internal var purchaseCompletion:            ((IAPNotification?) -> Void)? = nil  // Used when purchasing a product from the app store
+    internal var restorePurchasesCompletion:    ((IAPNotification?) -> Void)? = nil  // Used when requesting the app store to restore purchases
+    internal var notificationCompletion:        ((IAPNotification?) -> Void)? = nil  // Used to send notifications
     
     // MARK:- Initialization
     
@@ -83,36 +86,6 @@ public class IAPHelper: NSObject  {
         processReceipt()
     }
     
-    internal func processReceipt(refresh: Bool = false) {
-        receipt = IAPReceipt()
-        receipt.delegate = self
-        
-        // If any of the following fail then this should be considered a non-fatal error.
-        // A new receipt can be requested from the App Store if required (see refreshReceipt(completion:)).
-        // However, we don't do this automatically because it will cause the user to be prompted
-        // for their App Store credentials (not a good UX for a first time user).
-        guard receipt.isReachable,
-              receipt.load(),
-              receipt.validateSigning(),
-              receipt.read(),
-              receipt.validate() else {
-            
-            if refresh {
-                sendNotification(notification: .receiptRefreshFailed)
-                refreshReceiptCompletion?(.cantRefreshReceipt)
-            }
-            
-            return
-        }
-        
-        createValidatedFallbackProductIds()
-        
-        if refresh {
-            sendNotification(notification: .receiptRefreshCompleted)
-            refreshReceiptCompletion?(.noError)
-        }
-    }
-    
     internal func addToPaymentQueue() {
         // Add ourselves as an observer of the StoreKit payments queue. This allows us to receive
         // notifications when payments are successful, fail, are restored, etc.
@@ -129,18 +102,16 @@ public class IAPHelper: NSObject  {
         configuredProductIdentifiers = nil
         let result = IAPConfiguration.read(filename: IAPConstants.File(), ext: IAPConstants.FileExt())
         switch result {
-            case .failure(let error):
-                IAPLog.event(error: error)
-                sendNotification(notification: .configurationLoadFailed)
-                
-            case .success(let configuration):
-                guard let configuredProducts = configuration.products, configuredProducts.count > 0 else {
-                    sendNotification(notification: .configurationEmpty)
-                    return
-                }
-                
-                configuredProductIdentifiers = Set<ProductId>(configuredProducts.compactMap { product in product.productID })
-                sendNotification(notification: .configurationLoadCompleted)
+        case .failure(_): sendNotification(notification: .configurationLoadFailed)
+            
+        case .success(let configuration):
+            guard let configuredProducts = configuration.products, configuredProducts.count > 0 else {
+                sendNotification(notification: .configurationEmpty)
+                return
+            }
+            
+            configuredProductIdentifiers = Set<ProductId>(configuredProducts.compactMap { product in product.productID })
+            sendNotification(notification: .configurationLoadCompleted)
         }
     }
     
@@ -151,31 +122,47 @@ public class IAPHelper: NSObject  {
             return
         }
         
-        fallbackPurchasedProductIdentifiers = IAPPersistence.loadPurchasedProductIds(for: configuredProductIdentifiers!)        
+        fallbackPurchasedProductIdentifiers = IAPPersistence.loadPurchasedProductIds(for: configuredProductIdentifiers!)
         sendNotification(notification: .receiptFallbackLoadCompleted)
+    }
+    
+    internal func processReceipt(refresh: Bool = false) {
+        receipt = IAPReceipt()
+        receipt.delegate = self
+        
+        // If any of the following fail then this should be considered a non-fatal error.
+        // A new receipt can be requested from the App Store if required (see refreshReceipt(completion:)).
+        // However, we don't do this automatically because it will cause the user to be prompted
+        // for their App Store credentials (not a good UX for a first time user).
+        guard receipt.isReachable,
+              receipt.load(),
+              receipt.validateSigning(),
+              receipt.read(),
+              receipt.validate() else {
+            
+            if refresh {
+                sendNotification(notification: .receiptRefreshFailed)
+                refreshReceiptCompletion?(.receiptRefreshFailed)
+            }
+            
+            return
+        }
+        
+        createValidatedFallbackProductIds()
+        
+        if refresh {
+            sendNotification(notification: .receiptRefreshCompleted)
+            refreshReceiptCompletion?(.receiptRefreshCompleted)
+        }
     }
 
     // MARK:- Public Helpers
     
-    /// Helper to enable an object to observe an IAP-related notifications.
-    /// - Parameters:
-    ///   - notifications: Array of IAPNotification.
-    ///   - observer: The observer that wishes to receive notifications.
-    ///   - selector: The method which will receive notifications.
-    public func addObserverForNotifications(notifications: [IAPNotificaton], observer: Any, selector: Selector) {
-        for notification in notifications {
-            NotificationCenter.default.addObserver(observer, selector: selector, name: NSNotification.Name(rawValue: notification.key()), object: nil)
-        }
-    }
-
-    /// Helper to enable an object to remove itself as an observer of an IAP-related notifications.
-    /// - Parameters:
-    ///   - notifications: Array of IAPNotification.
-    ///   - observer: The observer that wishes to no longer receive notifications.
-    public func removeObserverForNotifications(notifications: [IAPNotificaton], observer: Any) {
-        for notification in notifications {
-            NotificationCenter.default.removeObserver(observer, name: NSNotification.Name(rawValue: notification.key()), object: nil)
-        }
+    /// Register a completion block to receive asynchronous notifications for app store operations.
+    /// - Parameter completion: Completion block to receive asynchronous notifications for app store operations.
+    /// - Parameter notification: IAPNotification providing details on the event.
+    public func processNotifications(completion: @escaping (_ notification: IAPNotification?) -> Void) {
+        notificationCompletion = completion
     }
 
     /// Returns an SKProduct given a ProductId. Product info is only available if isStoreProductInfoAvailable is true
@@ -223,9 +210,21 @@ public class IAPHelper: NSObject  {
     
     // MARK:- Internal Helpers
     
-    internal func sendNotification(notification: IAPNotificaton, object: Any? = nil) {
-        DispatchQueue.main.async { NotificationCenter.default.post(name: NSNotification.Name(rawValue: notification.key()), object: object) }
-        IAPLog.event(event: notification)
+    internal func sendNotification(notification: IAPNotification) {
+        DispatchQueue.main.async { self.notificationCompletion?(notification) }
+        
+        switch notification {
+        case .purchaseInProgress(           productId: let pid): IAPLog.event(event: notification, productId: pid)
+        case .purchaseFailed(               productId: let pid): IAPLog.event(event: notification, productId: pid)
+        case .purchaseDeferred(             productId: let pid): IAPLog.event(event: notification, productId: pid)
+        case .purchaseRestored(             productId: let pid): IAPLog.event(event: notification, productId: pid)
+        case .purchaseCompleted(            productId: let pid): IAPLog.event(event: notification, productId: pid)
+        case .purchaseCancelled(            productId: let pid): IAPLog.event(event: notification, productId: pid)
+        case .purchaseRestoreFailed(        productId: let pid): IAPLog.event(event: notification, productId: pid)
+        case .appStoreRevokedEntitlements(  productId: let pid): IAPLog.event(event: notification, productId: pid)
+            
+        default: IAPLog.event(event: notification)
+        }
     }
     
     internal func createValidatedFallbackProductIds() {
@@ -240,28 +239,5 @@ public class IAPHelper: NSObject  {
     }
 }
 
-// MARK:- SKRequestDelegate
-
-extension IAPHelper: SKRequestDelegate {
-
-    /// Called when the app store provides us with a refreshed receipt.
-    /// - Parameter request: The SKRequest object used to make the request.
-    public func requestDidFinish(_ request: SKRequest) {
-        receiptRequest = nil  // Destroy the request object
-        sendNotification(notification: .receiptRefreshPushedByAppStore)
-        processReceipt(refresh: true)
-    }
-}
-
-// MARK:- IAPReceiptDelegate
-
-extension IAPHelper: IAPReceiptDelegate {
-    
-    /// Make a request to send an IAP-related notification.
-    /// - Parameter notification: The required notification.
-    public func requestSendNotification(notification: IAPNotificaton) {
-        sendNotification(notification: notification)
-    }
-}
 
 

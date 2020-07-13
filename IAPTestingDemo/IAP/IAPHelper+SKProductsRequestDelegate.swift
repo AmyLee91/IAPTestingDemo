@@ -16,19 +16,22 @@ extension IAPHelper: SKProductsRequestDelegate {
     ///   - response: The response from the App Store.
     public func productsRequest(_ request: SKProductsRequest, didReceive response: SKProductsResponse) {
         if response.products.count == 0 {
-            IAPLog.event(error: .noProductsReturnedByAppStore)
-            DispatchQueue.main.async { self.requestProductsCompletion?(.noProductsReturnedByAppStore) }
+            DispatchQueue.main.async {
+                self.sendNotification(notification: .requestProductsNoProducts)
+                self.requestProductsCompletion?(.requestProductsNoProducts)
+            }
+            
             return
         }
 
         // Update our [SKProduct] set of all available products
         products = response.products
-
-        // Send a notification to let observers know we have an updated set of products.
-        sendNotification(notification: .requestProductsCompleted)
         
         productsRequest = nil  // Destroy the request object
-        DispatchQueue.main.async { self.requestProductsCompletion?(nil) }
+        DispatchQueue.main.async { self.requestProductsCompletion?(.requestProductsCompleted) }
+        
+        // Send a notification to let observers know we have an updated set of products.
+        sendNotification(notification: .requestProductsCompleted)
     }
     
     /// Called by the App Store if a request fails.
@@ -36,7 +39,9 @@ extension IAPHelper: SKProductsRequestDelegate {
     ///   - request: The request object.
     ///   - error: The error returned by the App Store.
     public func request(_ request: SKRequest, didFailWithError error: Error) {
-        sendNotification(notification: .requestProductsFailed)
         productsRequest = nil
+        DispatchQueue.main.async { self.requestProductsCompletion?(.requestProductsFailed) }
+        sendNotification(notification: .requestProductsFailed)
     }
 }
+

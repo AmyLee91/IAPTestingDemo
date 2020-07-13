@@ -25,7 +25,6 @@ extension IAPReceipt {
         ASN1_get_object(&pointer, &length, &type, &xclass, pointer!.distance(to: end))
         guard type == V_ASN1_SET else {
             mostRecentError = .unexpectedASN1Type
-            IAPLog.event(error: mostRecentError)
             delegate?.requestSendNotification(notification: .receiptReadFailed)
             return false
         }
@@ -34,21 +33,18 @@ extension IAPReceipt {
             ASN1_get_object(&pointer, &length, &type, &xclass, pointer!.distance(to: end))
             guard type == V_ASN1_SEQUENCE else {
                 mostRecentError = .unexpectedASN1Type
-                IAPLog.event(error: mostRecentError)
                 delegate?.requestSendNotification(notification: .receiptReadFailed)
                 return false
             }
             
             guard let attributeType = IAPOpenSSL.asn1Int(p: &pointer, expectedLength: length) else {
                 mostRecentError = .unexpectedASN1Type
-                IAPLog.event(error: mostRecentError)
                 delegate?.requestSendNotification(notification: .receiptReadFailed)
                 return false
             }
             
             guard let _ = IAPOpenSSL.asn1Int(p: &pointer, expectedLength: pointer!.distance(to: end)) else {
                 mostRecentError = .unexpectedASN1Type
-                IAPLog.event(error: mostRecentError)
                 delegate?.requestSendNotification(notification: .receiptReadFailed)
                 return false
             }
@@ -56,7 +52,6 @@ extension IAPReceipt {
             ASN1_get_object(&pointer, &length, &type, &xclass, pointer!.distance(to: end))
             guard type == V_ASN1_OCTET_STRING else {
                 mostRecentError = .unexpectedASN1Type
-                IAPLog.event(error: mostRecentError)
                 delegate?.requestSendNotification(notification: .receiptReadFailed)
                 return false
             }

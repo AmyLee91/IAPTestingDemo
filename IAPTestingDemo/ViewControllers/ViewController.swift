@@ -9,22 +9,31 @@ import UIKit
 
 class ViewController: UIViewController {
     
-    var tableView = UITableView(frame: .zero)
+    private var tableView = UITableView(frame: .zero)
     
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        IAPHelper.shared.processNotifications { notification in
+            switch notification {
+            case .appStoreChanged:
+                // The App Store storefront has changed (e.g. from US to UK). We need to get localized prices, etc.
+                IAPHelper.shared.requestProductsFromAppStore(forceRefresh: true) { _ in
+                    self.tableView.reloadData()
+                }
+                
+            case .appStoreRevokedEntitlements(productId: _):
+                // The App Store issued a refund for a product. Remove access from the user
+                IAPHelper.shared.requestProductsFromAppStore(forceRefresh: true) { _ in
+                    self.tableView.reloadData()
+                }
+            
+            default: break
+            }
+        }
         
         configureTableView()
         configureStore()
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        // Subscribe to IAPHelper notifications
-        IAPHelper.shared.addObserverForNotifications(notifications: [.purchaseCompleted, .purchaseRestored], observer: self, selector: #selector(self.handleIAPNotification(_:)))
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        IAPHelper.shared.removeObserverForNotifications(notifications: [.purchaseCompleted, .purchaseRestored], observer: self)
     }
     
     private func configureTableView() {
@@ -42,41 +51,43 @@ class ViewController: UIViewController {
         tableView.dataSource = self
         tableView.tableFooterView = UIView(frame: .zero)  // Removes empty cells
         tableView.register(ProductCell.self, forCellReuseIdentifier: ProductCell.reuseId)
+        tableView.register(RestoreCell.self, forCellReuseIdentifier: RestoreCell.reuseId)
     }
     
     private func configureStore() {
-        IAPHelper.shared.requestProductsFromAppStore { error in
-            if error != nil { return }
+        IAPHelper.shared.requestProductsFromAppStore { _ in
             self.tableView.reloadData()
         }
     }
-    
-    @objc func handleIAPNotification(_ notification: Notification) {
-        print(notification.name.rawValue)
-        
-        switch notification.name.rawValue {
-        case IAPNotificaton.purchaseCompleted.key(): handlePurchaseCompleted(notification)
-        case IAPNotificaton.purchaseRestored.key():  handlePurchaseCompleted(notification, restore: true)
-        default: return
-        }
-    }
-    
-    private func handlePurchaseCompleted(_ notification: Notification, restore: Bool = false) {
-        // An IAP product has been successfully purchased
-        tableView.reloadData()
-    }
 }
+
+// MARK:- UITableViewDelegate, UITableViewDataSource
 
 extension ViewController: UITableViewDelegate, UITableViewDataSource {
 
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat { 130 }
+    internal func numberOfSections(in tableView: UITableView) -> Int { 2 }
 
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        IAPHelper.shared.products == nil ? 0 : IAPHelper.shared.products!.count
+    internal func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        if indexPath.section == 1 { return RestoreCell.cellHeight }
+        
+        var purchased = false
+        if let p = IAPHelper.shared.products?[indexPath.row], IAPHelper.shared.isProductPurchased(id: p.productIdentifier) { purchased = true }
+        
+        return purchased ? ProductCell.cellHeightPurchased : ProductCell.cellHeightUnPurchased
+    }
+        
+    internal func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if section == 0 { return IAPHelper.shared.products == nil ? 0 : IAPHelper.shared.products!.count }
+        else { return 1 }
     }
     
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let products = IAPHelper.shared.products else { return UITableViewCell() }
+    internal func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        if indexPath.section == 0 { return configureProductCell(for: indexPath) }
+        return configureRestoreCell()
+    }
+    
+    private func configureProductCell(for indexPath: IndexPath) -> ProductCell {
+        guard let products = IAPHelper.shared.products else { return ProductCell() }
         
         let product = products[indexPath.row]
         var price = IAPHelper.getLocalizedPriceFor(product: product)
@@ -95,12 +106,33 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
         
         return cell
     }
+    
+    private func configureRestoreCell() -> RestoreCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: RestoreCell.reuseId) as! RestoreCell
+        cell.delegate = self
+        return cell
+    }
 }
+
+// MARK:- ProductCellDelegate
 
 extension ViewController: ProductCellDelegate {
     
-    func requestBuyProduct(productId: ProductId) {
+    internal func requestBuyProduct(productId: ProductId) {
         guard let product = IAPHelper.shared.getStoreProductFrom(id: productId) else { return }
-        IAPHelper.shared.buyProduct(product)
+        IAPHelper.shared.buyProduct(product) { _ in
+            self.tableView.reloadData()  // Reload data for a completed purchase, failure or cancellation
+        }
+    }
+}
+
+// MARK:- RestoreCellDelegate
+
+extension ViewController: RestoreCellDelegate {
+    
+    internal func requestRestore() {
+        IAPHelper.shared.restorePurchases() { _ in
+            self.tableView.reloadData()  // Reload data for a success or failure
+        }
     }
 }

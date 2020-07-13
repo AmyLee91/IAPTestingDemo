@@ -14,7 +14,6 @@ extension IAPReceipt {
     public func validateSigning() -> Bool {
         guard receiptData != nil else {
             mostRecentError = .noData
-            IAPLog.event(error: mostRecentError)
             delegate?.requestSendNotification(notification: .receiptValidateSigningFailed)
             return false
         }
@@ -23,7 +22,6 @@ extension IAPReceipt {
               let rootCertData = try? Data(contentsOf: rootCertUrl) else {
             
             mostRecentError = .invalidAppleRootCertificate
-            IAPLog.event(error: mostRecentError)
             delegate?.requestSendNotification(notification: .receiptValidateSigningFailed)
             return false
         }
@@ -50,7 +48,6 @@ extension IAPReceipt {
         
         guard verificationResult == 1  else {
             mostRecentError = .failedAppleSignature
-            IAPLog.event(error: mostRecentError)
             delegate?.requestSendNotification(notification: .receiptValidateSigningFailed)
             return false
         }

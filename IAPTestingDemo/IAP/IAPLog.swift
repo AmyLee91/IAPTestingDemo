@@ -21,16 +21,27 @@ import os.log
 /// dynamic strings (i.e. the error, event or message parameter you send to the event() function)
 /// will not be publicly viewable. They're automatically redacted with the word "private" in the
 /// console. This prevents the accidental logging of potentially sensistive user data. Because
-/// we know in advance that the IAPError, IAPReceiptError and IAPNotificaton enums do NOT contain
+/// we know in advance that the IAPReceiptError and IAPNotificaton enums do NOT contain
 /// sensitive information, we let the unified logging system know it's OK to log these strings
 /// through the use of the "%{public}s" keyword. However, we don't know what the event(message:)
-/// function will be used to display, so it's logs will be redacted.
+/// function will be used to display, so its logs will be redacted.
 public struct IAPLog {
     private static let iapLog = OSLog(subsystem: Bundle.main.bundleIdentifier!, category: "IAP")
     
-    public static func event(error: IAPError)        { os_log("Error: %{public}s",          log: iapLog, type: .error,   error.shortDescription()) }
-    public static func event(error: IAPReceiptError) { os_log("Receipt error: %{public}s",  log: iapLog, type: .error,   error.shortDescription()) }
-    public static func event(event: IAPNotificaton)  { os_log("Notification: %{public}s",   log: iapLog, type: .default, event.shortDescription()) }
-    public static func event(message: String)        { os_log("Message: %s",                log: iapLog, type: .info,    message) }
+    public static func event(error: IAPReceiptError) {
+        os_log("Receipt error: %{public}s", log: iapLog, type: .error, error.shortDescription())
+    }
+    
+    public static func event(event: IAPNotification) {
+        os_log("Notification: %{public}s", log: iapLog, type: .default, event.shortDescription())
+    }
+    
+    public static func event(event: IAPNotification, productId: ProductId) {
+        os_log("Notification: %{public}s for product %{public}s", log: iapLog, type: .default, event.shortDescription(), productId)
+    }
+    
+    public static func event(message: String) {
+        os_log("Message: %s", log: iapLog, type: .info, message)
+    }
 }
 

@@ -17,14 +17,12 @@ extension IAPReceipt {
     public func load() -> Bool {
         guard let receiptUrl = Bundle.main.appStoreReceiptURL else {
             mostRecentError = .missing
-            IAPLog.event(error: mostRecentError)
             delegate?.requestSendNotification(notification: .receiptMissing)
             return false
         }
         
         guard let data = try? Data(contentsOf: receiptUrl) else {
             mostRecentError = .badUrl
-            IAPLog.event(error: mostRecentError)
             delegate?.requestSendNotification(notification: .receiptLoadFailed)
             return false
         }
@@ -38,14 +36,12 @@ extension IAPReceipt {
 
         guard receiptPKCS7 != nil else {
             mostRecentError = .badFormat
-            IAPLog.event(error: mostRecentError)
             delegate?.requestSendNotification(notification: .receiptLoadFailed)
             return false
         }
         
         guard OBJ_obj2nid(receiptPKCS7!.pointee.type) == NID_pkcs7_signed else {
             mostRecentError = .badPKCS7Signature
-            IAPLog.event(error: mostRecentError)
             delegate?.requestSendNotification(notification: .receiptLoadFailed)
             return false
         }
@@ -53,7 +49,6 @@ extension IAPReceipt {
         let receiptContents = receiptPKCS7!.pointee.d.sign.pointee.contents
         guard OBJ_obj2nid(receiptContents?.pointee.type) == NID_pkcs7_data else {
             mostRecentError = .badPKCS7Type
-            IAPLog.event(error: mostRecentError)
             delegate?.requestSendNotification(notification: .receiptLoadFailed)
             return false
         }

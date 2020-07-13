@@ -43,14 +43,12 @@ public class IAPReceipt {
     public var isReachable: Bool {
         guard let receiptUrl = Bundle.main.appStoreReceiptURL else {
             mostRecentError = .badUrl
-            IAPLog.event(error: mostRecentError)
             delegate?.requestSendNotification(notification: .receiptMissing)
             return false
         }
         
         guard let _ = try? receiptUrl.checkResourceIsReachable() else {
             mostRecentError = .missing
-            IAPLog.event(error: mostRecentError)
             delegate?.requestSendNotification(notification: .receiptMissing)
             return false
         }

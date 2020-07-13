@@ -11,11 +11,12 @@
 		6844DCAF24A630DE0011C7E1 /* IAPSetupTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6844DCAE24A630DE0011C7E1 /* IAPSetupTests.swift */; };
 		6845FC0224A4D1EE007FF7BA /* IAPPersistenceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6845FC0124A4D1EE007FF7BA /* IAPPersistenceProtocol.swift */; };
 		6845FC0424A4F379007FF7BA /* IAPLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6845FC0324A4F379007FF7BA /* IAPLog.swift */; };
-		6845FC0624A4F503007FF7BA /* IAPError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6845FC0524A4F503007FF7BA /* IAPError.swift */; };
 		6845FC0D24A50845007FF7BA /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6845FC0B24A50831007FF7BA /* libcrypto.a */; };
 		6845FC0E24A50853007FF7BA /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6845FC0C24A50831007FF7BA /* libssl.a */; };
 		68572E5324AE9EF200965618 /* IAPReceiptError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68572E5224AE9EF200965618 /* IAPReceiptError.swift */; };
 		68572E5524AE9F6800965618 /* IAPOpenSSLAttributeType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68572E5424AE9F6800965618 /* IAPOpenSSLAttributeType.swift */; };
+		685E9F2924BCB218005A71F3 /* IAPHelper+SKRequestDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 685E9F2824BCB218005A71F3 /* IAPHelper+SKRequestDelegate.swift */; };
+		685E9F2B24BCB265005A71F3 /* IAPHelper+IAPReceiptDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 685E9F2A24BCB265005A71F3 /* IAPHelper+IAPReceiptDelegate.swift */; };
 		688774E924A39F41006840A8 /* IAPPurchaseFailureInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 688774E824A39F41006840A8 /* IAPPurchaseFailureInfo.swift */; };
 		688774EA24A3A26D006840A8 /* Configuration.storekit in Resources */ = {isa = PBXBuildFile; fileRef = 68E05E3E24A263B100B6728D /* Configuration.storekit */; };
 		688774EC24A3A2C3006840A8 /* IAPConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 688774EB24A3A2C3006840A8 /* IAPConfiguration.swift */; };
@@ -34,7 +35,6 @@
 		68D5B24324B2ABB00092F570 /* IAPHelper+SKPaymentTransactionObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68D5B24224B2ABB00092F570 /* IAPHelper+SKPaymentTransactionObserver.swift */; };
 		68D5B24524B2AD5A0092F570 /* IAPHelper+SKProductsRequestDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68D5B24424B2AD5A0092F570 /* IAPHelper+SKProductsRequestDelegate.swift */; };
 		68D5B24724B2AE630092F570 /* IAPHelper+AppStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68D5B24624B2AE630092F570 /* IAPHelper+AppStore.swift */; };
-		68D5B24924B2AED80092F570 /* IAPHelper+StoreKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68D5B24824B2AED80092F570 /* IAPHelper+StoreKit.swift */; };
 		68D5B24B24B2AF720092F570 /* IAPReceiptDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68D5B24A24B2AF720092F570 /* IAPReceiptDelegate.swift */; };
 		68D5B24D24B2AFDA0092F570 /* IAPReceipt+Load.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68D5B24C24B2AFDA0092F570 /* IAPReceipt+Load.swift */; };
 		68D5B24F24B2B02E0092F570 /* IAPReceipt+ValidateSigning.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68D5B24E24B2B02E0092F570 /* IAPReceipt+ValidateSigning.swift */; };
@@ -68,13 +68,14 @@
 		6844DCB024A630DE0011C7E1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		6845FC0124A4D1EE007FF7BA /* IAPPersistenceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IAPPersistenceProtocol.swift; sourceTree = "<group>"; };
 		6845FC0324A4F379007FF7BA /* IAPLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IAPLog.swift; sourceTree = "<group>"; };
-		6845FC0524A4F503007FF7BA /* IAPError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IAPError.swift; sourceTree = "<group>"; };
 		6845FC0724A505DB007FF7BA /* IAPTestingDemo-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "IAPTestingDemo-Bridging-Header.h"; sourceTree = "<group>"; };
 		6845FC0824A50610007FF7BA /* openssl */ = {isa = PBXFileReference; lastKnownFileType = folder; path = openssl; sourceTree = "<group>"; };
 		6845FC0B24A50831007FF7BA /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcrypto.a; path = IAPTestingDemo/openssl/lib/libcrypto.a; sourceTree = "<group>"; };
 		6845FC0C24A50831007FF7BA /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libssl.a; path = IAPTestingDemo/openssl/lib/libssl.a; sourceTree = "<group>"; };
 		68572E5224AE9EF200965618 /* IAPReceiptError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IAPReceiptError.swift; sourceTree = "<group>"; };
 		68572E5424AE9F6800965618 /* IAPOpenSSLAttributeType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IAPOpenSSLAttributeType.swift; sourceTree = "<group>"; };
+		685E9F2824BCB218005A71F3 /* IAPHelper+SKRequestDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "IAPHelper+SKRequestDelegate.swift"; sourceTree = "<group>"; };
+		685E9F2A24BCB265005A71F3 /* IAPHelper+IAPReceiptDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "IAPHelper+IAPReceiptDelegate.swift"; sourceTree = "<group>"; };
 		688774E824A39F41006840A8 /* IAPPurchaseFailureInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IAPPurchaseFailureInfo.swift; sourceTree = "<group>"; };
 		688774EB24A3A2C3006840A8 /* IAPConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IAPConfiguration.swift; sourceTree = "<group>"; };
 		688774ED24A3BC98006840A8 /* IAPConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IAPConstants.swift; sourceTree = "<group>"; };
@@ -92,7 +93,6 @@
 		68D5B24224B2ABB00092F570 /* IAPHelper+SKPaymentTransactionObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "IAPHelper+SKPaymentTransactionObserver.swift"; sourceTree = "<group>"; };
 		68D5B24424B2AD5A0092F570 /* IAPHelper+SKProductsRequestDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "IAPHelper+SKProductsRequestDelegate.swift"; sourceTree = "<group>"; };
 		68D5B24624B2AE630092F570 /* IAPHelper+AppStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "IAPHelper+AppStore.swift"; sourceTree = "<group>"; };
-		68D5B24824B2AED80092F570 /* IAPHelper+StoreKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "IAPHelper+StoreKit.swift"; sourceTree = "<group>"; };
 		68D5B24A24B2AF720092F570 /* IAPReceiptDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IAPReceiptDelegate.swift; sourceTree = "<group>"; };
 		68D5B24C24B2AFDA0092F570 /* IAPReceipt+Load.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "IAPReceipt+Load.swift"; sourceTree = "<group>"; };
 		68D5B24E24B2B02E0092F570 /* IAPReceipt+ValidateSigning.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "IAPReceipt+ValidateSigning.swift"; sourceTree = "<group>"; };
@@ -190,12 +190,12 @@
 				688774EB24A3A2C3006840A8 /* IAPConfiguration.swift */,
 				68A4653424A428A5002142D4 /* IAPConfigurationModel.swift */,
 				688774ED24A3BC98006840A8 /* IAPConstants.swift */,
-				6845FC0524A4F503007FF7BA /* IAPError.swift */,
 				68E05E4124A269CD00B6728D /* IAPHelper.swift */,
 				68D5B24624B2AE630092F570 /* IAPHelper+AppStore.swift */,
-				68D5B24424B2AD5A0092F570 /* IAPHelper+SKProductsRequestDelegate.swift */,
-				68D5B24824B2AED80092F570 /* IAPHelper+StoreKit.swift */,
+				685E9F2A24BCB265005A71F3 /* IAPHelper+IAPReceiptDelegate.swift */,
 				68D5B24224B2ABB00092F570 /* IAPHelper+SKPaymentTransactionObserver.swift */,
+				68D5B24424B2AD5A0092F570 /* IAPHelper+SKProductsRequestDelegate.swift */,
+				685E9F2824BCB218005A71F3 /* IAPHelper+SKRequestDelegate.swift */,
 				6845FC0324A4F379007FF7BA /* IAPLog.swift */,
 				68E05E4224A269CD00B6728D /* IAPNotification.swift */,
 				68A4653A24A42A7F002142D4 /* IAPOpenSSL.swift */,
@@ -204,10 +204,10 @@
 				6845FC0124A4D1EE007FF7BA /* IAPPersistenceProtocol.swift */,
 				688774E824A39F41006840A8 /* IAPPurchaseFailureInfo.swift */,
 				68A4653824A429DB002142D4 /* IAPReceipt.swift */,
-				68D5B25224B2B0A40092F570 /* IAPReceipt+Validate.swift */,
-				68D5B25024B2B0630092F570 /* IAPReceipt+Read.swift */,
-				68D5B24E24B2B02E0092F570 /* IAPReceipt+ValidateSigning.swift */,
 				68D5B24C24B2AFDA0092F570 /* IAPReceipt+Load.swift */,
+				68D5B25024B2B0630092F570 /* IAPReceipt+Read.swift */,
+				68D5B25224B2B0A40092F570 /* IAPReceipt+Validate.swift */,
+				68D5B24E24B2B02E0092F570 /* IAPReceipt+ValidateSigning.swift */,
 				68D5B24A24B2AF720092F570 /* IAPReceiptDelegate.swift */,
 				68572E5224AE9EF200965618 /* IAPReceiptError.swift */,
 				68AA839C24AA4165003A27AE /* IAPReceiptProductInfo.swift */,
@@ -372,7 +372,6 @@
 				68E05E4524A269CD00B6728D /* IAPNotification.swift in Sources */,
 				68572E5324AE9EF200965618 /* IAPReceiptError.swift in Sources */,
 				68D5B24724B2AE630092F570 /* IAPHelper+AppStore.swift in Sources */,
-				6845FC0624A4F503007FF7BA /* IAPError.swift in Sources */,
 				68E05E4424A269CD00B6728D /* IAPHelper.swift in Sources */,
 				68D5B24D24B2AFDA0092F570 /* IAPReceipt+Load.swift in Sources */,
 				68909B8D24B0D1CE00448F24 /* IAPUtils.swift in Sources */,
@@ -383,8 +382,8 @@
 				68D5B25324B2B0A40092F570 /* IAPReceipt+Validate.swift in Sources */,
 				68A4653B24A42A7F002142D4 /* IAPOpenSSL.swift in Sources */,
 				68D5B24F24B2B02E0092F570 /* IAPReceipt+ValidateSigning.swift in Sources */,
-				68D5B24924B2AED80092F570 /* IAPHelper+StoreKit.swift in Sources */,
 				68D5B24B24B2AF720092F570 /* IAPReceiptDelegate.swift in Sources */,
+				685E9F2B24BCB265005A71F3 /* IAPHelper+IAPReceiptDelegate.swift in Sources */,
 				68A4653924A429DB002142D4 /* IAPReceipt.swift in Sources */,
 				6845FC0424A4F379007FF7BA /* IAPLog.swift in Sources */,
 				68A4653524A428A5002142D4 /* IAPConfigurationModel.swift in Sources */,
@@ -398,6 +397,7 @@
 				68AA839D24AA4165003A27AE /* IAPReceiptProductInfo.swift in Sources */,
 				6845FC0224A4D1EE007FF7BA /* IAPPersistenceProtocol.swift in Sources */,
 				689F742324B7403E0093F12C /* ProductCell.swift in Sources */,
+				685E9F2924BCB218005A71F3 /* IAPHelper+SKRequestDelegate.swift in Sources */,
 				689F742524B7404B0093F12C /* RestoreCell.swift in Sources */,
 				68E05E1124A262C200B6728D /* SceneDelegate.swift in Sources */,
 			);

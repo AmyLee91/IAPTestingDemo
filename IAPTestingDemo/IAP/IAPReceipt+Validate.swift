@@ -35,42 +35,36 @@ extension IAPReceipt {
               let hash = hashData else {
             
             mostRecentError = .missingComponent
-            IAPLog.event(error: mostRecentError)
             delegate?.requestSendNotification(notification: .receiptValidationFailed)
             return false
         }
         
         guard let appBundleId = Bundle.main.bundleIdentifier else {
             mostRecentError = .unknownFailure
-            IAPLog.event(error: mostRecentError)
             delegate?.requestSendNotification(notification: .receiptValidationFailed)
             return false
         }
         
         guard idString == appBundleId else {
             mostRecentError = .invalidBundleIdentifier
-            IAPLog.event(error: mostRecentError)
             delegate?.requestSendNotification(notification: .receiptValidationFailed)
             return false
         }
         
         guard let appVersionString = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String else {
             mostRecentError = .unknownFailure
-            IAPLog.event(error: mostRecentError)
             delegate?.requestSendNotification(notification: .receiptValidationFailed)
             return false
         }
         
         guard version == appVersionString else {
             mostRecentError = .invalidVersionIdentifier
-            IAPLog.event(error: mostRecentError)
             delegate?.requestSendNotification(notification: .receiptValidationFailed)
             return false
         }
         
         guard hash == computeHash() else {
             mostRecentError = .invalidHash
-            IAPLog.event(error: mostRecentError)
             delegate?.requestSendNotification(notification: .receiptValidationFailed)
             return false
         }
@@ -78,7 +72,6 @@ extension IAPReceipt {
         if let expirationDate = expirationDate {
             if expirationDate < Date() {
                 mostRecentError = .expired
-                IAPLog.event(error: mostRecentError)
                 delegate?.requestSendNotification(notification: .receiptValidationFailed)
                 return false
             }
