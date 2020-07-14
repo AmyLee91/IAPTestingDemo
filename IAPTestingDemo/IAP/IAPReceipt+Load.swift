@@ -13,7 +13,7 @@ extension IAPReceipt {
     /// We check its format, if it has a signature and if contains data. After loading the receipt you
     /// should call validateSigning() to check the receipt has been correctly signed, then read its IAP
     /// data using read(). You can then validate() the receipt.
-    /// - Returns: Returns true if loaded correctly, false otherwise
+    /// - Returns: Returns true if loaded correctly, false otherwise.
     public func load() -> Bool {
         guard let receiptUrl = Bundle.main.appStoreReceiptURL else {
             mostRecentError = .missing

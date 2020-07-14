@@ -28,18 +28,31 @@ import os.log
 public struct IAPLog {
     private static let iapLog = OSLog(subsystem: Bundle.main.bundleIdentifier!, category: "IAP")
     
+    /// Logs an IAPReceiptError. Note that the text (shortDescription) of the log entry will be
+    /// publically available in the Console app.
+    /// - Parameter error: An IAPReceiptError describing the error.
     public static func event(error: IAPReceiptError) {
         os_log("Receipt error: %{public}s", log: iapLog, type: .error, error.shortDescription())
     }
     
+    /// Logs an IAPNotification. Note that the text (shortDescription) of the log entry will be
+    /// publically available in the Console app.
+    /// - Parameter event: An IAPNotification.
     public static func event(event: IAPNotification) {
         os_log("Notification: %{public}s", log: iapLog, type: .default, event.shortDescription())
     }
     
+    /// Logs an IAPNotification. Note that the text (shortDescription) and the productId for the
+    /// log entry will be publically available in the Console app.
+    /// - Parameters:
+    ///   - event:      An IAPNotification.
+    ///   - productId:  A ProductId associated with the event.
     public static func event(event: IAPNotification, productId: ProductId) {
         os_log("Notification: %{public}s for product %{public}s", log: iapLog, type: .default, event.shortDescription(), productId)
     }
     
+    /// Logs a message.
+    /// - Parameter message: The message to log.
     public static func event(message: String) {
         os_log("Message: %s", log: iapLog, type: .info, message)
     }

@@ -22,13 +22,13 @@ public class IAPHelper: NSObject  {
     public static let shared: IAPHelper = IAPHelper()
 
     /// True if the fallback and receipt purchases agree.
-    public var purchasesValid       = false
+    public var purchasesValid = false
     
     /// True if a purchase is in progress (excluding a deferred).
-    public var isPurchasing         = false
+    public var isPurchasing = false
     
     /// True if we've added ourselves to the SKPaymentQueue.
-    public var addedToPaymentQueue  = false
+    public var addedToPaymentQueue = false
 
     /// List of products retrieved from the App Store and available for purchase.
     public var products: [SKProduct]?
@@ -83,7 +83,6 @@ public class IAPHelper: NSObject  {
         addToPaymentQueue()
         readConfigFile()
         loadFallbackProductIds()
-        processReceipt()
     }
     
     internal func addToPaymentQueue() {
@@ -125,8 +124,18 @@ public class IAPHelper: NSObject  {
         fallbackPurchasedProductIdentifiers = IAPPersistence.loadPurchasedProductIds(for: configuredProductIdentifiers!)
         sendNotification(notification: .receiptFallbackLoadCompleted)
     }
+
+    // MARK:- Public Helpers
     
-    internal func processReceipt(refresh: Bool = false) {
+    /// The receipt issued by the app store will be validated. Calling this method immediately before a call
+    /// to IAPHelper.shared.requestProductsFromAppStore(forceRefresh:completion:) is superfluous because
+    /// requesting product info from the app store causes a new receipt to be issued and automatically
+    /// validated.
+    ///
+    /// * The receipt will be checked to see that it was correctly signed by a valid Apple vertificate
+    /// * The receipt is also checked to ensure it was issued for the same version of this app and the user's device
+    /// - Parameter refresh: If true a request will be made to the app store for a new receipt.
+    public func processReceipt(refresh: Bool = false) {
         receipt = IAPReceipt()
         receipt.delegate = self
         
@@ -142,7 +151,7 @@ public class IAPHelper: NSObject  {
             
             if refresh {
                 sendNotification(notification: .receiptRefreshFailed)
-                refreshReceiptCompletion?(.receiptRefreshFailed)
+                DispatchQueue.main.async { self.refreshReceiptCompletion?(.receiptRefreshFailed) }
             }
             
             return
@@ -152,26 +161,32 @@ public class IAPHelper: NSObject  {
         
         if refresh {
             sendNotification(notification: .receiptRefreshCompleted)
-            refreshReceiptCompletion?(.receiptRefreshCompleted)
+            DispatchQueue.main.async { self.refreshReceiptCompletion?(.receiptRefreshCompleted) }
         }
     }
-
-    // MARK:- Public Helpers
     
     /// Register a completion block to receive asynchronous notifications for app store operations.
-    /// - Parameter completion: Completion block to receive asynchronous notifications for app store operations.
-    /// - Parameter notification: IAPNotification providing details on the event.
+    /// - Parameter completion:     Completion block to receive asynchronous notifications for app store operations.
+    /// - Parameter notification:   IAPNotification providing details on the event.
     public func processNotifications(completion: @escaping (_ notification: IAPNotification?) -> Void) {
         notificationCompletion = completion
     }
 
-    /// Returns an SKProduct given a ProductId. Product info is only available if isStoreProductInfoAvailable is true
+    /// Returns an SKProduct given a ProductId. Product info is only available if isStoreProductInfoAvailable is true.
     /// - Parameter id: The ProductId for the product.
-    /// - Returns: Returns an SKProduct object containing localized information about the product.
+    /// - Returns:      Returns an SKProduct object containing localized information about the product.
     public func getStoreProductFrom(id: ProductId) -> SKProduct? {
         guard isAppStoreProductInfoAvailable else { return nil }
         for p in products! { if p.productIdentifier == id { return p } }
         return nil
+    }
+    
+    /// Returns a product's title given a ProductId. Only available if isStoreProductInfoAvailable is true.
+    /// - Parameter id: The ProductId for the product.
+    /// - Returns:      Returns a product's title.
+    public func getProductTitleFrom(id: ProductId) -> String? {
+        guard let p = getStoreProductFrom(id: id) else { return nil }
+        return p.localizedTitle
     }
     
     /// Returns true if the product identified by the ProductId has been purchased.
@@ -190,7 +205,7 @@ public class IAPHelper: NSObject  {
     /// When we validate the receipt we compare the fallback list of purchases with the more reliable
     /// data from the receipt. If they disagree we re-write the list using info from the receipt.
     /// - Parameter id: The ProductId for the product.
-    /// - Returns: Returns true if the product has previously been purchased, false otherwise.
+    /// - Returns:      Returns true if the product has previously been purchased, false otherwise.
     public func isProductPurchased(id: ProductId) -> Bool {
         guard isAppStoreProductInfoAvailable else { return false }
 
@@ -199,7 +214,7 @@ public class IAPHelper: NSObject  {
     
     /// Get a localized price for a product.
     /// - Parameter product: SKProduct for which you want the local price.
-    /// - Returns: Returns a localized price String for a product.
+    /// - Returns:           Returns a localized price String for a product.
     public class func getLocalizedPriceFor(product: SKProduct) -> String? {
         let priceFormatter = NumberFormatter()
         priceFormatter.formatterBehavior = .behavior10_4

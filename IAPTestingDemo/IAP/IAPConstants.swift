@@ -11,6 +11,7 @@ import Foundation
 public struct IAPConstants {
     
     /// Returns the appropriate .storekit configuration file to use for DEBUG and RELEASE builds.
+    /// - Returns: Returns a String containing the name of the .storekit file file.
     public static func File() -> String {
         #if DEBUG
         return "Configuration"
@@ -19,10 +20,12 @@ public struct IAPConstants {
         #endif
     }
     
-    /// Returns the file extension for the .storekit file.
+    /// The file extension for the .storekit file.
+    /// - Returns: Returns the file extension for the .storekit file.
     public static func FileExt() -> String { "storekit" }
     
-    /// Returns the appropriate certificate to use for DEBUG and RELEASE builds. Used in receipt validation.
+    /// The appropriate certificate to use for DEBUG and RELEASE builds. Used in receipt validation.
+    /// - Returns: Returns the appropriate certificate to use for DEBUG and RELEASE builds. Used in receipt validation.
     public static func Certificate() -> String {
         #if DEBUG
         return "StoreKitTestCertificate"  // This is issued by StoreKit for local testing
@@ -31,6 +34,7 @@ public struct IAPConstants {
         #endif
     }
     
-    /// Returns the file extension for the Apple certificate.
+    /// The file extension for the Apple certificate.
+    /// - Returns: Returns the file extension for the Apple certificate.
     public static func CertificateExt() -> String { "cer" }
 }

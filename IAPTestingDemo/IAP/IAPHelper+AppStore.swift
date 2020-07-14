@@ -13,8 +13,8 @@ extension IAPHelper {
     /// Should be used only when the receipt is not present at the appStoreReceiptURL or when
     /// it cannot be successfully validated. The app store is requested to provide a new receipt,
     /// which will result in the user being asked to provide their App Store credentials.
-    /// - Parameter completion: Closure that will be called when the receipt has been refreshed.
-    /// - Parameter notification: An IAPNotification with a value of .receiptRefreshCompleted or .receiptRefreshFailed.
+    /// - Parameter completion:     Closure that will be called when the receipt has been refreshed.
+    /// - Parameter notification:   An IAPNotification with a value of .receiptRefreshCompleted or .receiptRefreshFailed.
     public func refreshReceipt(completion: @escaping (_ notification: IAPNotification?) -> Void) {
         refreshReceiptCompletion = completion
         
@@ -26,12 +26,13 @@ extension IAPHelper {
     }
     
     /// Request from the App Store the collection of products that we've configured for sale in App Store Connect.
-    /// Note that requesting product info will cause the App Store to provide a refreshed receipt.
-    /// - Parameter forceRefresh: If true any existing product collection will be disgarded and the
-    /// app store will be requested to provide a fresh collection.
-    /// - Parameter completion: A closure that will be called when the results are returned from the App Store.
-    /// - Parameter notification: An IAPNotification with a value of .configurationNoProductIds,
-    /// .requestProductsCompleted or .requestProductsFailed
+    /// Note that requesting product info will cause the App Store to provide a refreshed receipt. This will automatically
+    /// cause the receipt to be validated.
+    /// - Parameter forceRefresh:   If true any existing product collection will be disgarded and the
+    ///                             app store will be requested to provide a fresh collection.
+    /// - Parameter completion:     A closure that will be called when the results are returned from the App Store.
+    /// - Parameter notification:   An IAPNotification with a value of .configurationNoProductIds,
+    ///                             .requestProductsCompleted or .requestProductsFailed
     public func requestProductsFromAppStore(forceRefresh: Bool = false, completion: @escaping (_ notification: IAPNotification?) -> Void) {
         // Get localized info about our available in-app purchase products from the App Store
         requestProductsCompletion = completion  // Save the completion handler so it can be used in productsRequest(_:didReceive:)
@@ -72,9 +73,9 @@ extension IAPHelper {
     /// transaction is complete or if a failure occurs, the payment queue sends the SKPaymentTransaction
     /// object that encapsulates the request to all transaction observers. See the
     /// paymentQueue(_:updatedTransactions) for how these events get handled.
-    /// - Parameter product: An SKProduct object that describes the product to purchase.
-    /// - Parameter completion: Completion block that will be called when the purchase has completed, failed or been cancelled.
-    /// - Parameter notification: An IAPNotification with a value of .purchaseCompleted, .purchaseCancelled or .purchaseFailed
+    /// - Parameter product:        An SKProduct object that describes the product to purchase.
+    /// - Parameter completion:     Completion block that will be called when the purchase has completed, failed or been cancelled.
+    /// - Parameter notification:   An IAPNotification with a value of .purchaseCompleted, .purchaseCancelled or .purchaseFailed
     public func buyProduct(_ product: SKProduct, completion: @escaping (_ notification: IAPNotification?) -> Void) {
         guard !isPurchasing else { return }  // Don't allow another purchase to start until the current one completes
 
@@ -89,8 +90,8 @@ extension IAPHelper {
     /// The user may be asked to authenticate. Will result in zero (if the user hasn't
     /// actually purchased anything) or more transactions to be received from the payment queue.
     /// See the SKPaymentTransactionObserver delegate.
-    /// - Parameter completion: Completion block that will be called when purchases have successfully restored or the process fails.
-    /// - Parameter notification: An IAPNotification with a value of .purchaseRestored or purchaseRestoreFailed
+    /// - Parameter completion:     Completion block that will be called when purchases have successfully restored or the process fails.
+    /// - Parameter notification:   An IAPNotification with a value of .purchaseRestored or purchaseRestoreFailed
     public func restorePurchases(completion: @escaping (_ notification: IAPNotification?) -> Void) {
         guard !isPurchasing else { return }  // Don't allow restore process to start until the current purchase completes
 

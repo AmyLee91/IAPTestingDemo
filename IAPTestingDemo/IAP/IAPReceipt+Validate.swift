@@ -11,13 +11,13 @@ extension IAPReceipt {
     
     /// Perform on-device (no network connection required) validation of the app's receipt.
     /// Returns false if the receipt is invalid or missing, in which case your app should call
-    /// refreshReceipt(completion:) to request an updated receipt from the app store. This will
+    /// refreshReceipt(completion:) to request an updated receipt from the app store. This may
     /// result in the user being prompted for their App Store credentials.
     ///
     /// We validate the receipt to ensure that it was:
     ///
-    /// - Created and signed using the Apple x509 root certificate via the App Store
-    /// - Issued for the same version of this app and the user's device
+    /// * Created and signed using the Apple x509 root certificate via the App Store
+    /// * Issued for the same version of this app and the user's device
     ///
     /// At this point a list of locally stored purchased product ids should have been loaded from the UserDefaults
     /// dictionary. We need to validate these product ids against the App Store receipt's collection of purchased
@@ -84,8 +84,8 @@ extension IAPReceipt {
         return true
     }
     
-    /// Compare the set of fallback ProductIds with the receipt's validatedPurchasedProductIdentifiers
-    /// - Parameter fallbackPids: Set of locally stored fallback ProductIds
-    /// - Returns: Returns true if both sets are the same, false otherwise
+    /// Compare the set of fallback ProductIds with the receipt's validatedPurchasedProductIdentifiers.
+    /// - Parameter fallbackPids:   Set of locally stored fallback ProductIds.
+    /// - Returns:                  Returns true if both sets are the same, false otherwise.
     public func validateFallbackProductIds(fallbackPids: Set<ProductId>) -> Bool { fallbackPids == validatedPurchasedProductIdentifiers }
 }

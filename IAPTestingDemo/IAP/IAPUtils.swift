@@ -7,9 +7,9 @@
 
 import UIKit
 
+/// Misc utility methods used by IAPHelper.
 public class IAPUtils {
     
-    /// Show an alert presented on the current view controller
     internal class func showMessage(msg: String, title: String) {
         let alert = UIAlertController(
             title: title,

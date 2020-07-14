@@ -12,15 +12,12 @@ extension IAPHelper: SKProductsRequestDelegate {
     
     /// Receives a list of localized product info from the App Store.
     /// - Parameters:
-    ///   - request: The request object.
-    ///   - response: The response from the App Store.
+    ///   - request:    The request object.
+    ///   - response:   The response from the App Store.
     public func productsRequest(_ request: SKProductsRequest, didReceive response: SKProductsResponse) {
         if response.products.count == 0 {
-            DispatchQueue.main.async {
-                self.sendNotification(notification: .requestProductsNoProducts)
-                self.requestProductsCompletion?(.requestProductsNoProducts)
-            }
-            
+            self.sendNotification(notification: .requestProductsNoProducts)
+            DispatchQueue.main.async { self.requestProductsCompletion?(.requestProductsNoProducts) }
             return
         }
 
@@ -36,8 +33,8 @@ extension IAPHelper: SKProductsRequestDelegate {
     
     /// Called by the App Store if a request fails.
     /// - Parameters:
-    ///   - request: The request object.
-    ///   - error: The error returned by the App Store.
+    ///   - request:    The request object.
+    ///   - error:      The error returned by the App Store.
     public func request(_ request: SKRequest, didFailWithError error: Error) {
         productsRequest = nil
         DispatchQueue.main.async { self.requestProductsCompletion?(.requestProductsFailed) }

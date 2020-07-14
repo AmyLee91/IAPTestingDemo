@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// An attribute type used in the validation of app store receipts.
 public enum IAPOpenSSLAttributeType: Int {
 
     case BundleIdentifier       = 2

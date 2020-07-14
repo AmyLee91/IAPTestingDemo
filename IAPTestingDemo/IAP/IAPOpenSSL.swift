@@ -15,9 +15,9 @@ public struct IAPOpenSSL {
     
     /// Get an Int value from the ASN.1 receipt payload.
     /// - Parameters:
-    ///   - p: Pointer to the location of the integer in the ASN.1 data.
+    ///   - p:              Pointer to the location of the integer in the ASN.1 data.
     ///   - expectedLength: The expected length of the integer.
-    /// - Returns: Returns an Int value, or nil if the integer value couldn't be read.
+    /// - Returns:          Returns an Int value, or nil if the integer value couldn't be read.
     public static func asn1Int(p: inout UnsafePointer<UInt8>?, expectedLength: Int) -> Int? {
         var tag: Int32          = 0
         var asn1Class: Int32    = 0
@@ -36,9 +36,9 @@ public struct IAPOpenSSL {
     
     /// Get a String value from the ASN.1 receipt payload.
     /// - Parameters:
-    ///   - p: Pointer to the location of the String in the ASN.1 data.
+    ///   - p:              Pointer to the location of the String in the ASN.1 data.
     ///   - expectedLength: The expected length of the String.
-    /// - Returns: Returns a String value, or nil if the String couldn't be read.
+    /// - Returns:          Returns a String value, or nil if the String couldn't be read.
     public static func asn1String(p: inout UnsafePointer<UInt8>?, expectedLength: Int) -> String? {
         var tag: Int32                  = 0
         var asn1Class: Int32            = 0
@@ -56,18 +56,18 @@ public struct IAPOpenSSL {
     
     /// Get a Data value from the ASN.1 receipt payload.
     /// - Parameters:
-    ///   - p: Pointer to the location of the Data in the ASN.1 data.
+    ///   - p:              Pointer to the location of the Data in the ASN.1 data.
     ///   - expectedLength: The expected length of the data.
-    /// - Returns: Returns a Data value, or nil if the data couldn't be read.
+    /// - Returns:          Returns a Data value, or nil if the data couldn't be read.
     public static func asn1Data(p: UnsafePointer<UInt8>, expectedLength: Int) -> Data {
         Data(bytes: p, count: expectedLength)
     }
     
     /// Get a Date value from the ASN.1 receipt payload.
     /// - Parameters:
-    ///   - p: Pointer to the location of the Date in the ASN.1 data.
+    ///   - p:              Pointer to the location of the Date in the ASN.1 data.
     ///   - expectedLength: The expected length of the date.
-    /// - Returns: Returns a Date, or nil if the value couldn't be read.
+    /// - Returns:          Returns a Date, or nil if the value couldn't be read.
     public static func asn1Date(p: inout UnsafePointer<UInt8>?, expectedLength: Int) -> Date? {
         var tag: Int32                  = 0
         var asn1Class: Int32            = 0

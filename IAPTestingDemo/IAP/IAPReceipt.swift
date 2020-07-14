@@ -18,10 +18,10 @@ import UIKit
 ///
 /// Note that:
 ///
-/// - The receipt is a single encrypted file stored locally on the device and is accessible
+/// * The receipt is a single encrypted file stored locally on the device and is accessible
 ///   through the main bundle (Bundle.main.appStoreReceiptURL)
-/// - We use OpenSSL to access data in the receipt
-/// - A new receipt is issued automatically (and to IAPHelper it appears as a refresh event)
+/// * We use OpenSSL to access data in the receipt
+/// * A new receipt is issued automatically (and to IAPHelper it appears as a refresh event)
 ///   by the App Store each time:
 ///     * an in-app purchase succeeds
 ///     * the app is re-installed

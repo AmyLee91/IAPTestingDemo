@@ -12,8 +12,8 @@ extension IAPHelper: SKPaymentTransactionObserver {
     
     /// This delegate allows us to receive notifications from the App Store when payments are successful, fail, are restored, etc.
     /// - Parameters:
-    ///   - queue: The payment queue object.
-    ///   - transactions: Transaction information.
+    ///   - queue:          The payment queue object.
+    ///   - transactions:   Transaction information.
     public func paymentQueue(_ queue: SKPaymentQueue, updatedTransactions transactions: [SKPaymentTransaction]) {
         for transaction in transactions {
             switch (transaction.transactionState) {
@@ -132,7 +132,7 @@ extension IAPHelper: SKPaymentTransactionObserver {
     
     /// Sent when entitlements for a user have changed and access to the specified IAPs has been revoked.
     /// - Parameters:
-    ///   - queue: Payment queue.
+    ///   - queue:              Payment queue.
     ///   - productIdentifiers: ProductId which should have user access revoked.
     @available(iOS 14.0, *)
     public func paymentQueue(_ queue: SKPaymentQueue, didRevokeEntitlementsForProductIdentifiers productIdentifiers: [String]) {
@@ -161,14 +161,14 @@ extension IAPHelper: SKPaymentTransactionObserver {
     ///
     /// Return true to continue the transaction, false to defer or cancel the transaction.
     ///
-    ///     * You should cancel (and provide feedback to the user) if the user has already purchased the product
-    ///     * You may wish to defer the purchase if the user is in the middle of something else critcial in your app.
+    /// * You should cancel (and provide feedback to the user) if the user has already purchased the product
+    /// * You may wish to defer the purchase if the user is in the middle of something else critcial in your app.
     ///
     /// If you defer, you can re-start the transaction later by:
     ///
-    ///     * saving the payment passed to paymentQueue(_:shouldAddStorePayment:for)
-    ///     * returning false from paymentQueue(_:shouldAddStorePayment:for)
-    ///     * calling SKPaymentQueue.default().add(savedPayment) later to re-start the purchase
+    /// * saving the payment passed to paymentQueue(_:shouldAddStorePayment:for)
+    /// * returning false from paymentQueue(_:shouldAddStorePayment:for)
+    /// * calling SKPaymentQueue.default().add(savedPayment) later to re-start the purchase
     ///
     /// Testing
     /// -------
@@ -192,18 +192,13 @@ extension IAPHelper: SKPaymentTransactionObserver {
     /// Send this URL to yourself in an email or iMessage and open it from your device. You will know the test is
     /// running when your app opens automatically. You can then test your promoted in-app purchase.
     /// - Parameters:
-    ///   - queue: Payment queue object.
-    ///   - payment: Payment info.
-    ///   - product: The product purchased.
-    /// - Returns: Return true to continue the transaction (will result in normal processing via paymentQueue(_:updatedTransactions:).
+    ///   - queue:      Payment queue object.
+    ///   - payment:    Payment info.
+    ///   - product:    The product purchased.
+    /// - Returns:      Return true to continue the transaction (will result in normal processing via paymentQueue(_:updatedTransactions:).
+    ///                 Return false to indicate that the store not to proceed with purchase (i.e. it's already been purchased).
     @available(iOS 11.0, *)
     public func paymentQueue(_ queue: SKPaymentQueue, shouldAddStorePayment payment: SKPayment, for product: SKProduct) -> Bool {        
-        // Has the IAP product already been purchased?
-        if isProductPurchased(id: product.productIdentifier) {
-            IAPUtils.showMessage(msg: "You have already purchased \(product.localizedTitle)", title: "Purchase Cancelled")
-            return false  // Tell the store not to proceed with purchase
-        }
-
-        return true  // Return true to continue the transaction (will result in normal processing via paymentQueue(_:updatedTransactions:)
+        return !isProductPurchased(id: product.productIdentifier)
     }
 }

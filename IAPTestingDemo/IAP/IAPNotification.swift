@@ -56,6 +56,8 @@ public enum IAPNotification: Error {
     case appStoreChanged
     case appStoreRevokedEntitlements(productId: ProductId)
     
+    /// A short description of the notification.
+    /// - Returns: Returns s short description of the notification.
     public func shortDescription() -> String {
         switch self {
             

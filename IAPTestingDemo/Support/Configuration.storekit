@@ -102,7 +102,9 @@
     }
   ],
   "settings" : {
-    "_askToBuyEnabled" : false
+    "_askToBuyEnabled" : false,
+    "_failTransactionsEnabled" : false,
+    "_storeKitError" : 0
   },
   "subscriptionGroups" : [
 

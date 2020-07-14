@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// IAPReceiptDelegate
 public protocol IAPReceiptDelegate: class {
     func requestSendNotification(notification: IAPNotification)
 }

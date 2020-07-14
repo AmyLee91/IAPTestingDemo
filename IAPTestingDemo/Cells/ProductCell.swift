@@ -44,9 +44,12 @@ class ProductCell: UITableViewCell {
             localizedDescriptionLabel.text = pInfo.localizedDescription
             localizedPriceLabel.text = String(pInfo.localizedPrice)
             purchasedLabel.text = pInfo.purchased ? "(purchased)" : "(available to purchase)"
-            
+
             if pInfo.purchased { buyButton.isHidden = true }
-            else { buyButton.addTarget(self, action: #selector(buyButtonTapped), for: .touchUpInside) }
+            else {
+                buyButton.isEnabled = true
+                buyButton.addTarget(self, action: #selector(buyButtonTapped), for: .touchUpInside)
+            }
         }
     }
 

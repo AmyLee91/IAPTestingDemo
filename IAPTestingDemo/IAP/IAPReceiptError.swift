@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// IAPReceiptError used to provide detailed information regarding receipt processing errors.
 public enum IAPReceiptError: Error {
     case noError
     case missing
@@ -25,6 +26,8 @@ public enum IAPReceiptError: Error {
     case invalidHash
     case expired
     
+    /// A short description of the error.
+    /// - Returns: Returns a short description of the error.
     public func shortDescription() -> String {
         switch self {
             case .noError:                      return ""
