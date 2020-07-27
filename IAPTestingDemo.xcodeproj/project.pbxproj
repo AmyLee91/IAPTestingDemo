@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		6837C8CA24A803EE00B62E7A /* ResetIAPStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6837C8C924A803EE00B62E7A /* ResetIAPStateTests.swift */; };
 		6844DCAF24A630DE0011C7E1 /* IAPSetupTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6844DCAE24A630DE0011C7E1 /* IAPSetupTests.swift */; };
 		6845FC0224A4D1EE007FF7BA /* IAPPersistenceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6845FC0124A4D1EE007FF7BA /* IAPPersistenceProtocol.swift */; };
 		6845FC0424A4F379007FF7BA /* IAPLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6845FC0324A4F379007FF7BA /* IAPLog.swift */; };
@@ -61,7 +60,6 @@
 
 /* Begin PBXFileReference section */
 		6811A5EE24A3D7DF00458F85 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		6837C8C924A803EE00B62E7A /* ResetIAPStateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResetIAPStateTests.swift; sourceTree = "<group>"; };
 		6844DCAC24A630DE0011C7E1 /* IAPTestingDemoTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = IAPTestingDemoTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		6844DCAE24A630DE0011C7E1 /* IAPSetupTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IAPSetupTests.swift; sourceTree = "<group>"; };
 		6844DCB024A630DE0011C7E1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -134,7 +132,6 @@
 			children = (
 				6844DCB024A630DE0011C7E1 /* Info.plist */,
 				6844DCAE24A630DE0011C7E1 /* IAPSetupTests.swift */,
-				6837C8C924A803EE00B62E7A /* ResetIAPStateTests.swift */,
 			);
 			path = IAPTestingDemoTests;
 			sourceTree = "<group>";
@@ -357,7 +354,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6837C8CA24A803EE00B62E7A /* ResetIAPStateTests.swift in Sources */,
 				6844DCAF24A630DE0011C7E1 /* IAPSetupTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

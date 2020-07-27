@@ -81,7 +81,7 @@ public class IAPHelper: NSObject  {
     
     internal func setup() {
         addToPaymentQueue()
-        readConfigFile()
+        guard readConfigFile() else { return }
         loadFallbackProductIds()
     }
     
@@ -94,24 +94,28 @@ public class IAPHelper: NSObject  {
         addedToPaymentQueue = true
     }
     
-    internal func readConfigFile() {
+    internal func readConfigFile() -> Bool {
         // Read our configuration file that contains the list of ProductIds that are available on the App Store.
         // If the data can't be read then it isn't a critcial error as we can request the info from the App Store
         // as required.
         configuredProductIdentifiers = nil
         let result = IAPConfiguration.read(filename: IAPConstants.File(), ext: IAPConstants.FileExt())
         switch result {
-        case .failure(_): sendNotification(notification: .configurationLoadFailed)
+        case .failure(_):
+            sendNotification(notification: .configurationLoadFailed)
+            return false
             
         case .success(let configuration):
             guard let configuredProducts = configuration.products, configuredProducts.count > 0 else {
                 sendNotification(notification: .configurationEmpty)
-                return
+                return false
             }
             
             configuredProductIdentifiers = Set<ProductId>(configuredProducts.compactMap { product in product.productID })
             sendNotification(notification: .configurationLoadCompleted)
         }
+        
+        return true
     }
     
     internal func loadFallbackProductIds() {
@@ -157,7 +161,7 @@ public class IAPHelper: NSObject  {
             return
         }
         
-        createValidatedFallbackProductIds()
+        let _ = createValidatedFallbackProductIds(receipt: receipt)
         
         if refresh {
             sendNotification(notification: .receiptRefreshCompleted)
@@ -242,15 +246,17 @@ public class IAPHelper: NSObject  {
         }
     }
     
-    internal func createValidatedFallbackProductIds() {
+    internal func createValidatedFallbackProductIds(receipt: IAPReceipt) -> Bool {
         if !receipt.validateFallbackProductIds(fallbackPids: fallbackPurchasedProductIdentifiers) {
             IAPPersistence.resetPurchasedProductIds(from: fallbackPurchasedProductIdentifiers, to: receipt.validatedPurchasedProductIdentifiers)
             fallbackPurchasedProductIdentifiers = receipt.validatedPurchasedProductIdentifiers
             sendNotification(notification: .receiptFallbackReset)
+            return false
         }
         
         sendNotification(notification: .receiptFallbackValidationCompleted)
         purchasesValid = true
+        return true
     }
 }
 

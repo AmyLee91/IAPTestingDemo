@@ -12,69 +12,57 @@ import StoreKitTest
 @testable import IAPTestingDemo
 
 class IAPSetupTests: XCTestCase {
-    private var session: SKTestSession!
+    private var session: SKTestSession! = try? SKTestSession(configurationFileNamed: IAPConstants.File())
+    private var iap = IAPHelper.shared
     
     func testSetup() {        
-        session = try? SKTestSession(configurationFileNamed: IAPConstants.File())
-        XCTAssertNotNil(session)
-        
+        XCTAssertTrue(iap.addedToPaymentQueue)
+        XCTAssertTrue(iap.readConfigFile())
+        XCTAssertTrue(iap.haveConfiguredProductIdentifiers)
+    }
+    
+    func testReceipt() {
+        let receipt = IAPReceipt()
+        XCTAssertTrue(receipt.isReachable)
+        XCTAssertTrue(receipt.load())
+        XCTAssertTrue(receipt.validateSigning())
+        XCTAssertTrue(receipt.read())
+        XCTAssertTrue(receipt.validate())
+    }
+    
+    func testPurchaseProduct() {
         session.disableDialogs = true
-        session.clearTransactions()
         
-        // Clear the fallbackPurchasedProductIdentifiers from UserDefaults
-        if let fbpids = IAPHelper.shared.fallbackPurchasedProductIdentifiers {
-            fbpids.forEach { pid in
-                UserDefaults.standard.removeObject(forKey: pid)
+        let requestProductsExpectation = XCTestExpectation()
+        let buyProductExpectation = XCTestExpectation()
+        
+        iap.requestProductsFromAppStore { notification in
+            requestProductsExpectation.fulfill()
+            
+            XCTAssertTrue(notification == .requestProductsCompleted)
+            
+            guard self.iap.isAppStoreProductInfoAvailable else {
+                XCTFail()
+                return
+            }
+            
+            guard let product = self.iap.getStoreProductFrom(id: "com.rarcher.flowers-small") else {
+                XCTFail()
+                return
+            }
+            
+            self.iap.buyProduct(product) { notification in
+                buyProductExpectation.fulfill()
+
+                switch notification {
+                case .purchaseCompleted(productId: let pid): fallthrough
+                case .purchaseRestored(productId: let pid): XCTAssertTrue(pid == "com.rarcher.flowers-small")
+                default: XCTFail()
+                }
             }
         }
         
-        XCTAssertFalse(IAPHelper.shared.addedToPaymentQueue)
-        IAPHelper.shared.addToPaymentQueue()
-        XCTAssertTrue(IAPHelper.shared.addedToPaymentQueue)
-        
-        XCTAssertFalse(IAPHelper.shared.haveConfiguredProductIdentifiers)
-        IAPHelper.shared.readConfigFile()
-        XCTAssertTrue(IAPHelper.shared.haveConfiguredProductIdentifiers)
-        
-        XCTAssertFalse(IAPHelper.shared.haveFallbackPurchasedProductIdentifiers)
-        IAPHelper.shared.loadFallbackProductIds()
-        XCTAssertTrue(IAPHelper.shared.haveFallbackPurchasedProductIdentifiers)
-        
-//        XCTAssertTrue(IAPHelper.shared.receiptAvailable())
-        
-        XCTAssertFalse(IAPHelper.shared.isReceiptValid)
-//        XCTAssertNotNil(IAPHelper.shared.validateReceipt())
-//        XCTAssertTrue(IAPHelper.shared.isReceiptValid)
+        wait(for: [requestProductsExpectation, buyProductExpectation], timeout: 30, enforceOrder: true)
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-//    func testRequestProductsFromAppStore() {
-//        // Create an expected outcome for an *asynchronous* test (background image download)
-//        let configIAPHelperExpectation = XCTestExpectation()
-//        wait(for: [configIAPHelperExpectation], timeout: 10.0)  // Wait up to 10 secs for the expectation to be fulfilled
-//        let iap = IAPHelper.shared
-//        configIAPHelperExpectation.fulfill()
-//
-//
-//        //iap.requestProductsFromAppStore()
-//    }
-    
-//    func testPurchaseProduct() {
-//        guard let product = iap.getStoreProductFrom(id: "com.rarcher.flowers-small") else {
-//            XCTFail()
-//            return
-//        }
-//
-//        IAPHelper.shared.buyProduct(product)
-//    }
-
 }
+

@@ -37,13 +37,13 @@ extension IAPReceipt {
         
         OPENSSL_init_crypto(UInt64(OPENSSL_INIT_ADD_ALL_DIGESTS), nil)
         
-        // If PKCS7_NOVERIFY is set the signer's certificates are not chain verified.
+        // If PKCS7_NOCHAIN is set the signer's certificates are not chain verified.
         // This is required when using the local testing StoreKitTestCertificate.cer certificate.
-        // TODO: Check this works OK when using the real AppleIncRootCertificate.cer certificate:
+        // See https://developer.apple.com/videos/play/wwdc2020/10659/ at the 16:30 mark.
         #if DEBUG
-        let verificationResult = PKCS7_verify(receiptData, nil, store, nil, nil, PKCS7_NOVERIFY)
+        let verificationResult = PKCS7_verify(receiptData, nil, store, nil, nil, PKCS7_NOCHAIN)
         #else
-        let verificationResult = PKCS7_verify(receiptData, nil, store, nil, nil, 0)
+        let verificationResult = PKCS7_verify(receiptData, nil, store, nil, nil, nil)
         #endif
         
         guard verificationResult == 1  else {

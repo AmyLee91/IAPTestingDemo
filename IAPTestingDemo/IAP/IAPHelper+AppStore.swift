@@ -38,6 +38,7 @@ extension IAPHelper {
         requestProductsCompletion = completion  // Save the completion handler so it can be used in productsRequest(_:didReceive:)
         
         guard haveConfiguredProductIdentifiers else {
+            sendNotification(notification: .configurationNoProductIds)
             DispatchQueue.main.async { completion(.configurationNoProductIds) }
             return
         }

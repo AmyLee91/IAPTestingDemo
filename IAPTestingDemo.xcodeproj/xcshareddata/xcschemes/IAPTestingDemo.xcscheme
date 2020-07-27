@@ -37,16 +37,11 @@
                BlueprintName = "IAPTestingDemoTests"
                ReferencedContainer = "container:IAPTestingDemo.xcodeproj">
             </BuildableReference>
-         </TestableReference>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "68E05E2B24A262C300B6728D"
-               BuildableName = "IAPTestingDemoUITests.xctest"
-               BlueprintName = "IAPTestingDemoUITests"
-               ReferencedContainer = "container:IAPTestingDemo.xcodeproj">
-            </BuildableReference>
+            <SkippedTests>
+               <Test
+                  Identifier = "IAPSetupTests">
+               </Test>
+            </SkippedTests>
          </TestableReference>
       </Testables>
    </TestAction>

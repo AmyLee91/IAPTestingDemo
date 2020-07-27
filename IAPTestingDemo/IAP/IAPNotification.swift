@@ -9,7 +9,7 @@
 import Foundation
 
 /// Notifications issued by IAPHelper
-public enum IAPNotification: Error {
+public enum IAPNotification: Error, Equatable {
     case configurationCantFindInBundle
     case configurationCantReadData
     case configurationCantDecode
