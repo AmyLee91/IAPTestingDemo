@@ -43,6 +43,16 @@
                </Test>
             </SkippedTests>
          </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "6805B78324D3100A00169F3F"
+               BuildableName = "IAPHelperTests.xctest"
+               BlueprintName = "IAPHelperTests"
+               ReferencedContainer = "container:IAPTestingDemo.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction

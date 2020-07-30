@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import IAPHelper
 
 class ViewController: UIViewController {
     
@@ -76,12 +77,12 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
         var price =  IAPHelper.getLocalizedPriceFor(product: product)
         if price == nil { price = "Price unknown" }
         
-        let productInfo = ProductInfo(id: product.productIdentifier,
-                                      imageName: product.productIdentifier,
-                                      localizedTitle: product.localizedTitle,
-                                      localizedDescription: product.localizedDescription,
-                                      localizedPrice: price!,
-                                      purchased: iap.isProductPurchased(id: product.productIdentifier))
+        let productInfo = IAPProductInfo(id: product.productIdentifier,
+                                         imageName: product.productIdentifier,
+                                         localizedTitle: product.localizedTitle,
+                                         localizedDescription: product.localizedDescription,
+                                         localizedPrice: price!,
+                                         purchased: iap.isProductPurchased(id: product.productIdentifier))
         
         let cell = tableView.dequeueReusableCell(withIdentifier: ProductCell.reuseId) as! ProductCell
         cell.delegate = self
@@ -117,8 +118,8 @@ extension ViewController: ProductCellDelegate {
     }
     
     private func showPurchaseError(title: String, pid: ProductId) {
-        let productTitle = iap.getProductTitleFrom(id: pid)
-        IAPUtils.showMessage(msg: "Purchase \(title) for \(productTitle ?? "unknown product")", title: "Purchase \(title)")
+        guard let productTitle = iap.getProductTitleFrom(id: pid) else { return }
+        print("Purchase error for \(productTitle)")
     }
 }
 

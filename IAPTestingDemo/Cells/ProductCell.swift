@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import IAPHelper
 
 /// Implement this delegate method to receive requests to purchase a product.
 protocol ProductCellDelegate: class {
@@ -35,7 +36,7 @@ class ProductCell: UITableViewCell {
     private var buyButton = UIButton()
     
     /// Set this property to provide the cell with required product information.
-    public var productInfo: ProductInfo? {
+    public var productInfo: IAPProductInfo? {
         didSet {
             guard let pInfo = productInfo else { return }
             
