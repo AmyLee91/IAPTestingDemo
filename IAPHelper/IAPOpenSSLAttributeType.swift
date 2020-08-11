@@ -1,6 +1,6 @@
 //
 //  OpenSSLAttributeType.swift
-//  IAPTestingDemo
+//  IAPHelper
 //
 //  Created by Russell Archer on 03/07/2020.
 //

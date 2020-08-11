@@ -1,6 +1,6 @@
 //
 //  IAPConfiguration.swift
-//  IAPTestingDemo
+//  IAPHelper
 //
 //  Created by Russell Archer on 24/06/2020.
 //

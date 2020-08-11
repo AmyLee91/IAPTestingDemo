@@ -1,6 +1,6 @@
 //
 //  IAPReceipt+Validate.swift
-//  IAPTestingDemo
+//  IAPHelper
 //
 //  Created by Russell Archer on 06/07/2020.
 //
@@ -87,5 +87,5 @@ extension IAPReceipt {
     /// Compare the set of fallback ProductIds with the receipt's validatedPurchasedProductIdentifiers.
     /// - Parameter fallbackPids:   Set of locally stored fallback ProductIds.
     /// - Returns:                  Returns true if both sets are the same, false otherwise.
-    public func validateFallbackProductIds(fallbackPids: Set<ProductId>) -> Bool { fallbackPids == validatedPurchasedProductIdentifiers }
+    public func compareProductIds(fallbackPids: Set<ProductId>) -> Bool { fallbackPids == validatedPurchasedProductIdentifiers }
 }

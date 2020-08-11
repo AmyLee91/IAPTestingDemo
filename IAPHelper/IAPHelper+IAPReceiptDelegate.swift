@@ -1,6 +1,6 @@
 //
 //  IAPHelper+IAPReceiptDelegate.swift
-//  IAPTestingDemo
+//  IAPHelper
 //
 //  Created by Russell Archer on 13/07/2020.
 //

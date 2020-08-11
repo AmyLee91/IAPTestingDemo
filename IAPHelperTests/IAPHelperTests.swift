@@ -18,7 +18,7 @@ class IAPHelperTests: XCTestCase {
     
     func testSetup() {
         XCTAssertTrue(iap.addedToPaymentQueue)
-        XCTAssertTrue(iap.readConfigFile())
+        iap.readConfigFile()
         XCTAssertTrue(iap.haveConfiguredProductIdentifiers)
     }
     

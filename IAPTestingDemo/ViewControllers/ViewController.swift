@@ -18,6 +18,13 @@ class ViewController: UIViewController {
         
         configureTableView()
         configureProducts()
+        
+        iap.processNotifications { notification in
+            switch notification {
+            case .appStoreRevokedEntitlements(productId: _): self.tableView.reloadData()
+            default: break
+            }
+        }
     }
     
     private func configureTableView() {
@@ -107,19 +114,15 @@ extension ViewController: ProductCellDelegate {
         
         iap.buyProduct(product) { notification in
             switch notification {
-            case .purchaseCancelled(productId: let pid): self.showPurchaseError(title: "cancelled", pid: pid)
-            case .purchaseFailed(productId: let pid): self.showPurchaseError(title: "failed", pid: pid)
+            case .purchaseAbortPurchaseInProgress: print("Purchase aborted because another purchase is being processed")
+            case .purchaseCancelled(productId: let pid): print("Purchase cancelled for product \(pid)")
+            case .purchaseFailed(productId: let pid): print("Purchase failed for product \(pid)")
             
             default: break
             }
             
             self.tableView.reloadData()  // Reload data for a success, cancel or failure
         }
-    }
-    
-    private func showPurchaseError(title: String, pid: ProductId) {
-        guard let productTitle = iap.getProductTitleFrom(id: pid) else { return }
-        print("Purchase error for \(productTitle)")
     }
 }
 

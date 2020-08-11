@@ -1,6 +1,6 @@
 //
 //  ProductInfo.swift
-//  IAPTestingDemo
+//  IAPHelper
 //
 //  Created by Russell Archer on 09/07/2020.
 //

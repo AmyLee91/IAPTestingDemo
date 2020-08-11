@@ -1,6 +1,6 @@
 //
 //  IAPHelper+SKPaymentTransactionObserver.swift
-//  IAPTestingDemo
+//  IAPHelper
 //
 //  Created by Russell Archer on 06/07/2020.
 //
@@ -43,10 +43,9 @@ extension IAPHelper: SKPaymentTransactionObserver {
             transaction.original?.payment.productIdentifier :
             transaction.payment.productIdentifier else {
             
-            // This is strange. The app store says the purchase successfully completed. However,
-            // we can't access the product id of the product that was purchased. We'll signal
-            // that the purchase/restore was successful and try and resolve the issue next time
-            // the receipt is refreshed
+            // The app store says the purchase successfully completed. However, we can't access
+            // the product id of the product that was purchased. We'll signal that the purchase/restore
+            // was successful and try and resolve the issue next time the receipt is refreshed
             sendNotification(notification: restore ? .purchaseRestored(productId: "??") : .purchaseCompleted(productId: "??"))
             if restore { DispatchQueue.main.async { self.restorePurchasesCompletion?(.purchaseRestored(productId: "??")) }}
             else { DispatchQueue.main.async { self.purchaseCompletion?(.purchaseCompleted(productId: "??")) }}
@@ -58,8 +57,8 @@ extension IAPHelper: SKPaymentTransactionObserver {
         IAPPersistence.savePurchasedState(for: transaction.payment.productIdentifier)
 
         // Add the purchased product ID to our fallback list of purchased product IDs
-        guard !fallbackPurchasedProductIdentifiers.contains(transaction.payment.productIdentifier) else { return }
-        fallbackPurchasedProductIdentifiers.insert(transaction.payment.productIdentifier)
+        guard !purchasedProductIdentifiers.contains(transaction.payment.productIdentifier) else { return }
+        purchasedProductIdentifiers.insert(transaction.payment.productIdentifier)
 
         // Send a local notification about the purchase
         sendNotification(notification: restore ? .purchaseRestored(productId: identifier) : .purchaseCompleted(productId: identifier))

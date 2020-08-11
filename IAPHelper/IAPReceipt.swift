@@ -1,6 +1,6 @@
 //
 //  IAPReceipt.swift
-//  IAPTestingDemo
+//  IAPHelper
 //
 //  Created by Russell Archer on 25/06/2020.
 //
@@ -23,19 +23,20 @@ import UIKit
 /// * We use OpenSSL to access data in the receipt
 /// * A new receipt is issued automatically (and to IAPHelper it appears as a refresh event)
 ///   by the App Store each time:
+///
 ///     * an in-app purchase succeeds
 ///     * the app is re-installed
 ///     * an app update happens
 ///     * when previous in-app purchases are restored
+///
 public class IAPReceipt {
         
     // MARK:- Public properties
     
     /// The set of purchased ProductIds validated against the app's App Store receipt.
-    /// The set of fallbackPurchasedProductIdentifiers held by IAPHelper should always
-    /// be the same as validatedPurchasedProductIdentifiers. If they differ,
-    /// fallbackPurchasedProductIdentifiers should be updated to be a copy of
-    /// validatedPurchasedProductIdentifiers and persisted.
+    /// The set of purchasedProductIdentifiers held by IAPHelper should always be the
+    /// same as validatedPurchasedProductIdentifiers. If they differ, purchasedProductIdentifiers
+    /// should be updated to be a copy of validatedPurchasedProductIdentifiers and persisted.
     public var validatedPurchasedProductIdentifiers = Set<ProductId>()
     
     /// Check to see if the receipt's URL is present and the receipt file itself is reachable.

@@ -1,6 +1,6 @@
 //
 //  IAPReceiptProductInfo.swift
-//  IAPTestingDemo
+//  IAPHelper
 //
 //  Created by Russell Archer on 29/06/2020.
 //

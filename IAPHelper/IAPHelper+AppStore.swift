@@ -1,6 +1,6 @@
 //
 //  IAPHelper+AppStore.swift
-//  IAPTestingDemo
+//  IAPHelper
 //
 //  Created by Russell Archer on 06/07/2020.
 //
@@ -61,7 +61,7 @@ extension IAPHelper {
         // to the SKProductsRequestDelegate methods productsRequest(_:didReceive:) or
         // request(_:didFailWithError:). These delegate methods may or may not be called if
         // there's no network connection). If the results are returned successfully to
-        // productsRequest(_:didReceive:) then it makes a call to validateReceiptAndGetProductsIds().
+        // productsRequest(_:didReceive:) then it makes a call to xxxx TODO
         productsRequest = SKProductsRequest(productIdentifiers: configuredProductIdentifiers!)
         productsRequest!.delegate = self
         productsRequest!.start()
@@ -78,7 +78,12 @@ extension IAPHelper {
     /// - Parameter completion:     Completion block that will be called when the purchase has completed, failed or been cancelled.
     /// - Parameter notification:   An IAPNotification with a value of .purchaseCompleted, .purchaseCancelled or .purchaseFailed
     public func buyProduct(_ product: SKProduct, completion: @escaping (_ notification: IAPNotification?) -> Void) {
-        guard !isPurchasing else { return }  // Don't allow another purchase to start until the current one completes
+        guard !isPurchasing else {
+            // Don't allow another purchase to start until the current one completes
+            sendNotification(notification: .purchaseAbortPurchaseInProgress)
+            completion(.purchaseAbortPurchaseInProgress)
+            return
+        }
 
         purchaseCompletion = completion  // Save the completion block for later use
         

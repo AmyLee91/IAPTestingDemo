@@ -1,6 +1,6 @@
 //
 //  IAPReceipt+Read.swift
-//  IAPTestingDemo
+//  IAPHelper
 //
 //  Created by Russell Archer on 06/07/2020.
 //

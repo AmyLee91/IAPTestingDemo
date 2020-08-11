@@ -1,6 +1,6 @@
 //
 //  IAPLog.swift
-//  IAPTestingDemo
+//  IAPHelper
 //
 //  Created by Russell Archer on 25/06/2020.
 //
@@ -39,7 +39,7 @@ public struct IAPLog {
     /// publically available in the Console app.
     /// - Parameter event: An IAPNotification.
     public static func event(event: IAPNotification) {
-        os_log("Notification: %{public}s", log: iapLog, type: .default, event.shortDescription())
+        os_log("Notification: (%{public}s) %{public}s", log: iapLog, type: .default, event.key(), event.shortDescription())
     }
     
     /// Logs an IAPNotification. Note that the text (shortDescription) and the productId for the
@@ -48,7 +48,7 @@ public struct IAPLog {
     ///   - event:      An IAPNotification.
     ///   - productId:  A ProductId associated with the event.
     public static func event(event: IAPNotification, productId: ProductId) {
-        os_log("Notification: %{public}s for product %{public}s", log: iapLog, type: .default, event.shortDescription(), productId)
+        os_log("Notification: (%{public}s) %{public}s for product %{public}s", log: iapLog, type: .default, event.key(), event.shortDescription(), productId)
     }
     
     /// Logs a message.

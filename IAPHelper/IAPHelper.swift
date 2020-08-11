@@ -1,8 +1,8 @@
 //
 //  IAPHelper.swift
-//  Writerly
+//  IAPHelper
 //
-//  Created by Russell Archer on 16/10/2016.
+//  Originally created by Russell Archer on 16/10/2016.
 //  Copyright © 2016 Russell Archer. All rights reserved.
 //
 
@@ -14,15 +14,13 @@ public typealias ProductId = String
 /// IAPHelper coordinates in-app purchases. Make sure to initiate IAPHelper early in the app's lifecycle so that
 /// notifications from the App Store are not missed. For example, reference `IAPHelper.shared` in
 /// `application(_:didFinishLaunchingWithOptions:)` in AppDelegate.
+///
 public class IAPHelper: NSObject  {
     
     // MARK:- Public Properties
     
     /// Singleton access. Use IAPHelper.shared to access all IAPHelper properties and methods.
     public static let shared: IAPHelper = IAPHelper()
-
-    /// True if the fallback and receipt purchases agree.
-    public var purchasesValid = false
     
     /// True if a purchase is in progress (excluding a deferred).
     public var isPurchasing = false
@@ -45,10 +43,10 @@ public class IAPHelper: NSObject  {
     /// This property is set automatically when IAPHelper is initialized and contains the set of
     /// all products purchased by the user. The collection is not persisted but is rebuilt from the
     /// product identifiers of purchased products stored individually in user defaults (see IAPPersistence).
-    /// This is a fall-back collection of purchases designed to allow the user access to purchases
+    /// This is a 'fallback' collection of purchases designed to allow the user access to purchases
     /// in the event that the app receipt is missing and we can't contact the App Store to refresh it.
-    /// THis set will be empty if the user hasn't yet purchased any iap products.
-    public var fallbackPurchasedProductIdentifiers = Set<ProductId>()
+    /// This set will be empty if the user hasn't yet purchased any iap products.
+    public var purchasedProductIdentifiers = Set<ProductId>()
     
     /// True if app store product info has been retrieved via requestProducts().
     public var isAppStoreProductInfoAvailable: Bool {
@@ -81,8 +79,8 @@ public class IAPHelper: NSObject  {
     
     internal func setup() {
         addToPaymentQueue()
-        guard readConfigFile() else { return }
-        loadFallbackProductIds()
+        readConfigFile()
+        loadPurchasedProductIds()
     }
     
     internal func addToPaymentQueue() {
@@ -94,39 +92,34 @@ public class IAPHelper: NSObject  {
         addedToPaymentQueue = true
     }
     
-    internal func readConfigFile() -> Bool {
+    internal func readConfigFile() {
         // Read our configuration file that contains the list of ProductIds that are available on the App Store.
         // If the data can't be read then it isn't a critcial error as we can request the info from the App Store
         // as required.
         configuredProductIdentifiers = nil
         let result = IAPConfiguration.read(filename: IAPConstants.File(), ext: IAPConstants.FileExt())
         switch result {
-        case .failure(_):
-            sendNotification(notification: .configurationLoadFailed)
-            return false
-            
+        case .failure(_): sendNotification(notification: .configurationLoadFailed)
         case .success(let configuration):
             guard let configuredProducts = configuration.products, configuredProducts.count > 0 else {
                 sendNotification(notification: .configurationEmpty)
-                return false
+                return
             }
             
             configuredProductIdentifiers = Set<ProductId>(configuredProducts.compactMap { product in product.productID })
             sendNotification(notification: .configurationLoadCompleted)
         }
-        
-        return true
     }
     
-    internal func loadFallbackProductIds() {
-        // Load our fallback list of purchased ProductIds
+    internal func loadPurchasedProductIds() {
+        // Load our set of purchased ProductIds from UserDefaults
         guard haveConfiguredProductIdentifiers else {
-            sendNotification(notification: .receiptFallbackLoadCompleted)
+            sendNotification(notification: .purchasedProductsLoadCompleted)
             return
         }
         
-        fallbackPurchasedProductIdentifiers = IAPPersistence.loadPurchasedProductIds(for: configuredProductIdentifiers!)
-        sendNotification(notification: .receiptFallbackLoadCompleted)
+        purchasedProductIdentifiers = IAPPersistence.loadPurchasedProductIds(for: configuredProductIdentifiers!)
+        sendNotification(notification: .purchasedProductsLoadCompleted)
     }
 
     // MARK:- Public Helpers
@@ -161,7 +154,10 @@ public class IAPHelper: NSObject  {
             return
         }
         
-        let _ = createValidatedFallbackProductIds(receipt: receipt)
+        // Compare the "fallback" set of purchased product ids that are stored in UserDefaults with the validated
+        // set of purchased product ids read from the app store receipt. If they differ, we reset the fallback
+        // set to match the receipt and persist the new set to UserDefaults.
+        createValidatedPurchasedProductIds(receipt: receipt)
         
         if refresh {
             sendNotification(notification: .receiptRefreshCompleted)
@@ -180,9 +176,18 @@ public class IAPHelper: NSObject  {
     /// - Parameter id: The ProductId for the product.
     /// - Returns:      Returns an SKProduct object containing localized information about the product.
     public func getStoreProductFrom(id: ProductId) -> SKProduct? {
-        guard isAppStoreProductInfoAvailable else { return nil }
-        for p in products! { if p.productIdentifier == id { return p } }
-        return nil
+        guard isAppStoreProductInfoAvailable else {
+            sendNotification(notification: .appStoreNoProductInfo)
+            return nil
+        }
+        
+        let selectedProducts = products!.filter { product in product.productIdentifier == id }
+        guard selectedProducts.count > 0 else {
+            sendNotification(notification: .purchaseProductUnavailable(productId: id))
+            return nil
+        }
+        
+        return selectedProducts.first
     }
     
     /// Returns a product's title given a ProductId. Only available if isStoreProductInfoAvailable is true.
@@ -210,11 +215,7 @@ public class IAPHelper: NSObject  {
     /// data from the receipt. If they disagree we re-write the list using info from the receipt.
     /// - Parameter id: The ProductId for the product.
     /// - Returns:      Returns true if the product has previously been purchased, false otherwise.
-    public func isProductPurchased(id: ProductId) -> Bool {
-        guard isAppStoreProductInfoAvailable else { return false }
-
-        return fallbackPurchasedProductIdentifiers.contains(id)
-    }
+    public func isProductPurchased(id: ProductId) -> Bool { purchasedProductIdentifiers.contains(id) }
     
     /// Get a localized price for a product.
     /// - Parameter product: SKProduct for which you want the local price.
@@ -233,30 +234,29 @@ public class IAPHelper: NSObject  {
         DispatchQueue.main.async { self.notificationCompletion?(notification) }
         
         switch notification {
-        case .purchaseInProgress(           productId: let pid): IAPLog.event(event: notification, productId: pid)
-        case .purchaseFailed(               productId: let pid): IAPLog.event(event: notification, productId: pid)
-        case .purchaseDeferred(             productId: let pid): IAPLog.event(event: notification, productId: pid)
-        case .purchaseRestored(             productId: let pid): IAPLog.event(event: notification, productId: pid)
-        case .purchaseCompleted(            productId: let pid): IAPLog.event(event: notification, productId: pid)
-        case .purchaseCancelled(            productId: let pid): IAPLog.event(event: notification, productId: pid)
-        case .purchaseRestoreFailed(        productId: let pid): IAPLog.event(event: notification, productId: pid)
+        case .purchaseInProgress(           productId: let pid): fallthrough
+        case .purchaseFailed(               productId: let pid): fallthrough
+        case .purchaseDeferred(             productId: let pid): fallthrough
+        case .purchaseRestored(             productId: let pid): fallthrough
+        case .purchaseCompleted(            productId: let pid): fallthrough
+        case .purchaseCancelled(            productId: let pid): fallthrough
+        case .purchaseRestoreFailed(        productId: let pid): fallthrough
+        case .purchaseProductUnavailable(   productId: let pid): fallthrough
         case .appStoreRevokedEntitlements(  productId: let pid): IAPLog.event(event: notification, productId: pid)
-            
         default: IAPLog.event(event: notification)
         }
     }
     
-    internal func createValidatedFallbackProductIds(receipt: IAPReceipt) -> Bool {
-        if !receipt.validateFallbackProductIds(fallbackPids: fallbackPurchasedProductIdentifiers) {
-            IAPPersistence.resetPurchasedProductIds(from: fallbackPurchasedProductIdentifiers, to: receipt.validatedPurchasedProductIdentifiers)
-            fallbackPurchasedProductIdentifiers = receipt.validatedPurchasedProductIdentifiers
-            sendNotification(notification: .receiptFallbackReset)
-            return false
+    internal func createValidatedPurchasedProductIds(receipt: IAPReceipt) {
+        if purchasedProductIdentifiers == receipt.validatedPurchasedProductIdentifiers {
+            sendNotification(notification: .purchasedProductsValidatedAgainstReceipt)
+            return
         }
         
-        sendNotification(notification: .receiptFallbackValidationCompleted)
-        purchasesValid = true
-        return true
+        IAPPersistence.resetPurchasedProductIds(from: purchasedProductIdentifiers, to: receipt.validatedPurchasedProductIdentifiers)
+        purchasedProductIdentifiers = receipt.validatedPurchasedProductIdentifiers
+        sendNotification(notification: .purchasedProductsResetToReceipt)
+        sendNotification(notification: .purchasedProductsValidatedAgainstReceipt)
     }
 }
 

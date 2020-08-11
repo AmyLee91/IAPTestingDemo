@@ -1,6 +1,6 @@
 //
 //  IAPPersistence.swift
-//  IAPTestingDemo
+//  IAPHelper
 //
 //  Created by Russell Archer on 25/06/2020.
 //
