@@ -7,10 +7,10 @@ Implementing and testing In-App Purchases in Xcode 12 and iOS 14
 ## Synopsis
 In this post we will review:
 
-* **Basic Steps**: An overview of what it takes to support in-app purchases in an iOS app
-* **Basic Example**: A basic example of how to handle in-app purchases
-* **Xcode 12 Improvements**: In-app purchase-related improvements in Xcode 12 and iOS 14
-* **Receipt Validation**: Approaches to validating and reading the App Store receipt
+* **[Basic Steps](#Basic-Steps)**: An overview of what it takes to support in-app purchases in an iOS app
+* **[Basic Example](#Basic-Example)**: A basic example of how to handle in-app purchases
+* **[Xcode 12 Improvements](#Xcode-12-Improvements)**: In-app purchase-related improvements in Xcode 12 and iOS 14
+* **[Receipt Validation Approaches](#Receipt-Validation-Approaches)**: Approaches to validating and reading the App Store receipt
 * **[IAPHelper Framework](#IAPHelper-Framework)**: An example of how to wrap-up in-app purchase related code in a framework
 
 ## Basic Steps
@@ -51,7 +51,7 @@ When I first implemented in-app purchases in 2016 the two main pain-points for m
 
 ## Xcode 12 Improvements
 
-## Receipt Validation
+## Receipt Validation Approaches
 
 ## IAPHelper Framework
 
