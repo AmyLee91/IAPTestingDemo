@@ -40,7 +40,6 @@
 		688774F224A3C090006840A8 /* AppleIncRootCertificate.cer in Resources */ = {isa = PBXBuildFile; fileRef = 688774F124A3C080006840A8 /* AppleIncRootCertificate.cer */; };
 		688FAA2024E3045500BBF2B9 /* iap1.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 688FAA1F24E3045500BBF2B9 /* iap1.jpg */; };
 		688FAA2324E3051400BBF2B9 /* iap1.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 688FAA2224E3051400BBF2B9 /* iap1.jpg */; };
-		689DB29624E43F3F00767C2D /* iap0.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 689DB29524E43F3F00767C2D /* iap0.jpg */; };
 		689F742324B7403E0093F12C /* ProductCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 689F742224B7403E0093F12C /* ProductCell.swift */; };
 		689F742524B7404B0093F12C /* RestoreCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 689F742424B7404B0093F12C /* RestoreCell.swift */; };
 		689F742924B745D10093F12C /* IAPProductInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 689F742824B745D10093F12C /* IAPProductInfo.swift */; };
@@ -221,7 +220,6 @@
 		688774F124A3C080006840A8 /* AppleIncRootCertificate.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = AppleIncRootCertificate.cer; sourceTree = "<group>"; };
 		688FAA1F24E3045500BBF2B9 /* iap1.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = iap1.jpg; sourceTree = "<group>"; };
 		688FAA2224E3051400BBF2B9 /* iap1.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = iap1.jpg; sourceTree = "<group>"; };
-		689DB29524E43F3F00767C2D /* iap0.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = iap0.jpg; sourceTree = "<group>"; };
 		689F742224B7403E0093F12C /* ProductCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductCell.swift; sourceTree = "<group>"; };
 		689F742424B7404B0093F12C /* RestoreCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestoreCell.swift; sourceTree = "<group>"; };
 		689F742824B745D10093F12C /* IAPProductInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IAPProductInfo.swift; sourceTree = "<group>"; };
@@ -452,7 +450,6 @@
 		688FAA1E24E3011500BBF2B9 /* readme-assets */ = {
 			isa = PBXGroup;
 			children = (
-				689DB29524E43F3F00767C2D /* iap0.jpg */,
 				688FAA1F24E3045500BBF2B9 /* iap1.jpg */,
 			);
 			path = "readme-assets";
@@ -875,7 +872,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				688FAA2024E3045500BBF2B9 /* iap1.jpg in Resources */,
-				689DB29624E43F3F00767C2D /* iap0.jpg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -86,9 +86,9 @@ extension IAPHelper {
         }
 
         purchaseCompletion = completion  // Save the completion block for later use
-        
-        let payment = SKPayment(product: product)  // Wrap the product in an SKPayment object
         isPurchasing = true
+        
+        let payment = SKPayment(product: product)  // Wrap the SKProduct in an SKPayment object
         SKPaymentQueue.default().add(payment)
     }
     
