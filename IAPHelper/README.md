@@ -87,7 +87,7 @@ Define a set of Strings that hold **ProductIds** for the products you want to se
 
 3. Add your IAPHelper to the Payment Queue\
 \
-To receive notifications from the App Store (when payments are successful, fail, are restored, etc.) add your IAPHelper to the StoreKit payment queue using:\
+To receive notifications from the App Store (when payments are successful, fail, are restored, etc.) add your IAPHelper to the StoreKit payment queue using:
 
 ``` swift
 SKPaymentQueue.default().add(self)
