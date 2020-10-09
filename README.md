@@ -2,16 +2,11 @@
 
 Implementing and testing In-App Purchases in Xcode 12 and iOS 14
 
-## Synopsis
+# Contents
 
-* **[Overview](#Overview)**: An overview of what it takes to support in-app purchases in an iOS app
-* **[Basic Steps](#Basic-Steps)**: The principle things you need to do to support in-app purchases
-* **[Xcode 12 Improvements](#Xcode-12-Improvements)**: In-app purchase-related improvements in Xcode 12 and iOS 14
-* **[Basic Example](#Basic-Example)**: A basic example of how to handle in-app purchases
-* **[Receipt Validation Approaches](#Receipt-Validation-Approaches)**: Approaches to validating and reading the App Store receipt
-* **[IAPHelper Framework](#IAPHelper-Framework)**: An example of how to wrap-up in-app purchase related code in a framework
+{{TOC}}
 
-## Overview
+# Overview
 The code we write to manage in-app purchases is critically important to the success of our apps. However, if you've not tackled it
 before, implementing and testing in-app purchases is daunting, complex and seems *way* more involved than you'd expect!   
 
@@ -33,7 +28,7 @@ When I first implemented in-app purchases in one of my apps in 2016 the two main
 * [Receipt validation](#Receipt-validation)
 * [Sandbox accounts](#Sandbox-accounts)
 
-### Receipt validation
+## Receipt validation options
 The App Store issues an encrypted receipt when in-app purchases are made or restored (when an app's first installed, no receipt is present).
 This receipt contains a complete list of all in-app purchases made in the app. There are three approaches available to validating the receipt:
 
@@ -79,7 +74,7 @@ of purchased products that your app maintains. The list should be persisted in a
 a far less secure approach than doing receipt validation. However, you may decide that a particular app doesn't warrant the greater
 protection and associated complexity provided by receipt validation. See [Basic Example](#Basic-Example) below for an example of this approach.
 
-### Sandbox accounts
+## Sandbox accounts
 Prior to Xcode 12, in order to test in-app purchases you needed to create multiple sandbox test accounts in App Store Connect.
 Each sandbox account has to have a unique email address and be validated as an AppleID. In addition, tests must be on a real device,
 not the simulator.
@@ -89,7 +84,7 @@ spare device to do testing on. To make things more painful, each time you make a
 becomes "used up" and can't be used to re-purchase the same product. There's no way to clear purchases, so you need to use a fresh
 sandbox account for each set of product purchases.
 
-## Basic Steps
+# Basic Steps
 The basic steps you need to take to support in-app purchases (IAP hereafter) in your app are as follows:
 
 ![](./readme-assets/iap1.jpg)
@@ -124,7 +119,7 @@ the purchase progresses. Note that the App Store presents the user with all the 
 
 The code discussed in [Basic Example](#Basic-Example) below provides a practical example of the above points (receipt validation is covered later).
 
-## Xcode 12 Improvements
+# Xcode 12 Improvements
 Immediately before Apple's WWDC 2020 keynote event I tweeted that I was hoping for something "magical and unexpected". I followed this up with
 "How about an update to StoreKit that makes it really easy to do on-device validation of App Store receipts". Well, I didn't get my wish with regard to
 receipt validation, but I certainly got something magical and unexpected related to StoreKit and in-app purchases!
@@ -137,7 +132,7 @@ The [Basic Example](#Basic-Example) project below includes details on how to cre
 
 These new features are a huge leap forward in terms of making testing substantially easier, quicker to setup, more flexible and less frustrating!
 
-## Basic Example
+# Basic Example
 The following example shows how to create a **very minimal IAP example** (the IAP equivalent of "Hello World") that makes use of the new StoreKit 
 testing features in Xcode 12. 
 
@@ -158,22 +153,22 @@ Note that this example project is missing some features a real-world app would b
 * Deferred purchases aren't supported
 * Edge cases are not supported (refunds, entitlements being revoked, store front changes, purchasing IAPs directly from the app store, etc.)  
 
-### Walk-through
-For this example we'll assume you're going to create a demo app from scratch using iOS 14 and Xcode 12.
+For this example we'll assume you're going to create a demo app from scratch using iOS 14 and Xcode 12:
 
 * [Add the StoreKit Framework](#Add-the-StoreKit-Framework)
 * [Create the StoreKit configuration file](#Create-the-StoreKit-configuration-file)
 * [Add the in-app purchase capability](#Add-the-in-app-purchase-capability)
 * [Enable StoreKit Testing via the Project Scheme](#Enable-StoreKit-Testing-via-the-Project-Scheme)
 * [Add the StoreKit public certificate](#Add-the-StoreKit-public-certificate)
+* [IAPHelper Code](#IAPHelper-Code)
 
-### Add the StoreKit Framework
+## Add the StoreKit Framework
 The first thing you need to do after creating your new app is to add the StoreKit framework. 
 Select your app Target and the **General** tab, then add the StoreKit framework:
 
 ![](./readme-assets/iap12.jpg)
 
-### Create the StoreKit configuration file
+## Create the StoreKit configuration file
 Now create a StoreKit configuration file. Select **File > New > File** and choose the *StoreKit Configuration File* template:
 
 ![](./readme-assets/iap4.jpg)<br/>
@@ -206,7 +201,7 @@ By default, the first localization is for the US store. However, you can add as 
 
 Note that **none of the data defined in the .storekit file is ever uploaded to App Store Connect**. It's only used when testing in-app purchases locally in Xcode.
 
-### Add the in-app purchase capability
+## Add the in-app purchase capability
 It's easy to forget to do this! And you can successfully test in-app purchases *without* adding the IAP capability. However, you will receive the following error 
 when attempting to archive a project in preparation for uploading it to the App Store:
 
@@ -218,7 +213,7 @@ Add the in-app purchase capability by selecting the app target and **Signing & C
 
 ![](./readme-assets/iap11.jpg)<br/>
 
-### Enable StoreKit Testing via the Project Scheme
+## Enable StoreKit Testing via the Project Scheme
 You now need to enable StoreKit testing in Xcode (it's disabled by default).<br/>
 
 Select **Product > Scheme > Edit Scheme**.
@@ -228,7 +223,7 @@ Now select **Run** and the **Options** tab. You can now select your configuratio
 
 Should you wish to disable StoreKit testing then repeat the above steps and remove the StoreKit configuration file from the *StoreKit Configuration* list.
 
-### Add the StoreKit public certificate
+## Add the StoreKit public certificate
 You need to add the StoreKit public test certificate to your project. This isn't strictly necessary if you're not going to be doing any receipt validation. 
 However, we'll include the details here for completeness. 
 
@@ -258,7 +253,7 @@ public struct IAPConstants {
 
 ```
 
-## IAPHelper Framework
+## Minimal IAPHelper Code
 In this example we'll put all IAP related code into a single **IAPHelper** class. We set this up as a singleton, ensuring there's only ever a single instance of the class:
 
 ``` swift
@@ -341,5 +336,9 @@ extension ViewController: ProductCellDelegate {
 }
 ```
 
-## TODO - incomplete
+# IAPHelper
+
+# How to Validate Receipts
+
+# IAPTestingDemo Example
 
