@@ -4,21 +4,21 @@ Implementing and testing In-App Purchases in Xcode 12 and iOS 14
 
 # Contents
 
-* [Overview](#Overview)
+* [Overview](#Overview) : An overview of what it takes to support in-app purchases in an iOS app
 	* [Receipt validation options](#Receipt-validation-options)
 	* [Sandbox accounts](#Sandbox-accounts)
-* [Basic Steps](#Basic-Steps)
-* [Xcode 12 Improvements](#Xcode-12-Improvements)
-* [Basic Example](#Basic-Example)
+* [Basic Steps](#Basic-Steps) : The key things you need to do to support in-app purchases
+* [Xcode 12 Improvements](#Xcode-12-Improvements) : In-app purchase-related improvements in Xcode 12 and iOS 14
+* [Basic Example](#Basic-Example) : A basic example of how to handle in-app purchases
 	* [Add the StoreKit Framework](#Add-the-StoreKit-Framework)
 	* [Create the StoreKit configuration file](#Create-the-StoreKit-configuration-file)
 	* [Add the in-app purchase capability](#Add-the-in-app-purchase-capability)
 	* [Enable StoreKit Testing via the Project Scheme](#Enable-StoreKit-Testing-via-the-Project-Scheme)
 	* [Add the StoreKit public certificate](#Add-the-StoreKit-public-certificate)
 	* [Minimal IAPHelper Code](#Minimal-IAPHelper-Code)
-* [IAPHelper](#IAPHelper)
-* [How to Validate Receipts Locally](#How-to-Validate-Receipts-Locally)
-* [IAPTestingDemo Example](#IAPTestingDemo-Example)
+* [IAPHelper](#IAPHelper) : A helper for handling in-app purchases and receipts
+* [How to Validate Receipts Locally](#How-to-Validate-Receipts-Locally) : Validating and reading the App Store receipt
+* [IAPTestingDemo Example](#IAPTestingDemo-Example) : A more in-depth example
 
 # Overview
 The code we write to manage in-app purchases is critically important to the success of our apps. However, if you've not tackled it
