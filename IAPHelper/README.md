@@ -35,7 +35,7 @@ When I first implemented in-app purchases in one of my apps in 2016 the two main
 
 ### Receipt validation
 The App Store issues an encrypted receipt when in-app purchases are made or restored (when an app's first installed, no receipt is present).
-This receipt contains a complete list of all in-app purchases made in the app. There are three approaches available to validation the receipt:
+This receipt contains a complete list of all in-app purchases made in the app. There are three approaches available to validating the receipt:
 
 * Server-side receipt validation
 * On-device receipt validation
@@ -49,7 +49,7 @@ direct app-to-App Store connections. The advantage of using server-side validati
 JSON payloads that include all the in-app purchase data you need. We don't cover server-side validation in this example.
 
 **On-device validation**<br/>
-Local on-device validation is tricky and requires use the C-based [OpenSSL](https://www.openssl.org) library
+Local on-device validation is tricky and requires use of the C-based [OpenSSL](https://www.openssl.org) library
 to decrypt and read the data. Note that including the required two OpenSSL libraries adds nearly 50MB to your app.
 
 Back in 2016 I fully expected StoreKit or some other Apple framework to provide ready-to-use abstractions allowing for easy access
@@ -77,7 +77,7 @@ paymentQueue(_:updatedTransactions:)
 When you get a *.purchased* or *.restored* transaction simply add the product identifier for the product to a list
 of purchased products that your app maintains. The list should be persisted in a database, or even UserDefaults. Clearly, this is
 a far less secure approach than doing receipt validation. However, you may decide that a particular app doesn't warrant the greater
-protection and associated complexity provided by receipt validation. See [Basic Example](#Basic-Example) below for an example.
+protection and associated complexity provided by receipt validation. See [Basic Example](#Basic-Example) below for an example of this approach.
 
 ### Sandbox accounts
 Prior to Xcode 12, in order to test in-app purchases you needed to create multiple sandbox test accounts in App Store Connect.
@@ -98,8 +98,7 @@ The basic steps you need to take to support in-app purchases (IAP hereafter) in 
 Create a class or struct that will contain all your IAP-related code. For the sake of example we'll refer to this as the **IAPHelper** code
 
 * **Define your ProductIds**\
-Define a set of Strings that hold *ProductIds* for the products you want to sell. ProductIds take the form "com.your-company.your-product".
-For example, "com.rarcher.flowers-large". These ids will match the products you define in App Store Connect
+Define a set of Strings that hold *ProductIds* for the products you want to sell. ProductIds are generally in reverse domain form ("com.your-company.your-product"). For example, "com.rarcher.flowers-large". These ids will match the product ids you define in App Store Connect
 
 * **Add your IAPHelper to the Payment Queue**\
 To receive notifications from the App Store (when payments are successful, fail, are restored, etc.) add your IAPHelper to the StoreKit payment queue.
@@ -123,7 +122,7 @@ When the user taps on "buy product" you should wrap the selected *SKProduct* in 
 The App Store will then send notifications to the *SKPaymentTransactionObserver* method **paymentQueue(_:updatedTransactions)** as
 the purchase progresses. Note that the App Store presents the user with all the required purchase prompts and confirmations
 
-The code discussed in [Basic Example](#Basic-Example) below provides a practical example of the above points.
+The code discussed in [Basic Example](#Basic-Example) below provides a practical example of the above points (receipt validation is covered later).
 
 ## Xcode 12 Improvements
 Immediately before Apple's WWDC 2020 keynote event I tweeted that I was hoping for something "magical and unexpected". I followed this up with
@@ -195,11 +194,11 @@ In this example I set the following fields:
 A descriptive name for the product
 
 * **Product ID**<br/>
-This is a unique code used to identify the IAP product. This same ID will be used in App Store Connect when setting up in-app purchases for production.
+This the unique code used to identify an IAP product. This same ID will be used in App Store Connect when setting up in-app purchases for production.
 Note that Product ID is a string that, by convention, uses the format "*com.developer.product*", although it can be anything you like
 
 * **Price**<br/>
-A hard-coded, non-localized price for the product. In production your app will request localized price (and other) information from the App Store
+A hard-coded price for the product. In production your app will request localized price (and other) information from the App Store
 
 By default, the first localization is for the US store. However, you can add as many localizations as required:
 
@@ -223,7 +222,7 @@ Add the in-app purchase capability by selecting the app target and **Signing & C
 You now need to enable StoreKit testing in Xcode (it's disabled by default).<br/>
 
 Select **Product > Scheme > Edit Scheme**.
-Now select **Run** and the **Options** tab. You can now choose your configuration file from the *StoreKit Configuration* list:
+Now select **Run** and the **Options** tab. You can now select your configuration file from the *StoreKit Configuration* list:
 
 ![](./readme-assets/iap7.jpg)<br/>
 
@@ -274,7 +273,7 @@ public class IAPHelper: NSObject  {
     private override init() {
         super.init()
         
-		// Add ourselves to the payment queue so we get App Store notifications        
+        // Add ourselves to the payment queue so we get App Store notifications        
         SKPaymentQueue.default().add(self)  
     }
     :
@@ -282,3 +281,64 @@ public class IAPHelper: NSObject  {
 }
 ```
 
+In AppDelegate we initialise IAP Helper:
+
+``` swift
+class AppDelegate: UIResponder, UIApplicationDelegate {
+
+    public var iapHelper: IAPHelper?
+    
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        // Make sure the IAPHelper is initialized early in the app's lifecycle 
+        // to ensure we don't miss any App Store notifications
+        iapHelper = IAPHelper.shared
+        return true
+    }
+```
+
+Then in the initial ViewController we request a list of localized product information:
+
+``` swift
+class ViewController: UIViewController {
+
+    private let iap = IAPHelper.shared
+    
+    override func viewDidLoad() {
+        :
+        configureProducts()
+    }
+    
+    private func configureProducts() {
+        // Ask the App Store for a list of localized products
+        iap.requestProductsFromAppStore { _ in
+            self.tableView.reloadData()
+        }
+    }
+}
+```
+
+When the user wants to purchase a product we call **IAPHelper.buyProduct(_:completion:)** and handle the result in a closure:
+
+``` swift
+extension ViewController: ProductCellDelegate {
+    
+    internal func requestBuyProduct(productId: ProductId) {
+        guard let product = iap.getStoreProductFrom(id: productId) else { return }
+        
+        // Start the process to purchase the product
+        iap.buyProduct(product) { notification in
+            switch notification {
+            case .purchaseAbortPurchaseInProgress: print("Purchase aborted because another purchase is being processed")
+            case .purchaseCompleted(productId: let pid): print("Purchase completed for product \(pid)")
+            case .purchaseCancelled(productId: let pid): print("Purchase cancelled for product \(pid)")
+            case .purchaseFailed(productId: let pid): print("Purchase failed for product \(pid)")
+            default: break
+            }
+            
+            self.tableView.reloadData()  // Reload data for a success, cancel or failure
+        }
+    }
+}
+```
+
+## TODO - incomplete
