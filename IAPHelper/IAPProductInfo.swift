@@ -7,6 +7,7 @@
 
 import UIKit
 
+/// Holds localized product data
 internal struct IAPProductInfo {
     var id: String
     var imageName: String

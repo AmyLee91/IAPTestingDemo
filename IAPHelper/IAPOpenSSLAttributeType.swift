@@ -4,6 +4,7 @@
 //
 //  Created by Russell Archer on 03/07/2020.
 //
+//  Swift wrapper for OpenSSL functions.
 
 import Foundation
 

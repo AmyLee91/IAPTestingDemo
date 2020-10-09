@@ -4,12 +4,13 @@
 //
 //  Created by Russell Archer on 29/06/2020.
 //
-//  This class contains highly modified portions of code based on modified original Objective-C
-//  code created by Hermes copyright (c) 2013 Robot Media. It also contains modified portions of
-//  Swift code created by Bill Morefield copyright (c) 2018 Razeware LLC.
+//  Swift wrapper for OpenSSL functions.
+//  This class contains modified portions of code created by Bill Morefield copyright (c) 2018 Razeware LLC.
+//  See https://www.raywenderlich.com/9257-in-app-purchases-receipt-validation-tutorial
 
 import Foundation
 
+/// Used to hold info on an in-app purchase taken from the App Store receipt.
 struct IAPReceiptProductInfo {
     var quantity: Int?
     var productIdentifier: String?

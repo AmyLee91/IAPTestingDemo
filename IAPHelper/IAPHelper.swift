@@ -72,24 +72,20 @@ public class IAPHelper: NSObject  {
     // See the public static 'shared' property.
     private override init() {
         super.init()
+        
+        // Add ourselves as an observer of the StoreKit payments queue. This allows us to receive
+        // notifications when payments are successful, fail, are restored, etc.
+        // See the SKPaymentQueue notification handler paymentQueue(_:updatedTransactions:)
+        SKPaymentQueue.default().add(self)
+        
         setup()
     }
     
     // MARK:- Configuration
     
     internal func setup() {
-        addToPaymentQueue()
         readConfigFile()
         loadPurchasedProductIds()
-    }
-    
-    internal func addToPaymentQueue() {
-        // Add ourselves as an observer of the StoreKit payments queue. This allows us to receive
-        // notifications when payments are successful, fail, are restored, etc.
-        // See the SKPaymentQueue notification handler paymentQueue(_:updatedTransactions:) below
-        if addedToPaymentQueue { return }
-        SKPaymentQueue.default().add(self)
-        addedToPaymentQueue = true
     }
     
     internal func readConfigFile() {

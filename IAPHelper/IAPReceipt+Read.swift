@@ -4,6 +4,9 @@
 //
 //  Created by Russell Archer on 06/07/2020.
 //
+//  Swift wrapper for OpenSSL functions.
+//  This class contains modified portions of code created by Bill Morefield copyright (c) 2018 Razeware LLC.
+//  See https://www.raywenderlich.com/9257-in-app-purchases-receipt-validation-tutorial
 
 import Foundation
 

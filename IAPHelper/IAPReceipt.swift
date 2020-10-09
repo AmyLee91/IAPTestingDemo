@@ -4,9 +4,9 @@
 //
 //  Created by Russell Archer on 25/06/2020.
 //
-//  This class contains highly modified portions of code based on original Objective-C code
-//  created by Hermes copyright (c) 2013 Robot Media. It also contains modified portions of
-//  Swift code created by Bill Morefield copyright (c) 2018 Razeware LLC. 
+//  Swift wrapper for OpenSSL functions.
+//  This class contains modified portions of code created by Bill Morefield copyright (c) 2018 Razeware LLC.
+//  See https://www.raywenderlich.com/9257-in-app-purchases-receipt-validation-tutorial
 
 import UIKit
 
