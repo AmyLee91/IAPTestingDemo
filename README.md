@@ -2,7 +2,9 @@
 
 Implementing and testing In-App Purchases in Xcode 12 and iOS 14.
 
-<p align="center">![](./readme-assets/iap13sm.jpg)</p>
+<p align="center">
+    <img src="./readme-assets/iap13sm.jpg"/>
+</p>
 
 # Disclaimer. 
 The source code presented here is for educational purposes. You may freely reuse and amend this code for use in your own apps. 
