@@ -10,7 +10,7 @@
 
 import UIKit
 
-/// IAPReceipt encasulates an Apple App Store-issued receipt. App Store receipts are a complete
+/// IAPReceipt encapsulates an Apple App Store-issued receipt. App Store receipts are a complete
 /// record of a user's in-app purchase history. The receipt will contain a list of any in-app
 /// purchases the user has made. This list can be used to validate a locally stored fall-back
 /// list of purchased products. The fall-back list should be used when a connection to the App

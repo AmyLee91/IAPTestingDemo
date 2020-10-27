@@ -12,7 +12,7 @@ public struct IAPConstants {
     
     /// Returns the appropriate .storekit configuration file to use for DEBUG and RELEASE builds.
     /// - Returns: Returns a String containing the name of the .storekit file file.
-    public static func File() -> String {
+    public static func ConfigFile() -> String {
         #if DEBUG
         return "Configuration"
         #else
@@ -22,7 +22,7 @@ public struct IAPConstants {
     
     /// The file extension for the .storekit file.
     /// - Returns: Returns the file extension for the .storekit file.
-    public static func FileExt() -> String { "storekit" }
+    public static func ConfigFileExt() -> String { "storekit" }
     
     /// The appropriate certificate to use for DEBUG and RELEASE builds. Used in receipt validation.
     /// - Returns: Returns the appropriate certificate to use for DEBUG and RELEASE builds. Used in receipt validation.

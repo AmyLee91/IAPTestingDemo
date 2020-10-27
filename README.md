@@ -1,6 +1,19 @@
 #  IAPTestingDemo
 
-Implementing and testing In-App Purchases in Xcode 12 and iOS 14
+Implementing and testing In-App Purchases in Xcode 12 and iOS 14.
+
+<p align="center">![](./readme-assets/iap13sm.jpg)</p>
+
+# Disclaimer. 
+The source code presented here is for educational purposes. You may freely reuse and amend this code for use in your own apps. 
+However, this should be done entirely at your own risk. 
+
+# Apple References: 
+* [In-App Purchase Overview](https://developer.apple.com/in-app-purchase/)
+* [Receipt Validation Programming Guide](https://developer.apple.com/library/archive/releasenotes/General/ValidateAppStoreReceipt/Chapters/ValidateLocally.html#//apple_ref/doc/uid/TP40010573-CH1-SW2)
+* [In-App Purchase](https://developer.apple.com/documentation/storekit/in-app_purchase)
+* [Choosing a Receipt Validation Technique](https://developer.apple.com/documentation/storekit/in-app_purchase/choosing_a_receipt_validation_technique)
+* [Validating Receipts with the App Store](https://developer.apple.com/documentation/storekit/in-app_purchase/validating_receipts_with_the_app_store)
 
 # Contents
 
@@ -51,7 +64,7 @@ This receipt contains a complete list of all in-app purchases made in the app. T
 * No receipt validation
 
 **Server-side validation**<br/>
-This is easier, *but* you need an app server to send requests to the App Store server. Apple specifically says
+This is easier, but you need an app server to send requests to the App Store server. Apple specifically says
 you **should not** create direct connections to the App Store server from your app because you can't guard against
 man-in-the-middle attacks. Despite this clear warning, the web has many examples (including commercial offerings) of using
 direct app-to-App Store connections. The advantage of using server-side validation is that you can retrieve easily decoded
@@ -72,8 +85,7 @@ cryptographic-related code is **hard** and if you get it wrong disasters will ha
 provide something that enables correct and *reasonably secure* receipt validation for the general app developer?
 
 However, at present (August 2020) you have no choice if you want to validate and read receipt data on-device: you must develop your
-own OpenSSL-based solution. If you don't feel confident doing this feel free to adapt (or use as-is) the code presented in the
-[IAPHelper Framework](#IAPHelper-Framework).
+own OpenSSL-based solution. If you don't feel confident doing this feel free to adapt (or use as-is) the code presented below in [IAPHelper](#IAPHelper).
 
 **No receipt validation**<br/>
 It's perfectly possible to do no receipt validation at all, if you think that's appropriate for your app's business model. All you need to do is handle
@@ -101,17 +113,18 @@ sandbox account for each set of product purchases.
 # Basic Steps
 The basic steps you need to take to support in-app purchases (IAP hereafter) in your app are as follows:
 
-![](./readme-assets/iap1.jpg)
+<p align="center">![](./readme-assets/iap1.jpg)</p>
 
 * **Create an IAP helper class**\
-Create a class or struct that will contain all your IAP-related code. For the sake of example we'll refer to this as the **IAPHelper** code
+Create a class or struct that will contain all your IAP-related code. For the sake of example we'll refer to this as the **`IAPHelper`** code
 
 * **Define your ProductIds**\
-Define a set of Strings that hold *ProductIds* for the products you want to sell. ProductIds are generally in reverse domain form ("com.your-company.your-product"). For example, "com.rarcher.flowers-large". These ids will match the product ids you define in App Store Connect
+Define a set of Strings that hold **`ProductIds`** for the products you want to sell. ProductIds are generally in reverse domain form 
+("com.your-company.your-product"). For example, "com.rarcher.flowers-large". These ids will match the product ids you define in App Store Connect
 
 * **Add your IAPHelper to the Payment Queue**\
 To receive notifications from the App Store (when payments are successful, fail, are restored, etc.) add your IAPHelper to the StoreKit payment queue.
-This should be done as soon as possible in the app's lifecycle. For example in *application(_:didFinishLaunchingWithOptions:)*, so that notifications
+This should be done as soon as possible in the app's lifecycle. For example in **`application(_:didFinishLaunchingWithOptions:)`**, so that notifications
 from the App Store are not missed:
 
 ``` swift
@@ -119,30 +132,32 @@ SKPaymentQueue.default().add(iapHelper)
 ```
 
 * **Request localized product information from the App Store**\
-The *SKProductsRequestDelegate* method **productsRequest(_:didReceive:)** will be called asynchronously with a list of *SKProduct* objects.
+The **`SKProductsRequestDelegate`** method **`productsRequest(_:didReceive:)`** will be called asynchronously with a list of *SKProduct* objects.
 Note that you can't simply use predefined product data because you need to display prices, etc. that are *localized* for each user
 
 * **Process the App Store Receipt**\
-The App Store will asynchronously send a *receipt* that can be received on the *SKRequestDelegate* method **requestDidFinish(_:)**.
+The App Store will asynchronously send a **receipt** that can be received on the **`SKRequestDelegate`** method **`requestDidFinish(_:)`**.
 This receipt, which is cryptographically signed and encrypted, contains a complete record of all the IAPs made by the user of your app
 
 * **Present the localized product list to the user and handle purchases**\
-When the user taps on "buy product" you should wrap the selected *SKProduct* in an *SKPayment* object, then add it to the **SKPaymentQueue**.
-The App Store will then send notifications to the *SKPaymentTransactionObserver* method **paymentQueue(_:updatedTransactions)** as
+When the user taps on "buy product" you should wrap the selected **`SKProduct`** in an **`SKPayment`** object, then add it to the **`SKPaymentQueue`**.
+The App Store will then send notifications to the **`SKPaymentTransactionObserver`** method **`paymentQueue(_:updatedTransactions)`** as
 the purchase progresses. Note that the App Store presents the user with all the required purchase prompts and confirmations
 
 The code discussed in [Basic Example](#Basic-Example) below provides a practical example of the above points (receipt validation is covered later).
 
 # Xcode 12 Improvements
+<p align="center">![](./readme-assets/wwdc-2020.jpg)</p>
 Immediately before Apple's WWDC 2020 keynote event I tweeted that I was hoping for something "magical and unexpected". I followed this up with
 "How about an update to StoreKit that makes it really easy to do on-device validation of App Store receipts". Well, I didn't get my wish with regard to
 receipt validation, but I certainly got something magical and unexpected related to StoreKit and in-app purchases!
 
-Starting with Xcode 12, there's a new local StoreKit test environment that allows you to do early testing of IAPs in the simulator and without having to set anything up in App Store Connect. You can define your products locally in a **StoreKit Configuration file**. Furthermore, you can view and delete
-transactions, issue refunds, and a whole lot more. There's also a new **StoreKitTest** framework that enables you to do automated testing of IAPs.
+Starting with Xcode 12, there's a new local StoreKit test environment that allows you to do early testing of IAPs in the simulator and without having to set 
+anything up in App Store Connect. You can define your products locally in a **StoreKit Configuration file**. Furthermore, you can view and delete
+transactions, issue refunds, and a whole lot more. There's also a new **`StoreKitTest`** framework that enables you to do automated testing of IAPs.
 The [Basic Example](#Basic-Example) project below includes details on how to create and use a StoreKit configuration file.
 
-![](./readme-assets/iap2.jpg)<br/>
+<p align="center">![](./readme-assets/iap2.jpg)</p>
 
 These new features are a huge leap forward in terms of making testing substantially easier, quicker to setup, more flexible and less frustrating!
 
@@ -157,7 +172,7 @@ purchases in an iOS app.
 
 You can find the code for **IAPTestingMinimal** [on GitHub](https://github.com/russell-archer/IAPTestingMinimal).
 
-![](./readme-assets/iap3.jpg)<br/>
+<p align="center">![](./readme-assets/iap3.jpg)</p>
 
 Note that this example project is missing some features a real-world app would be expected to support:
 
@@ -178,24 +193,24 @@ For this example we'll assume you're going to create a demo app from scratch usi
 
 ## Add the StoreKit Framework
 The first thing you need to do after creating your new app is to add the StoreKit framework. 
-Select your app Target and the **General** tab, then add the StoreKit framework:
+Select your app **Target** and the **General** tab, then add the **StoreKit** framework:
 
-![](./readme-assets/iap12.jpg)
+<p align="center">![](./readme-assets/iap12.jpg)</p>
 
 ## Create the StoreKit configuration file
-Now create a StoreKit configuration file. Select **File > New > File** and choose the *StoreKit Configuration File* template:
+Now create a StoreKit configuration file. Select **File > New > File** and choose the **StoreKit Configuration File** template:
 
-![](./readme-assets/iap4.jpg)<br/>
+<p align="center">![](./readme-assets/iap4.jpg)</p>
 
 Choose a location in your project to save the file.
 
 Open the StoreKit configuration file and click **+** to add an in-app purchase. For this example select the non-consumable option:
 
-![](./readme-assets/iap5.jpg)<br/>
+<p align="center">![](./readme-assets/iap5.jpg)</p>
 
 You can now define your products in the StoreKit configuration file:
 
-![](./readme-assets/iap6.jpg)<br/>
+<p align="center">![](./readme-assets/iap6.jpg)</p>
 
 In this example I set the following fields:
 
@@ -211,7 +226,7 @@ A hard-coded price for the product. In production your app will request localize
 
 By default, the first localization is for the US store. However, you can add as many localizations as required:
 
-![](./readme-assets/iap2.jpg)<br/>
+<p align="center">![](./readme-assets/iap2.jpg)</p>
 
 Note that **none of the data defined in the .storekit file is ever uploaded to App Store Connect**. It's only used when testing in-app purchases locally in Xcode.
 
@@ -219,23 +234,23 @@ Note that **none of the data defined in the .storekit file is ever uploaded to A
 It's easy to forget to do this! And you can successfully test in-app purchases *without* adding the IAP capability. However, you will receive the following error 
 when attempting to archive a project in preparation for uploading it to the App Store:
 
-![](./readme-assets/iap10.jpg)<br/>
+<p align="center">![](./readme-assets/iap10.jpg)</p>
 
 Add the in-app purchase capability by selecting the app target and **Signing & Capabilities**, then click **+** **Capability** to add a capability:
 
-![](./readme-assets/iap9.jpg)<br/>
+<p align="center">![](./readme-assets/iap9.jpg)</p>
 
-![](./readme-assets/iap11.jpg)<br/>
+<p align="center">![](./readme-assets/iap11.jpg)</p>
 
 ## Enable StoreKit Testing via the Project Scheme
 You now need to enable StoreKit testing in Xcode (it's disabled by default).<br/>
 
 Select **Product > Scheme > Edit Scheme**.
-Now select **Run** and the **Options** tab. You can now select your configuration file from the *StoreKit Configuration* list:
+Now select **Run** and the **Options** tab. You can now select your configuration file from the **StoreKit Configuration** list:
 
-![](./readme-assets/iap7.jpg)<br/>
+<p align="center">![](./readme-assets/iap7.jpg)</p>
 
-Should you wish to disable StoreKit testing then repeat the above steps and remove the StoreKit configuration file from the *StoreKit Configuration* list.
+Should you wish to disable StoreKit testing then repeat the above steps and remove the StoreKit configuration file from the **StoreKit Configuration** list.
 
 ## Add the StoreKit public certificate
 You need to add the StoreKit public test certificate to your project. This isn't strictly necessary if you're not going to be doing any receipt validation. 
@@ -248,7 +263,8 @@ In Xcode project navigator, select the StoreKit configuration file. Now select *
 
 Choose a location in your project to save the file.
 
-You now need to ensure your app uses the correct certificate in all environments. The easiest way to do this is to create a simple helper which returns the correct certificate name for the runtime environment:
+You now need to ensure your app uses the correct certificate in all environments. The easiest way to do this is to create a simple helper which returns 
+the correct certificate name for the runtime environment:
 
 ``` swift
 /// Constants used in support of IAP operations.
@@ -268,7 +284,7 @@ public struct IAPConstants {
 ```
 
 ## Minimal IAPHelper Code
-In this example we'll put all IAP related code into a single **IAPHelper** class. We set this up as a singleton, ensuring there's only ever a single instance of the class:
+In this example we'll put all IAP related code into a single **`IAPHelper`** class. We set this up as a singleton, ensuring there's only ever a single instance of the class:
 
 ``` swift
 public class IAPHelper: NSObject  {
@@ -290,14 +306,18 @@ public class IAPHelper: NSObject  {
 }
 ```
 
-In AppDelegate we initialise IAP Helper:
+In **`AppDelegate`** we initialise **`IAPHelper`**:
 
 ``` swift
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     public var iapHelper: IAPHelper?
     
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+    func application(
+        _ application: UIApplication, 
+        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) 
+        -> Bool {
+        
         // Make sure the IAPHelper is initialized early in the app's lifecycle 
         // to ensure we don't miss any App Store notifications
         iapHelper = IAPHelper.shared
@@ -326,7 +346,7 @@ class ViewController: UIViewController {
 }
 ```
 
-When the user wants to purchase a product we call **IAPHelper.buyProduct(_:completion:)** and handle the result in a closure:
+When the user wants to purchase a product we call **`IAPHelper.buyProduct(_:completion:)`** and handle the result in a closure:
 
 ``` swift
 extension ViewController: ProductCellDelegate {
@@ -337,10 +357,19 @@ extension ViewController: ProductCellDelegate {
         // Start the process to purchase the product
         iap.buyProduct(product) { notification in
             switch notification {
-            case .purchaseAbortPurchaseInProgress: print("Purchase aborted because another purchase is being processed")
-            case .purchaseCompleted(productId: let pid): print("Purchase completed for product \(pid)")
-            case .purchaseCancelled(productId: let pid): print("Purchase cancelled for product \(pid)")
-            case .purchaseFailed(productId: let pid): print("Purchase failed for product \(pid)")
+            
+            case .purchaseAbortPurchaseInProgress: 
+                print("Purchase aborted (another purchase is being processed)")
+            
+            case .purchaseCompleted(productId: let pid): 
+                print("Purchase completed for product \(pid)")
+            
+            case .purchaseCancelled(productId: let pid): 
+                print("Purchase cancelled for product \(pid)")
+            
+            case .purchaseFailed(productId: let pid): 
+                print("Purchase failed for product \(pid)")
+            
             default: break
             }
             
@@ -350,9 +379,32 @@ extension ViewController: ProductCellDelegate {
 }
 ```
 
-# IAPHelper
-
 # How to Validate Receipts Locally
+
+## What actually is a receipt?
+
+The receipt issued to an app by the App Store contains a complete record of a user's in-app purchase history for that app.  
+It is a single **encrypted** file which is stored on the device in the app's **main bundle**. The location of the receipt is given by the 
+URL **`Bundle.main.appStoreReceiptURL`**. 
+
+A new receipt is issued automatically by the App Store each time:
+
+* An in-app purchase succeeds
+* The app is re-installed
+* An app update happens
+* Previous in-app purchases are restored
+* The app requests localized product info from the app store
+
+When a new receipt is pushed to our app from the App Store we receive a **notification** via the **`requestDidFinish(_:)`** **`SKRequestDelegate`** method. 
+
+## Structure of a Receipt
+An app store receipt has the following structure:
+
+<p align="center">![](./readme-assets/iap13.jpg)</p>
+
+xxx
+
+# IAPHelper
 
 # IAPTestingDemo Example
 

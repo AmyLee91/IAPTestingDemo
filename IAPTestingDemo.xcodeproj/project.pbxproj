@@ -53,6 +53,9 @@
 		689F742524B7404B0093F12C /* RestoreCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 689F742424B7404B0093F12C /* RestoreCell.swift */; };
 		689F742924B745D10093F12C /* IAPProductInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 689F742824B745D10093F12C /* IAPProductInfo.swift */; };
 		68A40E2B24E4030D001C8B72 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 68A40E2A24E4030D001C8B72 /* StoreKit.framework */; };
+		68C3943F25474D0300E33C21 /* wwdc-2020.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 68C3943E25474D0300E33C21 /* wwdc-2020.jpg */; };
+		68DB3B86254869BD001ABB95 /* iap13.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 68DB3B85254869BD001ABB95 /* iap13.jpg */; };
+		68DB3B8A25486A99001ABB95 /* iap13sm.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 68DB3B8925486A99001ABB95 /* iap13sm.jpg */; };
 		68E05E0F24A262C200B6728D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68E05E0E24A262C200B6728D /* AppDelegate.swift */; };
 		68E05E1124A262C200B6728D /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68E05E1024A262C200B6728D /* SceneDelegate.swift */; };
 		68E05E1324A262C200B6728D /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68E05E1224A262C200B6728D /* ViewController.swift */; };
@@ -247,6 +250,7 @@
 		68A4653824A429DB002142D4 /* IAPReceipt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IAPReceipt.swift; sourceTree = "<group>"; };
 		68A4653A24A42A7F002142D4 /* IAPOpenSSL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IAPOpenSSL.swift; sourceTree = "<group>"; };
 		68AA839C24AA4165003A27AE /* IAPReceiptProductInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IAPReceiptProductInfo.swift; sourceTree = "<group>"; };
+		68C3943E25474D0300E33C21 /* wwdc-2020.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "wwdc-2020.jpg"; sourceTree = "<group>"; };
 		68D5B24224B2ABB00092F570 /* IAPHelper+SKPaymentTransactionObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "IAPHelper+SKPaymentTransactionObserver.swift"; sourceTree = "<group>"; };
 		68D5B24424B2AD5A0092F570 /* IAPHelper+SKProductsRequestDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "IAPHelper+SKProductsRequestDelegate.swift"; sourceTree = "<group>"; };
 		68D5B24624B2AE630092F570 /* IAPHelper+AppStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "IAPHelper+AppStore.swift"; sourceTree = "<group>"; };
@@ -255,6 +259,8 @@
 		68D5B24E24B2B02E0092F570 /* IAPReceipt+ValidateSigning.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "IAPReceipt+ValidateSigning.swift"; sourceTree = "<group>"; };
 		68D5B25024B2B0630092F570 /* IAPReceipt+Read.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "IAPReceipt+Read.swift"; sourceTree = "<group>"; };
 		68D5B25224B2B0A40092F570 /* IAPReceipt+Validate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "IAPReceipt+Validate.swift"; sourceTree = "<group>"; };
+		68DB3B85254869BD001ABB95 /* iap13.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = iap13.jpg; sourceTree = "<group>"; };
+		68DB3B8925486A99001ABB95 /* iap13sm.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = iap13sm.jpg; sourceTree = "<group>"; };
 		68E05E0B24A262C200B6728D /* IAPTestingDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = IAPTestingDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		68E05E0E24A262C200B6728D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		68E05E1024A262C200B6728D /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -476,6 +482,9 @@
 				68427B91253092B800A7C328 /* iap10.jpg */,
 				68427B9B253092B800A7C328 /* iap11.jpg */,
 				68427B92253092B800A7C328 /* iap12.jpg */,
+				68DB3B85254869BD001ABB95 /* iap13.jpg */,
+				68DB3B8925486A99001ABB95 /* iap13sm.jpg */,
+				68C3943E25474D0300E33C21 /* wwdc-2020.jpg */,
 			);
 			path = "readme-assets";
 			sourceTree = "<group>";
@@ -905,11 +914,14 @@
 			files = (
 				68E05E1B24A262C300B6728D /* LaunchScreen.storyboard in Resources */,
 				68427B9F253092B800A7C328 /* iap6.jpg in Resources */,
+				68DB3B8A25486A99001ABB95 /* iap13sm.jpg in Resources */,
 				688774F024A3BF36006840A8 /* ConfigurationRelease.storekit in Resources */,
 				68427BA4253092B800A7C328 /* iap3.jpg in Resources */,
 				688774F224A3C090006840A8 /* AppleIncRootCertificate.cer in Resources */,
 				68427BA0253092B800A7C328 /* iap7.jpg in Resources */,
 				68427B9C253092B800A7C328 /* iap10.jpg in Resources */,
+				68C3943F25474D0300E33C21 /* wwdc-2020.jpg in Resources */,
+				68DB3B86254869BD001ABB95 /* iap13.jpg in Resources */,
 				68427BA6253092B800A7C328 /* iap11.jpg in Resources */,
 				68427BA1253092B800A7C328 /* iap4.jpg in Resources */,
 				688774EA24A3A26D006840A8 /* Configuration.storekit in Resources */,

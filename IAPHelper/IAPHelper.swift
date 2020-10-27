@@ -93,7 +93,7 @@ public class IAPHelper: NSObject  {
         // If the data can't be read then it isn't a critcial error as we can request the info from the App Store
         // as required.
         configuredProductIdentifiers = nil
-        let result = IAPConfiguration.read(filename: IAPConstants.File(), ext: IAPConstants.FileExt())
+        let result = IAPConfiguration.read(filename: IAPConstants.ConfigFile(), ext: IAPConstants.ConfigFileExt())
         switch result {
         case .failure(_): sendNotification(notification: .configurationLoadFailed)
         case .success(let configuration):
