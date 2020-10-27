@@ -2,9 +2,7 @@
 
 Implementing and testing In-App Purchases in Xcode 12 and iOS 14.
 
-<p align="center">
-    <img src="./readme-assets/iap13sm.jpg"/>
-</p>
+<p align="center"><img src="./readme-assets/iap13sm.jpg"/></p>
 
 # Disclaimer. 
 The source code presented here is for educational purposes. You may freely reuse and amend this code for use in your own apps. 
@@ -115,7 +113,7 @@ sandbox account for each set of product purchases.
 # Basic Steps
 The basic steps you need to take to support in-app purchases (IAP hereafter) in your app are as follows:
 
-<p align="center">![](./readme-assets/iap1.jpg)</p>
+<p align="center"><img src="./readme-assets/iap1.jpg"/></p>
 
 * **Create an IAP helper class**\
 Create a class or struct that will contain all your IAP-related code. For the sake of example we'll refer to this as the **`IAPHelper`** code
@@ -149,7 +147,8 @@ the purchase progresses. Note that the App Store presents the user with all the 
 The code discussed in [Basic Example](#Basic-Example) below provides a practical example of the above points (receipt validation is covered later).
 
 # Xcode 12 Improvements
-<p align="center">![](./readme-assets/wwdc-2020.jpg)</p>
+<p align="center"><img src="./readme-assets/wwdc-2020.jpg"/></p>
+
 Immediately before Apple's WWDC 2020 keynote event I tweeted that I was hoping for something "magical and unexpected". I followed this up with
 "How about an update to StoreKit that makes it really easy to do on-device validation of App Store receipts". Well, I didn't get my wish with regard to
 receipt validation, but I certainly got something magical and unexpected related to StoreKit and in-app purchases!
@@ -159,7 +158,7 @@ anything up in App Store Connect. You can define your products locally in a **St
 transactions, issue refunds, and a whole lot more. There's also a new **`StoreKitTest`** framework that enables you to do automated testing of IAPs.
 The [Basic Example](#Basic-Example) project below includes details on how to create and use a StoreKit configuration file.
 
-<p align="center">![](./readme-assets/iap2.jpg)</p>
+<p align="center"><img src="./readme-assets/iap2.jpg"/></p>
 
 These new features are a huge leap forward in terms of making testing substantially easier, quicker to setup, more flexible and less frustrating!
 
@@ -174,7 +173,7 @@ purchases in an iOS app.
 
 You can find the code for **IAPTestingMinimal** [on GitHub](https://github.com/russell-archer/IAPTestingMinimal).
 
-<p align="center">![](./readme-assets/iap3.jpg)</p>
+<p align="center"><img src="./readme-assets/iap3.jpg"/></p>
 
 Note that this example project is missing some features a real-world app would be expected to support:
 
@@ -197,22 +196,22 @@ For this example we'll assume you're going to create a demo app from scratch usi
 The first thing you need to do after creating your new app is to add the StoreKit framework. 
 Select your app **Target** and the **General** tab, then add the **StoreKit** framework:
 
-<p align="center">![](./readme-assets/iap12.jpg)</p>
+<p align="center"><img src="./readme-assets/iap12.jpg"/></p>
 
 ## Create the StoreKit configuration file
 Now create a StoreKit configuration file. Select **File > New > File** and choose the **StoreKit Configuration File** template:
 
-<p align="center">![](./readme-assets/iap4.jpg)</p>
+<p align="center"><img src="./readme-assets/iap4.jpg"/></p>
 
 Choose a location in your project to save the file.
 
 Open the StoreKit configuration file and click **+** to add an in-app purchase. For this example select the non-consumable option:
 
-<p align="center">![](./readme-assets/iap5.jpg)</p>
+<p align="center"><img src="./readme-assets/iap5.jpg"/></p>
 
 You can now define your products in the StoreKit configuration file:
 
-<p align="center">![](./readme-assets/iap6.jpg)</p>
+<p align="center"><img src="./readme-assets/iap6.jpg"/></p>
 
 In this example I set the following fields:
 
@@ -228,7 +227,7 @@ A hard-coded price for the product. In production your app will request localize
 
 By default, the first localization is for the US store. However, you can add as many localizations as required:
 
-<p align="center">![](./readme-assets/iap2.jpg)</p>
+<p align="center"><img src="./readme-assets/iap2.jpg"/></p>
 
 Note that **none of the data defined in the .storekit file is ever uploaded to App Store Connect**. It's only used when testing in-app purchases locally in Xcode.
 
@@ -236,13 +235,13 @@ Note that **none of the data defined in the .storekit file is ever uploaded to A
 It's easy to forget to do this! And you can successfully test in-app purchases *without* adding the IAP capability. However, you will receive the following error 
 when attempting to archive a project in preparation for uploading it to the App Store:
 
-<p align="center">![](./readme-assets/iap10.jpg)</p>
+<p align="center"><img src="./readme-assets/iap10.jpg"/></p>
 
 Add the in-app purchase capability by selecting the app target and **Signing & Capabilities**, then click **+** **Capability** to add a capability:
 
-<p align="center">![](./readme-assets/iap9.jpg)</p>
+<p align="center"><img src="./readme-assets/iap9.jpg"/></p>
 
-<p align="center">![](./readme-assets/iap11.jpg)</p>
+<p align="center"><img src="./readme-assets/iap11.jpg"/></p>
 
 ## Enable StoreKit Testing via the Project Scheme
 You now need to enable StoreKit testing in Xcode (it's disabled by default).<br/>
@@ -250,7 +249,7 @@ You now need to enable StoreKit testing in Xcode (it's disabled by default).<br/
 Select **Product > Scheme > Edit Scheme**.
 Now select **Run** and the **Options** tab. You can now select your configuration file from the **StoreKit Configuration** list:
 
-<p align="center">![](./readme-assets/iap7.jpg)</p>
+<p align="center"><img src="./readme-assets/iap7.jpg"/></p>
 
 Should you wish to disable StoreKit testing then repeat the above steps and remove the StoreKit configuration file from the **StoreKit Configuration** list.
 
@@ -402,7 +401,7 @@ When a new receipt is pushed to our app from the App Store we receive a **notifi
 ## Structure of a Receipt
 An app store receipt has the following structure:
 
-<p align="center">![](./readme-assets/iap13.jpg)</p>
+<p align="center"><img src="./readme-assets/iap13.jpg"/></p>
 
 xxx
 
