@@ -7,7 +7,7 @@
 
 import UIKit
 
-/// Holds localized product data
+/// Holds localized product data returned by teh App Store
 internal struct IAPProductInfo {
     var id: String
     var imageName: String

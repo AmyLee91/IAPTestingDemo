@@ -5,8 +5,8 @@
 //  Created by Russell Archer on 06/07/2020.
 //
 //  Swift wrapper for OpenSSL functions.
-//  This class contains modified portions of code created by Bill Morefield copyright (c) 2018 Razeware LLC.
-//  See https://www.raywenderlich.com/9257-in-app-purchases-receipt-validation-tutorial
+//  Contains modified portions of code created by Bill Morefield copyright (c) 2018 Razeware LLC.
+//  
 
 import Foundation
 
@@ -15,17 +15,16 @@ extension IAPReceipt {
     /// Check the receipt has been correctly signed with a valid Apple X509 certificate.
     /// - Returns: Returns true if correctly signed, false otherwise.
     public func validateSigning() -> Bool {
+        // Do we have cached PKCS7 data
         guard receiptData != nil else {
-            mostRecentError = .noData
-            delegate?.requestSendNotification(notification: .receiptValidateSigningFailed)
+            IAPLog.event(.receiptValidateSigningFailed)
             return false
         }
         
         guard let rootCertUrl = Bundle.main.url(forResource: IAPConstants.Certificate(), withExtension: IAPConstants.CertificateExt()),
               let rootCertData = try? Data(contentsOf: rootCertUrl) else {
             
-            mostRecentError = .invalidAppleRootCertificate
-            delegate?.requestSendNotification(notification: .receiptValidateSigningFailed)
+            IAPLog.event(.receiptValidateSigningFailed)
             return false
         }
         
@@ -50,15 +49,12 @@ extension IAPReceipt {
         #endif
         
         guard verificationResult == 1  else {
-            mostRecentError = .failedAppleSignature
-            delegate?.requestSendNotification(notification: .receiptValidateSigningFailed)
+            IAPLog.event(.receiptValidateSigningFailed)
             return false
         }
         
         isValidSignature = true
-        mostRecentError = .noError
-        delegate?.requestSendNotification(notification: .receiptValidateSigningCompleted)
-
+        IAPLog.event(.receiptValidateSigningFailed)
         return true
     }
 }

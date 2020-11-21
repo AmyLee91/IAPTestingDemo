@@ -48,7 +48,7 @@ public struct IAPPersistence: IAPPersistenceProtocol {
             let purchased = UserDefaults.standard.bool(forKey: productId)
             if purchased {
                 purchasedProductIds.insert(productId)
-                IAPLog.event(message: "Loaded purchased product: \(productId)")
+                IAPLog.event("Loaded purchased product: \(productId)")
             }
         }
         

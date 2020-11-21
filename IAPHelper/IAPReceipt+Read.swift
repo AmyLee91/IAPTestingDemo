@@ -5,8 +5,8 @@
 //  Created by Russell Archer on 06/07/2020.
 //
 //  Swift wrapper for OpenSSL functions.
-//  This class contains modified portions of code created by Bill Morefield copyright (c) 2018 Razeware LLC.
-//  See https://www.raywenderlich.com/9257-in-app-purchases-receipt-validation-tutorial
+//  Contains modified portions of code created by Bill Morefield copyright (c) 2018 Razeware LLC.
+//  
 
 import Foundation
 
@@ -27,51 +27,46 @@ extension IAPReceipt {
         
         ASN1_get_object(&pointer, &length, &type, &xclass, pointer!.distance(to: end))
         guard type == V_ASN1_SET else {
-            mostRecentError = .unexpectedASN1Type
-            delegate?.requestSendNotification(notification: .receiptReadFailed)
+            IAPLog.event(.receiptReadFailed)
             return false
         }
         
         while pointer! < end {
             ASN1_get_object(&pointer, &length, &type, &xclass, pointer!.distance(to: end))
             guard type == V_ASN1_SEQUENCE else {
-                mostRecentError = .unexpectedASN1Type
-                delegate?.requestSendNotification(notification: .receiptReadFailed)
+                IAPLog.event(.receiptReadFailed)
                 return false
             }
             
             guard let attributeType = IAPOpenSSL.asn1Int(p: &pointer, expectedLength: length) else {
-                mostRecentError = .unexpectedASN1Type
-                delegate?.requestSendNotification(notification: .receiptReadFailed)
+                IAPLog.event(.receiptReadFailed)
                 return false
             }
             
             guard let _ = IAPOpenSSL.asn1Int(p: &pointer, expectedLength: pointer!.distance(to: end)) else {
-                mostRecentError = .unexpectedASN1Type
-                delegate?.requestSendNotification(notification: .receiptReadFailed)
+                IAPLog.event(.receiptReadFailed)
                 return false
             }
             
             ASN1_get_object(&pointer, &length, &type, &xclass, pointer!.distance(to: end))
             guard type == V_ASN1_OCTET_STRING else {
-                mostRecentError = .unexpectedASN1Type
-                delegate?.requestSendNotification(notification: .receiptReadFailed)
+                IAPLog.event(.receiptReadFailed)
                 return false
             }
             
             var p = pointer
             switch IAPOpenSSLAttributeType(rawValue: attributeType) {
                     
-                case .BudleVersion: bundleVersionString         = IAPOpenSSL.asn1String(p: &p, expectedLength: length)
-                case .ReceiptCreationDate: receiptCreationDate  = IAPOpenSSL.asn1Date(p: &p, expectedLength: length)
-                case .OriginalAppVersion: originalAppVersion    = IAPOpenSSL.asn1String(p: &p, expectedLength: length)
-                case .ExpirationDate: expirationDate            = IAPOpenSSL.asn1Date(p: &p, expectedLength: length)
-                case .OpaqueValue: opaqueData                   = IAPOpenSSL.asn1Data(p: p!, expectedLength: length)
-                case .ComputedGuid: hashData                    = IAPOpenSSL.asn1Data(p: p!, expectedLength: length)
+                case .BudleVersion: bundleVersionString         = IAPOpenSSL.asn1String(    p: &p, expectedLength: length)
+                case .ReceiptCreationDate: receiptCreationDate  = IAPOpenSSL.asn1Date(      p: &p, expectedLength: length)
+                case .OriginalAppVersion: originalAppVersion    = IAPOpenSSL.asn1String(    p: &p, expectedLength: length)
+                case .ExpirationDate: expirationDate            = IAPOpenSSL.asn1Date(      p: &p, expectedLength: length)
+                case .OpaqueValue: opaqueData                   = IAPOpenSSL.asn1Data(      p: p!, expectedLength: length)
+                case .ComputedGuid: hashData                    = IAPOpenSSL.asn1Data(      p: p!, expectedLength: length)
                     
                 case .BundleIdentifier:
-                    bundleIdString                              = IAPOpenSSL.asn1String(p: &pointer, expectedLength: length)
-                    bundleIdData                                = IAPOpenSSL.asn1Data(p: pointer!, expectedLength: length)
+                    bundleIdString                              = IAPOpenSSL.asn1String(    p: &pointer, expectedLength: length)
+                    bundleIdData                                = IAPOpenSSL.asn1Data(      p: pointer!, expectedLength: length)
                     
                 case .IAPReceipt:
                     var iapStartPtr = pointer
@@ -89,8 +84,7 @@ extension IAPReceipt {
         }
         
         hasBeenRead = true
-        mostRecentError = .noError
-        delegate?.requestSendNotification(notification: .receiptReadCompleted)
+        IAPLog.event(.receiptReadCompleted)
         
         return true
     }

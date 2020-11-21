@@ -75,6 +75,13 @@
             ReferencedContainer = "container:IAPTestingDemo.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
+      <EnvironmentVariables>
+         <EnvironmentVariable
+            key = "OS_ACTIVITY_MODE"
+            value = "enable"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+      </EnvironmentVariables>
       <StoreKitConfigurationFileReference
          identifier = "../../IAPTestingDemo/Support/Configuration.storekit">
       </StoreKitConfigurationFileReference>

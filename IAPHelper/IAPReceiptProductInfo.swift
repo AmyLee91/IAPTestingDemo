@@ -5,8 +5,8 @@
 //  Created by Russell Archer on 29/06/2020.
 //
 //  Swift wrapper for OpenSSL functions.
-//  This class contains modified portions of code created by Bill Morefield copyright (c) 2018 Razeware LLC.
-//  See https://www.raywenderlich.com/9257-in-app-purchases-receipt-validation-tutorial
+//  Contains modified portions of code created by Bill Morefield copyright (c) 2018 Razeware LLC.
+//  
 
 import Foundation
 
@@ -42,15 +42,15 @@ struct IAPReceiptProductInfo {
 
             var p = pointer
             switch IAPReceiptAttributeType(rawValue: attributeType) {
-                case .Quantity: quantity                                            = IAPOpenSSL.asn1Int(p: &p, expectedLength: length)
+                case .Quantity: quantity                                            = IAPOpenSSL.asn1Int(   p: &p, expectedLength: length)
                 case .ProductIdentifier: productIdentifier                          = IAPOpenSSL.asn1String(p: &p, expectedLength: length)
                 case .TransactionIdentifer: transactionIdentifer                    = IAPOpenSSL.asn1String(p: &p, expectedLength: length)
                 case .OriginalTransactionIdentifier: originalTransactionIdentifier  = IAPOpenSSL.asn1String(p: &p, expectedLength: length)
-                case .PurchaseDate: purchaseDate                                    = IAPOpenSSL.asn1Date(p: &p, expectedLength: length)
-                case .OriginalPurchaseDate: originalPurchaseDate                    = IAPOpenSSL.asn1Date(p: &p, expectedLength: length)
-                case .SubscriptionExpirationDate: subscriptionExpirationDate        = IAPOpenSSL.asn1Date(p: &p, expectedLength: length)
-                case .SubscriptionCancellationDate: subscriptionCancellationDate    = IAPOpenSSL.asn1Date(p: &p, expectedLength: length)
-                case .WebOrderLineId: webOrderLineId                                = IAPOpenSSL.asn1Int(p: &p, expectedLength: length)
+                case .PurchaseDate: purchaseDate                                    = IAPOpenSSL.asn1Date(  p: &p, expectedLength: length)
+                case .OriginalPurchaseDate: originalPurchaseDate                    = IAPOpenSSL.asn1Date(  p: &p, expectedLength: length)
+                case .SubscriptionExpirationDate: subscriptionExpirationDate        = IAPOpenSSL.asn1Date(  p: &p, expectedLength: length)
+                case .SubscriptionCancellationDate: subscriptionCancellationDate    = IAPOpenSSL.asn1Date(  p: &p, expectedLength: length)
+                case .WebOrderLineId: webOrderLineId                                = IAPOpenSSL.asn1Int(   p: &p, expectedLength: length)
                 default: break
             }
             

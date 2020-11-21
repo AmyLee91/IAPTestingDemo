@@ -1,12 +1,11 @@
 //
 //  IAPHelper.h
-//  IAPHelper
+//  IAPHelper Umbrella header.
 //
 //  Created by Russell Archer on 30/07/2020.
 //
 
-#import <Foundation/Foundation.h>
-
+#import "Foundation/Foundation.h"
 #import "aes.h"
 #import "asn1.h"
 #import "asn1_locl.h"
@@ -113,3 +112,4 @@
 #import "x509err.h"
 #import "x509v3.h"
 #import "x509v3err.h"
+

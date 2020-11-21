@@ -5,61 +5,69 @@
 //  Created by Russell Archer on 06/07/2020.
 //
 //  Swift wrapper for OpenSSL functions.
-//  This class contains modified portions of code created by Bill Morefield copyright (c) 2018 Razeware LLC.
-//  See https://www.raywenderlich.com/9257-in-app-purchases-receipt-validation-tutorial
+//  
 
 import Foundation
 
 extension IAPReceipt {
     
-    /// Load the receipt data from the main bundle and cache it. Basic validation of the receipt is done:
+    /// Load the receipt data from the main bundle and cache it. Basic validation of the receipt is done.
     /// We check its format, if it has a signature and if contains data. After loading the receipt you
     /// should call validateSigning() to check the receipt has been correctly signed, then read its IAP
     /// data using read(). You can then validate() the receipt.
     /// - Returns: Returns true if loaded correctly, false otherwise.
     public func load() -> Bool {
+        
+        // Get the URL of the receipt file
         guard let receiptUrl = Bundle.main.appStoreReceiptURL else {
-            mostRecentError = .missing
-            delegate?.requestSendNotification(notification: .receiptMissing)
+            IAPLog.event(.receiptLoadFailed)
             return false
         }
         
+        // Read the encrypted receipt container file as Data
         guard let data = try? Data(contentsOf: receiptUrl) else {
-            mostRecentError = .badUrl
-            delegate?.requestSendNotification(notification: .receiptLoadFailed)
+            IAPLog.event(.receiptLoadFailed)
             return false
         }
         
-        let receiptBIO = BIO_new(BIO_s_mem())
-        let receiptBytes: [UInt8] = .init(data)
-        BIO_write(receiptBIO, receiptBytes, Int32(data.count))
+        // Using OpenSSL create a buffer to read the PKCS #7 container into
+        let receiptBIO = BIO_new(BIO_s_mem())  // The buffer we will write into
+        let receiptBytes: [UInt8] = .init(data)  // The encrytped data as an array of bytes
+        BIO_write(receiptBIO, receiptBytes, Int32(data.count))  // Write the data to the receiptBIO buffer
+        let receiptPKCS7 = d2i_PKCS7_bio(receiptBIO, nil) // Now convert the buffer into the required PKCS7 struct
+        BIO_free(receiptBIO)  // Free the buffer
 
-        let receiptPKCS7 = d2i_PKCS7_bio(receiptBIO, nil)
-        BIO_free(receiptBIO)
-
+        // Check the PKCS7 container exists
         guard receiptPKCS7 != nil else {
-            mostRecentError = .badFormat
-            delegate?.requestSendNotification(notification: .receiptLoadFailed)
+            IAPLog.event(.receiptLoadFailed)
             return false
         }
         
-        guard OBJ_obj2nid(receiptPKCS7!.pointee.type) == NID_pkcs7_signed else {
-            mostRecentError = .badPKCS7Signature
-            delegate?.requestSendNotification(notification: .receiptLoadFailed)
+        // Check the PKCS7 container has a signature
+        guard pkcs7IsSigned(pkcs7: receiptPKCS7!) else {
+            IAPLog.event(.receiptLoadFailed)
             return false
         }
         
-        let receiptContents = receiptPKCS7!.pointee.d.sign.pointee.contents
-        guard OBJ_obj2nid(receiptContents?.pointee.type) == NID_pkcs7_data else {
-            mostRecentError = .badPKCS7Type
-            delegate?.requestSendNotification(notification: .receiptLoadFailed)
+        // Check the PKCS7 container is of the correct data type
+        guard pkcs7IsData(pkcs7: receiptPKCS7!) else {
+            IAPLog.event(.receiptLoadFailed)
             return false
         }
         
-        receiptData = receiptPKCS7
-        mostRecentError = .noError
-        delegate?.requestSendNotification(notification: .receiptLoadCompleted)
+        receiptData = receiptPKCS7  // Cache the PKCS7 data
+        IAPLog.event(.receiptLoadCompleted)
 
         return true
+    }
+    
+    func pkcs7IsSigned(pkcs7: UnsafeMutablePointer<PKCS7>) -> Bool {
+        // Convert the object in the PKCS7 struct to an Int32 and compare it to the OpenSSL NID constant
+        OBJ_obj2nid(pkcs7.pointee.type) == NID_pkcs7_signed
+    }
+    
+    func pkcs7IsData(pkcs7: UnsafeMutablePointer<PKCS7>) -> Bool {
+        // Convert the object in the PKCS7 struct to an Int32 and compare it to the OpenSSL NID constant
+        OBJ_obj2nid(pkcs7.pointee.d.sign.pointee.contents.pointee.type) == NID_pkcs7_data
     }
 }

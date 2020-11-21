@@ -43,12 +43,14 @@ extension IAPHelper: SKPaymentTransactionObserver {
             transaction.original?.payment.productIdentifier :
             transaction.payment.productIdentifier else {
             
+            let upid = "Unknown ProductID"
             // The app store says the purchase successfully completed. However, we can't access
             // the product id of the product that was purchased. We'll signal that the purchase/restore
             // was successful and try and resolve the issue next time the receipt is refreshed
-            sendNotification(notification: restore ? .purchaseRestored(productId: "??") : .purchaseCompleted(productId: "??"))
-            if restore { DispatchQueue.main.async { self.restorePurchasesCompletion?(.purchaseRestored(productId: "??")) }}
-            else { DispatchQueue.main.async { self.purchaseCompletion?(.purchaseCompleted(productId: "??")) }}
+            IAPLog.event(restore ? .purchaseRestored(productId: upid) : .purchaseCompleted(productId: upid))
+
+            if restore { DispatchQueue.main.async { self.restorePurchasesCompletion?(.purchaseRestored(productId: upid)) }}
+            else { DispatchQueue.main.async { self.purchaseCompletion?(.purchaseCompleted(productId: upid)) }}
             
             return
         }
@@ -60,8 +62,8 @@ extension IAPHelper: SKPaymentTransactionObserver {
         guard !purchasedProductIdentifiers.contains(transaction.payment.productIdentifier) else { return }
         purchasedProductIdentifiers.insert(transaction.payment.productIdentifier)
 
-        // Send a local notification about the purchase
-        sendNotification(notification: restore ? .purchaseRestored(productId: identifier) : .purchaseCompleted(productId: identifier))
+        // Tell the request originator about the purchase
+        IAPLog.event(restore ? .purchaseRestored(productId: identifier) : .purchaseCompleted(productId: identifier))
         if restore { DispatchQueue.main.async { self.restorePurchasesCompletion?(.purchaseRestored(productId: identifier)) }}
         else { DispatchQueue.main.async { self.purchaseCompletion?(.purchaseCompleted(productId: identifier)) }}
 
@@ -84,18 +86,18 @@ extension IAPHelper: SKPaymentTransactionObserver {
         if let e = transaction.error as NSError? {
 
             if e.code == SKError.paymentCancelled.rawValue {
-                sendNotification(notification: .purchaseCancelled(productId: identifier))
+                IAPLog.event(.purchaseCancelled(productId: identifier))
                 DispatchQueue.main.async { self.purchaseCompletion?(.purchaseCancelled(productId: identifier)) }
 
             } else {
 
-                sendNotification(notification: .purchaseFailed(productId: identifier))
+                IAPLog.event(.purchaseFailed(productId: identifier))
                 DispatchQueue.main.async { self.purchaseCompletion?(.purchaseFailed(productId: identifier)) }
             }
 
         } else {
 
-            sendNotification(notification: .purchaseCancelled(productId: identifier))
+            IAPLog.event(.purchaseCancelled(productId: identifier))
             DispatchQueue.main.async { self.purchaseCompletion?(.purchaseCancelled(productId: identifier)) }
         }
     }
@@ -107,15 +109,17 @@ extension IAPHelper: SKPaymentTransactionObserver {
         // before the purchase is approved or declined.
 
         isPurchasing = false
-        sendNotification(notification: .purchaseDeferred(productId: transaction.payment.productIdentifier))
+        IAPLog.event(.purchaseDeferred(productId: transaction.payment.productIdentifier))
+        DispatchQueue.main.async { self.purchaseCompletion?(.purchaseDeferred(productId: transaction.payment.productIdentifier)) }
 
         // Do NOT call SKPaymentQueue.default().finishTransaction() for .deferred status
     }
 
     private func purchaseInProgress(transaction: SKPaymentTransaction) {
         // The product purchase transaction has started. Do not allow access to the product yet
-        sendNotification(notification: .purchaseInProgress(productId: transaction.payment.productIdentifier))
-
+        IAPLog.event(.purchaseInProgress(productId: transaction.payment.productIdentifier))
+        DispatchQueue.main.async { self.purchaseCompletion?(.purchaseInProgress(productId: transaction.payment.productIdentifier)) }
+        
         // Do NOT call SKPaymentQueue.default().finishTransaction() for .purchasing status
     }
     
@@ -126,7 +130,10 @@ extension IAPHelper: SKPaymentTransactionObserver {
     /// - Parameter queue: Payment queue.
     @available(iOS 13.0, *)
     public func paymentQueueDidChangeStorefront(_ queue: SKPaymentQueue) {
-        sendNotification(notification: .appStoreChanged)
+        IAPLog.event(.appStoreChanged)
+        
+        // TODO: We need an appStoreCompletion handler for this type of general app store notification
+        // that's not tied to specific requests like product info, purchase product, etc.
     }
     
     /// Sent when entitlements for a user have changed and access to the specified IAPs has been revoked.
@@ -136,8 +143,11 @@ extension IAPHelper: SKPaymentTransactionObserver {
     @available(iOS 14.0, *)
     public func paymentQueue(_ queue: SKPaymentQueue, didRevokeEntitlementsForProductIdentifiers productIdentifiers: [String]) {
         productIdentifiers.forEach { productId in
-            sendNotification(notification: .appStoreRevokedEntitlements(productId: productId))
+            IAPLog.event(.appStoreRevokedEntitlements(productId: productId))
         }
+        
+        // TODO: We need an appStoreCompletion handler for this type of general app store notification
+        // that's not tied to specific requests like product info, purchase product, etc.
     }
     
     /// Tells the observer that a user initiated an in-app purchase from the App Store, rather than via the app itself.

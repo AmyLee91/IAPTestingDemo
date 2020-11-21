@@ -11,11 +11,18 @@ import IAPHelper
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
+    public var iapHelper: IAPHelper!
+    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        let _ = IAPHelper.shared
+        // Make sure the IAPHelper is initialized early in the app's lifecycle to ensure we don't miss any App Store notifications
+        iapHelper = IAPHelper.shared
         return true
     }
 
+    func applicationWillTerminate(_ application: UIApplication) {
+        iapHelper.removeFromPaymentQueue()
+    }
+    
     // MARK: UISceneSession Lifecycle
 
     func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {

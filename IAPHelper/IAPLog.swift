@@ -8,7 +8,6 @@
 import Foundation
 import os.log
 
-
 /// We use Apple's unified logging system to log errors, notifications and general messages.
 /// This system works on simulators and real devices for both debug and release builds.
 /// You can view the logs in the Console app by selecting the test device in the left console pane.
@@ -28,17 +27,10 @@ import os.log
 public struct IAPLog {
     private static let iapLog = OSLog(subsystem: Bundle.main.bundleIdentifier!, category: "IAP")
     
-    /// Logs an IAPReceiptError. Note that the text (shortDescription) of the log entry will be
-    /// publically available in the Console app.
-    /// - Parameter error: An IAPReceiptError describing the error.
-    public static func event(error: IAPReceiptError) {
-        os_log("Receipt error: %{public}s", log: iapLog, type: .error, error.shortDescription())
-    }
-    
     /// Logs an IAPNotification. Note that the text (shortDescription) of the log entry will be
     /// publically available in the Console app.
     /// - Parameter event: An IAPNotification.
-    public static func event(event: IAPNotification) {
+    public static func event(_ event: IAPNotification) {
         os_log("Notification: (%{public}s) %{public}s", log: iapLog, type: .default, event.key(), event.shortDescription())
     }
     
@@ -47,13 +39,13 @@ public struct IAPLog {
     /// - Parameters:
     ///   - event:      An IAPNotification.
     ///   - productId:  A ProductId associated with the event.
-    public static func event(event: IAPNotification, productId: ProductId) {
+    public static func event(_ event: IAPNotification, productId: ProductId) {
         os_log("Notification: (%{public}s) %{public}s for product %{public}s", log: iapLog, type: .default, event.key(), event.shortDescription(), productId)
     }
     
     /// Logs a message.
     /// - Parameter message: The message to log.
-    public static func event(message: String) {
+    public static func event(_ message: String) {
         os_log("Message: %s", log: iapLog, type: .info, message)
     }
 }

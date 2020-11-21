@@ -14,32 +14,28 @@ public typealias ProductId = String
 /// IAPHelper coordinates in-app purchases. Make sure to initiate IAPHelper early in the app's lifecycle so that
 /// notifications from the App Store are not missed. For example, reference `IAPHelper.shared` in
 /// `application(_:didFinishLaunchingWithOptions:)` in AppDelegate.
-///
 public class IAPHelper: NSObject  {
-    
+
     // MARK:- Public Properties
-    
+
     /// Singleton access. Use IAPHelper.shared to access all IAPHelper properties and methods.
     public static let shared: IAPHelper = IAPHelper()
-    
+
     /// True if a purchase is in progress (excluding a deferred).
     public var isPurchasing = false
-    
-    /// True if we've added ourselves to the SKPaymentQueue.
-    public var addedToPaymentQueue = false
 
     /// List of products retrieved from the App Store and available for purchase.
     public var products: [SKProduct]?
-    
+
     /// List of ProductIds that are read from the .storekit configuration file.
     public var configuredProductIdentifiers: Set<ProductId>?
-    
+
     /// True if we have a list of ProductIds read from the .storekit configuration file. See configuredProductIdentifiers.
     public var haveConfiguredProductIdentifiers: Bool {
         guard configuredProductIdentifiers != nil else { return false }
         return configuredProductIdentifiers!.count > 0 ? true : false
     }
-    
+
     /// This property is set automatically when IAPHelper is initialized and contains the set of
     /// all products purchased by the user. The collection is not persisted but is rebuilt from the
     /// product identifiers of purchased products stored individually in user defaults (see IAPPersistence).
@@ -47,120 +43,142 @@ public class IAPHelper: NSObject  {
     /// in the event that the app receipt is missing and we can't contact the App Store to refresh it.
     /// This set will be empty if the user hasn't yet purchased any iap products.
     public var purchasedProductIdentifiers = Set<ProductId>()
-    
+
     /// True if app store product info has been retrieved via requestProducts().
     public var isAppStoreProductInfoAvailable: Bool {
         guard products != nil else { return false }
         guard products!.count > 0 else { return false }
         return true
     }
-    
+
     // MARK:- Internal Properties
 
-    internal var receipt:                       IAPReceipt!                          // Represents the app store receipt located in the main bundle
-    internal var productsRequest:               SKProductsRequest?                   // Used to request product info async from the App Store
-    internal var receiptRequest:                SKRequest?                           // Used to request a receipt refresh async from the App Store
-    internal var refreshReceiptCompletion:      ((IAPNotification?) -> Void)? = nil  // Used when requesting a refreshed receipt from the app store
-    internal var requestProductsCompletion:     ((IAPNotification?) -> Void)? = nil  // Used when requesting products from the app store
-    internal var purchaseCompletion:            ((IAPNotification?) -> Void)? = nil  // Used when purchasing a product from the app store
-    internal var restorePurchasesCompletion:    ((IAPNotification?) -> Void)? = nil  // Used when requesting the app store to restore purchases
-    internal var notificationCompletion:        ((IAPNotification?) -> Void)? = nil  // Used to send notifications
-    
-    // MARK:- Initialization
-    
+    internal var receipt: IAPReceipt!  // Encapsulates the app store receipt located in the main bundle
+    internal var productsRequest: SKProductsRequest?  // Used to request product info async from the App Store
+    internal var receiptRequest: SKRequest?  // Used to request a receipt refresh async from the App Store
+
+    internal var requestProductsCompletion:     ((IAPNotification) -> Void)? = nil  // Completion handler when requesting products from the app store
+    internal var requestReceiptCompletion:      ((IAPNotification) -> Void)? = nil  // Completion handler when requesting a receipt refresh from the App Store
+    internal var purchaseCompletion:            ((IAPNotification?) -> Void)? = nil // Completion handler when purchasing a product from the App Store
+    internal var restorePurchasesCompletion:    ((IAPNotification?) -> Void)? = nil // Completion handler when requesting the app store to restore purchases
+    internal var notificationCompletion:        ((IAPNotification?) -> Void)? = nil // Completion handler for general notifications
+
+    // MARK:- Initialization of IAPHelper
+
     // Private initializer prevents more than a single instance of this class being created.
     // See the public static 'shared' property.
     private override init() {
         super.init()
-        
+
         // Add ourselves as an observer of the StoreKit payments queue. This allows us to receive
         // notifications when payments are successful, fail, are restored, etc.
         // See the SKPaymentQueue notification handler paymentQueue(_:updatedTransactions:)
+        // Add ourselves to the payment queue so we get App Store notifications
         SKPaymentQueue.default().add(self)
-        
+
         setup()
     }
-    
+
     // MARK:- Configuration
-    
+
+    /// Call this method to remove IAPHelper as an observer of the StoreKit payment queue.
+    /// This should be done from the AppDelgate applicationWillTerminate(_:) method.
+    public func removeFromPaymentQueue() {
+        SKPaymentQueue.default().remove(self)
+    }
+
     internal func setup() {
         readConfigFile()
         loadPurchasedProductIds()
     }
-    
+
     internal func readConfigFile() {
         // Read our configuration file that contains the list of ProductIds that are available on the App Store.
-        // If the data can't be read then it isn't a critcial error as we can request the info from the App Store
-        // as required.
         configuredProductIdentifiers = nil
-        let result = IAPConfiguration.read(filename: IAPConstants.ConfigFile(), ext: IAPConstants.ConfigFileExt())
+        if IAPConstants.isRelease { readPropertyListFile() } else { readStoreKitFile() }
+    }
+    
+    internal func readStoreKitFile() {
+        let result = IAPConfiguration.readStoreKitFile(filename: IAPConstants.ConfigFile(), ext: IAPConstants.ConfigFileExt())
         switch result {
-        case .failure(_): sendNotification(notification: .configurationLoadFailed)
+        case .failure(_): IAPLog.event(.configurationEmpty)
         case .success(let configuration):
             guard let configuredProducts = configuration.products, configuredProducts.count > 0 else {
-                sendNotification(notification: .configurationEmpty)
+                IAPLog.event(.configurationEmpty)
                 return
             }
             
             configuredProductIdentifiers = Set<ProductId>(configuredProducts.compactMap { product in product.productID })
-            sendNotification(notification: .configurationLoadCompleted)
+            IAPLog.event(.configurationLoadCompleted)
         }
     }
     
-    internal func loadPurchasedProductIds() {
-        // Load our set of purchased ProductIds from UserDefaults
-        guard haveConfiguredProductIdentifiers else {
-            sendNotification(notification: .purchasedProductsLoadCompleted)
+    internal func readPropertyListFile() {
+        guard let result = IAPConfiguration.readPropertyFile(filename: IAPConstants.ConfigFile()) else {
+            IAPLog.event(.configurationLoadFailed)
             return
         }
         
+        guard result.count > 0 else {
+            IAPLog.event(.configurationEmpty)
+            return
+        }
+        
+        guard let values = result["Products"] as? [String] else {
+            IAPLog.event(.configurationEmpty)
+            return
+        }
+        
+        configuredProductIdentifiers = Set<ProductId>(values.compactMap { $0 })
+        IAPLog.event(.configurationLoadCompleted)
+    }
+
+    internal func loadPurchasedProductIds() {
+        // Load our set of purchased ProductIds from UserDefaults
+        guard haveConfiguredProductIdentifiers else {
+            IAPLog.event(.configurationEmpty)
+            return
+        }
+
         purchasedProductIdentifiers = IAPPersistence.loadPurchasedProductIds(for: configuredProductIdentifiers!)
-        sendNotification(notification: .purchasedProductsLoadCompleted)
+        IAPLog.event(.purchasedProductsLoadCompleted)
     }
 
     // MARK:- Public Helpers
-    
-    /// The receipt issued by the app store will be validated. Calling this method immediately before a call
-    /// to IAPHelper.shared.requestProductsFromAppStore(forceRefresh:completion:) is superfluous because
-    /// requesting product info from the app store causes a new receipt to be issued and automatically
-    /// validated.
-    ///
-    /// * The receipt will be checked to see that it was correctly signed by a valid Apple vertificate
-    /// * The receipt is also checked to ensure it was issued for the same version of this app and the user's device
-    /// - Parameter refresh: If true a request will be made to the app store for a new receipt.
-    public func processReceipt(refresh: Bool = false) {
-        receipt = IAPReceipt()
-        receipt.delegate = self
+
+    /// Validates the receipt issued by the app store and reads in-app purchase records.
+    /// When an app is first installed the receipt will be missing. A new receipt will be issued automatically by the
+    /// App Store when an in-app purchase succeeds, the app is updated or previous in-app purchases are restored.
+    /// This method should be called:
+    ///     - on app start-up
+    ///     - when a purchase succeeds (the new receipt is available when paymentQueue(_:updatedTransactions:) is called by StoreKit)
+    ///     - when purchases are restored
+    public func processReceipt() {
+        IAPLog.event("Processing App Store receipt...")
         
+        receipt = IAPReceipt()
+
         // If any of the following fail then this should be considered a non-fatal error.
         // A new receipt can be requested from the App Store if required (see refreshReceipt(completion:)).
         // However, we don't do this automatically because it will cause the user to be prompted
-        // for their App Store credentials (not a good UX for a first time user).
+        // for their App Store credentials.
         guard receipt.isReachable,
               receipt.load(),
               receipt.validateSigning(),
               receipt.read(),
               receipt.validate() else {
-            
-            if refresh {
-                sendNotification(notification: .receiptRefreshFailed)
-                DispatchQueue.main.async { self.refreshReceiptCompletion?(.receiptRefreshFailed) }
-            }
-            
+
+            IAPLog.event(.receiptProcessingFailed)
             return
         }
-        
+
         // Compare the "fallback" set of purchased product ids that are stored in UserDefaults with the validated
         // set of purchased product ids read from the app store receipt. If they differ, we reset the fallback
         // set to match the receipt and persist the new set to UserDefaults.
         createValidatedPurchasedProductIds(receipt: receipt)
-        
-        if refresh {
-            sendNotification(notification: .receiptRefreshCompleted)
-            DispatchQueue.main.async { self.refreshReceiptCompletion?(.receiptRefreshCompleted) }
-        }
+        IAPLog.event(.receiptProcessingSuccess)
     }
-    
+
     /// Register a completion block to receive asynchronous notifications for app store operations.
     /// - Parameter completion:     Completion block to receive asynchronous notifications for app store operations.
     /// - Parameter notification:   IAPNotification providing details on the event.
@@ -173,19 +191,19 @@ public class IAPHelper: NSObject  {
     /// - Returns:      Returns an SKProduct object containing localized information about the product.
     public func getStoreProductFrom(id: ProductId) -> SKProduct? {
         guard isAppStoreProductInfoAvailable else {
-            sendNotification(notification: .appStoreNoProductInfo)
+            IAPLog.event(.appStoreNoProductInfo)
             return nil
         }
-        
+
         let selectedProducts = products!.filter { product in product.productIdentifier == id }
         guard selectedProducts.count > 0 else {
-            sendNotification(notification: .purchaseProductUnavailable(productId: id))
+            IAPLog.event(.purchaseProductUnavailable(productId: id))
             return nil
         }
-        
+
         return selectedProducts.first
     }
-    
+
     /// Returns a product's title given a ProductId. Only available if isStoreProductInfoAvailable is true.
     /// - Parameter id: The ProductId for the product.
     /// - Returns:      Returns a product's title.
@@ -193,7 +211,7 @@ public class IAPHelper: NSObject  {
         guard let p = getStoreProductFrom(id: id) else { return nil }
         return p.localizedTitle
     }
-    
+
     /// Returns true if the product identified by the ProductId has been purchased.
     /// There are two strategies we use to determine if a product has been successfully purchased:
     ///
@@ -212,7 +230,7 @@ public class IAPHelper: NSObject  {
     /// - Parameter id: The ProductId for the product.
     /// - Returns:      Returns true if the product has previously been purchased, false otherwise.
     public func isProductPurchased(id: ProductId) -> Bool { purchasedProductIdentifiers.contains(id) }
-    
+
     /// Get a localized price for a product.
     /// - Parameter product: SKProduct for which you want the local price.
     /// - Returns:           Returns a localized price String for a product.
@@ -223,38 +241,17 @@ public class IAPHelper: NSObject  {
         priceFormatter.locale = product.priceLocale
         return priceFormatter.string(from: product.price)
     }
-    
+
     // MARK:- Internal Helpers
-    
-    internal func sendNotification(notification: IAPNotification) {
-        DispatchQueue.main.async { self.notificationCompletion?(notification) }
-        
-        switch notification {
-        case .purchaseInProgress(           productId: let pid): fallthrough
-        case .purchaseFailed(               productId: let pid): fallthrough
-        case .purchaseDeferred(             productId: let pid): fallthrough
-        case .purchaseRestored(             productId: let pid): fallthrough
-        case .purchaseCompleted(            productId: let pid): fallthrough
-        case .purchaseCancelled(            productId: let pid): fallthrough
-        case .purchaseRestoreFailed(        productId: let pid): fallthrough
-        case .purchaseProductUnavailable(   productId: let pid): fallthrough
-        case .appStoreRevokedEntitlements(  productId: let pid): IAPLog.event(event: notification, productId: pid)
-        default: IAPLog.event(event: notification)
-        }
-    }
-    
+
     internal func createValidatedPurchasedProductIds(receipt: IAPReceipt) {
         if purchasedProductIdentifiers == receipt.validatedPurchasedProductIdentifiers {
-            sendNotification(notification: .purchasedProductsValidatedAgainstReceipt)
+            IAPLog.event(.purchasedProductsValidatedAgainstReceipt)
             return
         }
-        
+
         IAPPersistence.resetPurchasedProductIds(from: purchasedProductIdentifiers, to: receipt.validatedPurchasedProductIdentifiers)
         purchasedProductIdentifiers = receipt.validatedPurchasedProductIdentifiers
-        sendNotification(notification: .purchasedProductsResetToReceipt)
-        sendNotification(notification: .purchasedProductsValidatedAgainstReceipt)
+        IAPLog.event(.purchasedProductsValidatedAgainstReceipt)
     }
 }
-
-
-

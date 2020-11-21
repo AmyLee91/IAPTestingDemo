@@ -8,7 +8,7 @@ Implementing and testing In-App Purchases in Xcode 12 and iOS 14.
 The source code presented here is for educational purposes. You may freely reuse and amend this code for use in your own apps. 
 However, this should be done entirely at your own risk. 
 
-# Apple References: 
+# Apple References
 * [In-App Purchase Overview](https://developer.apple.com/in-app-purchase/)
 * [Receipt Validation Programming Guide](https://developer.apple.com/library/archive/releasenotes/General/ValidateAppStoreReceipt/Chapters/ValidateLocally.html#//apple_ref/doc/uid/TP40010573-CH1-SW2)
 * [In-App Purchase](https://developer.apple.com/documentation/storekit/in-app_purchase)
@@ -16,7 +16,6 @@ However, this should be done entirely at your own risk.
 * [Validating Receipts with the App Store](https://developer.apple.com/documentation/storekit/in-app_purchase/validating_receipts_with_the_app_store)
 
 # Contents
-
 * [Overview](#Overview) : An overview of what it takes to support in-app purchases in an iOS app
 	* [Receipt validation options](#Receipt-validation-options)
 	* [Sandbox accounts](#Sandbox-accounts)
@@ -385,16 +384,17 @@ extension ViewController: ProductCellDelegate {
 ## What actually is a receipt?
 
 The receipt issued to an app by the App Store contains a complete record of a user's in-app purchase history for that app.  
+
 It is a single **encrypted** file which is stored on the device in the app's **main bundle**. The location of the receipt is given by the 
 URL **`Bundle.main.appStoreReceiptURL`**. 
 
-A new receipt is issued automatically by the App Store each time:
+When an app is first installed the receipt will be missing. A new receipt will be issued automatically by the App Store each time:
 
 * An in-app purchase succeeds
-* The app is re-installed
 * An app update happens
 * Previous in-app purchases are restored
-* The app requests localized product info from the app store
+
+Not sure this is true. With a newly installed app a receipt refresh is pushed by the app store but no receipt is actually delivered
 
 When a new receipt is pushed to our app from the App Store we receive a **notification** via the **`requestDidFinish(_:)`** **`SKRequestDelegate`** method. 
 
@@ -405,7 +405,5 @@ An app store receipt has the following structure:
 
 xxx
 
-# IAPHelper
 
-# IAPTestingDemo Example
 

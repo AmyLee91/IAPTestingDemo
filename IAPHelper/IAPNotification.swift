@@ -10,6 +10,7 @@ import Foundation
 
 /// Notifications issued by IAPHelper
 public enum IAPNotification: Error, Equatable {
+    
     case configurationCantFindInBundle
     case configurationCantReadData
     case configurationCantDecode
@@ -19,41 +20,39 @@ public enum IAPNotification: Error, Equatable {
     case configurationEmpty
     
     case purchaseProductUnavailable(productId: ProductId)
-    case purchaseStarted
     case purchaseAbortPurchaseInProgress
     case purchaseInProgress(productId: ProductId)
-    case purchaseDeferred(productId: ProductId)
     case purchaseCompleted(productId: ProductId)
     case purchaseFailed(productId: ProductId)
     case purchaseCancelled(productId: ProductId)
+    case purchaseDeferred(productId: ProductId)
     case purchaseRestored(productId: ProductId)
     case purchaseRestoreFailed(productId: ProductId)
-    case purchaseValidationCompleted
-    case purchaseValidationFailed
-    
     case purchasedProductsLoadCompleted
     case purchasedProductsValidatedAgainstReceipt
-    case purchasedProductsResetToReceipt
     
+    case receiptBadUrl
     case receiptMissing
-    case receiptUrlMissing
     case receiptLoadCompleted
     case receiptLoadFailed
-    case receiptValidateSigningCompleted
     case receiptValidateSigningFailed
     case receiptReadCompleted
     case receiptReadFailed
     case receiptValidationCompleted
     case receiptValidationFailed
     case receiptRefreshInitiated
-    case receiptRefreshPushedByAppStore
     case receiptRefreshCompleted
     case receiptRefreshFailed
+    case receiptProcessingSuccess
+    case receiptProcessingFailed
     
-    case requestProductsInitiated
-    case requestProductsCompleted
+    case requestProductsSuccess
+    case requestProductsDidFinish
     case requestProductsFailed
     case requestProductsNoProducts
+    case requestProductsInvalidProducts
+    case requestReceiptRefreshSuccess
+    case requestReceiptRefreshFailed
     
     case appStoreChanged
     case appStoreRevokedEntitlements(productId: ProductId)
@@ -73,7 +72,6 @@ public enum IAPNotification: Error, Equatable {
         case .configurationEmpty:                       return "Configuration does not contain any product definitions"
                 
         case .purchaseProductUnavailable:               return "Product unavailable for purchase"
-        case .purchaseStarted:                          return "Purchase started"
         case .purchaseAbortPurchaseInProgress:          return "Purchase aborted because another purchase is already in progress"
         case .purchaseInProgress:                       return "Purchase in progress"
         case .purchaseDeferred:                         return "Purchase in progress. Awaiting authorization"
@@ -82,33 +80,32 @@ public enum IAPNotification: Error, Equatable {
         case .purchaseCancelled:                        return "Purchase cancelled"
         case .purchaseRestored:                         return "Purchases restored"
         case .purchaseRestoreFailed:                    return "Purchase restore failed"
-        case .purchaseValidationCompleted:              return "Purchases validated against App Store receipt"
-        case .purchaseValidationFailed:                 return "Purchases could not be validated against App Store receipt"
-            
         case .purchasedProductsLoadCompleted:           return "Purchased products loaded"
         case .purchasedProductsValidatedAgainstReceipt: return "Purchased products validated against receipt"
-        case .purchasedProductsResetToReceipt:          return "Purchased products reset to match receipt"
             
+        case .receiptBadUrl:                            return "Receipt URL is invalid or missing"
         case .receiptMissing:                           return "Receipt missing"
-        case .receiptUrlMissing:                        return "The App Store receipt URL is missing"
         case .receiptLoadCompleted:                     return "Receipt load completed"
         case .receiptLoadFailed:                        return "Receipt load failed"
-        case .receiptValidateSigningCompleted:          return "Receipt validation of signing completed"
         case .receiptValidateSigningFailed:             return "Receipt validation of signing failed"
         case .receiptReadCompleted:                     return "Receipt read completed"
         case .receiptReadFailed:                        return "Receipt read failed"
         case .receiptValidationCompleted:               return "Receipt validation completed"
         case .receiptValidationFailed:                  return "Receipt validation failed"
         case .receiptRefreshInitiated:                  return "Receipt refresh initiated"
-        case .receiptRefreshPushedByAppStore:           return "Receipt refresh was pushed to us by the App Store"
         case .receiptRefreshCompleted:                  return "Receipt refresh completed"
         case .receiptRefreshFailed:                     return "Receipt refresh failed"
-                
-        case .requestProductsInitiated:                 return "Requested product information from the App Store"
-        case .requestProductsCompleted:                 return "Products retrieved from App Store"
-        case .requestProductsFailed:                    return "Unable to retrieve products from App Store"
+        case .receiptProcessingSuccess:                 return "Receipt processing success"
+        case .receiptProcessingFailed:                  return "Receipt processing failed"
+            
+        case .requestProductsSuccess:                   return "Products retrieved from App Store"
+        case .requestProductsDidFinish:                 return "The request for products finished"
+        case .requestProductsFailed:                    return "The request for products failed"
         case .requestProductsNoProducts:                return "The App Store returned an empty list of products"
-    
+        case .requestProductsInvalidProducts:           return "The App Store returned a list of invalid (unrecognized) products"
+        case .requestReceiptRefreshSuccess:             return "The request for a receipt refresh completed successfully"
+        case .requestReceiptRefreshFailed:              return "The request for a receipt refresh failed"
+            
         case .appStoreChanged:                          return "The App Store storefront has changed"
         case .appStoreRevokedEntitlements:              return "The App Store revoked user entitlements"
         case .appStoreNoProductInfo:                    return "No localized product information is available"
@@ -129,7 +126,6 @@ public enum IAPNotification: Error, Equatable {
         case .configurationEmpty:                       return "configurationEmpty"
                 
         case .purchaseProductUnavailable:               return "purchaseProductUnavailable"
-        case .purchaseStarted:                          return "purchaseStarted"
         case .purchaseAbortPurchaseInProgress:          return "purchaseAbortPurchaseInProgress"
         case .purchaseInProgress:                       return "purchaseInProgress"
         case .purchaseDeferred:                         return "purchaseDeferred"
@@ -138,33 +134,32 @@ public enum IAPNotification: Error, Equatable {
         case .purchaseCancelled:                        return "purchaseCancelled"
         case .purchaseRestored:                         return "purchaseRestored"
         case .purchaseRestoreFailed:                    return "purchaseRestoreFailed"
-        case .purchaseValidationCompleted:              return "purchaseValidationCompleted"
-        case .purchaseValidationFailed:                 return "purchaseValidationFailed"
-            
         case .purchasedProductsLoadCompleted:           return "purchasedProductsLoadCompleted"
         case .purchasedProductsValidatedAgainstReceipt: return "purchasedProductsValidatedAgainstReceipt"
-        case .purchasedProductsResetToReceipt:          return "purchasedProductsResetToReceipt"
             
+        case .receiptBadUrl:                            return "receiptBadUrl"
         case .receiptMissing:                           return "receiptMissing"
-        case .receiptUrlMissing:                        return "receiptUrlMissing"
         case .receiptLoadCompleted:                     return "receiptLoadCompleted"
         case .receiptLoadFailed:                        return "receiptLoadFailed"
-        case .receiptValidateSigningCompleted:          return "receiptValidateSigningCompleted"
         case .receiptValidateSigningFailed:             return "receiptValidateSigningFailed"
         case .receiptReadCompleted:                     return "receiptReadCompleted"
         case .receiptReadFailed:                        return "receiptReadFailed"
         case .receiptValidationCompleted:               return "receiptValidationCompleted"
         case .receiptValidationFailed:                  return "receiptValidationFailed"
         case .receiptRefreshInitiated:                  return "receiptRefreshInitiated"
-        case .receiptRefreshPushedByAppStore:           return "receiptRefreshPushedByAppStore"
         case .receiptRefreshCompleted:                  return "receiptRefreshCompleted"
         case .receiptRefreshFailed:                     return "receiptRefreshFailed"
-                
-        case .requestProductsInitiated:                 return "requestProductsInitiated"
-        case .requestProductsCompleted:                 return "requestProductsCompleted"
+        case .receiptProcessingSuccess:                 return "receiptProcessingSuccess"
+        case .receiptProcessingFailed:                  return "receiptProcessingFailed"
+            
+        case .requestProductsSuccess:                   return "requestProductsSuccess"
+        case .requestProductsDidFinish:                 return "requestProductsDidFinish"
         case .requestProductsFailed:                    return "requestProductsFailed"
         case .requestProductsNoProducts:                return "requestProductsNoProducts"
-    
+        case .requestProductsInvalidProducts:           return "requestProductsInvalidProducts"
+        case .requestReceiptRefreshSuccess:             return "requestReceiptRefreshSuccess"
+        case .requestReceiptRefreshFailed:              return "requestReceiptRefreshFailed"
+            
         case .appStoreChanged:                          return "appStoreChanged"
         case .appStoreRevokedEntitlements:              return "appStoreRevokedEntitlements"
         case .appStoreNoProductInfo:                    return "appStoreNoProductInfo"

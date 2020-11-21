@@ -5,8 +5,8 @@
 //  Created by Russell Archer on 06/07/2020.
 //
 //  Swift wrapper for OpenSSL functions.
-//  This class contains modified portions of code created by Bill Morefield copyright (c) 2018 Razeware LLC.
-//  See https://www.raywenderlich.com/9257-in-app-purchases-receipt-validation-tutorial
+//  Contains modified portions of code created by Bill Morefield copyright (c) 2018 Razeware LLC.
+//  
 
 import Foundation
 
@@ -25,11 +25,10 @@ extension IAPReceipt {
     /// At this point a list of locally stored purchased product ids should have been loaded from the UserDefaults
     /// dictionary. We need to validate these product ids against the App Store receipt's collection of purchased
     /// product ids to see that they match. If there are no locally stored purchased product ids (i.e. the user
-    /// hasn't purchased anything) then we don't attempt to validate the receipt as this would trigger a prompt
-    /// for the user to provide their App Store credentials (and this isn't a good experience for a new user of
-    /// the app to immediately be asked to sign-in). Note that if the user has previously purchased products
-    /// then either using the Restore feature or attempting to re-purchase the product will result in a refreshed
-    /// receipt and the product id of the product will be stored locally in the UserDefaults dictionary.
+    /// hasn't purchased anything) then we don't attempt to validate the receipt. Note that if the user has previously
+    /// purchased products then either using the Restore feature or attempting to re-purchase the product will
+    /// result in a refreshed receipt and the product id of the product will be stored locally in the UserDefaults
+    /// dictionary.
     /// - Returns: Returns true if the receipt is valid; false otherwise.
     public func validate() -> Bool {
         guard let idString = bundleIdString,
@@ -37,52 +36,44 @@ extension IAPReceipt {
               let _ = opaqueData,
               let hash = hashData else {
             
-            mostRecentError = .missingComponent
-            delegate?.requestSendNotification(notification: .receiptValidationFailed)
+            IAPLog.event(.receiptValidationFailed)
             return false
         }
         
         guard let appBundleId = Bundle.main.bundleIdentifier else {
-            mostRecentError = .unknownFailure
-            delegate?.requestSendNotification(notification: .receiptValidationFailed)
+            IAPLog.event(.receiptValidationFailed)
             return false
         }
         
         guard idString == appBundleId else {
-            mostRecentError = .invalidBundleIdentifier
-            delegate?.requestSendNotification(notification: .receiptValidationFailed)
+            IAPLog.event(.receiptValidationFailed)
             return false
         }
         
         guard let appVersionString = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String else {
-            mostRecentError = .unknownFailure
-            delegate?.requestSendNotification(notification: .receiptValidationFailed)
+            IAPLog.event(.receiptValidationFailed)
             return false
         }
         
         guard version == appVersionString else {
-            mostRecentError = .invalidVersionIdentifier
-            delegate?.requestSendNotification(notification: .receiptValidationFailed)
+            IAPLog.event(.receiptValidationFailed)
             return false
         }
         
         guard hash == computeHash() else {
-            mostRecentError = .invalidHash
-            delegate?.requestSendNotification(notification: .receiptValidationFailed)
+            IAPLog.event(.receiptValidationFailed)
             return false
         }
         
         if let expirationDate = expirationDate {
             if expirationDate < Date() {
-                mostRecentError = .expired
-                delegate?.requestSendNotification(notification: .receiptValidationFailed)
+                IAPLog.event(.receiptValidationFailed)
                 return false
             }
         }
         
         isValid = true
-        mostRecentError = .noError
-        delegate?.requestSendNotification(notification: .receiptValidationCompleted)
+        IAPLog.event(.receiptValidationCompleted)
         
         return true
     }

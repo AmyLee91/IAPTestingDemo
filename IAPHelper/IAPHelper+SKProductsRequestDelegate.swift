@@ -15,30 +15,25 @@ extension IAPHelper: SKProductsRequestDelegate {
     ///   - request:    The request object.
     ///   - response:   The response from the App Store.
     public func productsRequest(_ request: SKProductsRequest, didReceive response: SKProductsResponse) {
-        if response.products.count == 0 {
-            self.sendNotification(notification: .requestProductsNoProducts)
+        guard !response.products.isEmpty else {
+            IAPLog.event(.requestProductsNoProducts)
             DispatchQueue.main.async { self.requestProductsCompletion?(.requestProductsNoProducts) }
             return
         }
 
+        guard response.invalidProductIdentifiers.isEmpty else {
+            IAPLog.event(.requestProductsInvalidProducts)
+            DispatchQueue.main.async { self.requestProductsCompletion?(.requestProductsInvalidProducts) }  // Call the completion handler
+            return
+        }
+        
         // Update our [SKProduct] set of all available products
         products = response.products
+        IAPLog.event(.requestProductsSuccess)
+        DispatchQueue.main.async { self.requestProductsCompletion?(.requestProductsSuccess) }
         
-        productsRequest = nil  // Destroy the request object
-        DispatchQueue.main.async { self.requestProductsCompletion?(.requestProductsCompleted) }
-        
-        // Send a notification to let observers know we have an updated set of products.
-        sendNotification(notification: .requestProductsCompleted)
-    }
-    
-    /// Called by the App Store if a request fails.
-    /// - Parameters:
-    ///   - request:    The request object.
-    ///   - error:      The error returned by the App Store.
-    public func request(_ request: SKRequest, didFailWithError error: Error) {
-        productsRequest = nil
-        DispatchQueue.main.async { self.requestProductsCompletion?(.requestProductsFailed) }
-        sendNotification(notification: .requestProductsFailed)
+        // When this method returns StoreKit will immediately call the SKRequestDelegate method
+        // requestDidFinish(_:) where we will destroy the productsRequest object
     }
 }
 

@@ -10,11 +10,49 @@ import StoreKit
 
 extension IAPHelper: SKRequestDelegate {
 
-    /// Called when the app store provides us with a refreshed receipt.
-    /// - Parameter request: The SKRequest object used to make the request.
+    /// This method is called for both SKProductsRequest (request product info) and
+    /// SKRequest (request receipt refresh).
+    /// - Parameters:
+    ///   - request:    The request object.
     public func requestDidFinish(_ request: SKRequest) {
-        receiptRequest = nil  // Destroy the request object
-        sendNotification(notification: .receiptRefreshPushedByAppStore)
-        processReceipt(refresh: true)
+        
+        if productsRequest != nil {
+            productsRequest = nil  // Destroy the product info request object
+            
+            // Call the completion handler. The request for product info completed. See also productsRequest(_:didReceive:)
+            IAPLog.event(.requestProductsDidFinish)
+            DispatchQueue.main.async { self.requestProductsCompletion?(.requestProductsDidFinish) }
+            return
+        }
+        
+        if receiptRequest != nil {
+            receiptRequest = nil  // Destory the receipt request object
+            IAPLog.event(.requestReceiptRefreshSuccess)
+            DispatchQueue.main.async { self.requestReceiptCompletion?(.requestReceiptRefreshSuccess) }
+        }
+    }
+    
+    /// Called by the App Store if a request fails.
+    /// This method is called for both SKProductsRequest (request product info) and
+    /// SKRequest (request receipt refresh).
+    /// - Parameters:
+    ///   - request:    The request object.
+    ///   - error:      The error returned by the App Store.
+    public func request(_ request: SKRequest, didFailWithError error: Error) {
+        
+        if productsRequest != nil {
+            productsRequest = nil  // Destroy the request object
+            
+            // Call the completion handler. The request for product info failed
+            IAPLog.event(.requestProductsFailed)
+            DispatchQueue.main.async { self.requestProductsCompletion?(.requestProductsFailed) }
+            return
+        }
+        
+        if receiptRequest != nil {
+            receiptRequest = nil  // Destory the receipt request object
+            IAPLog.event(.requestReceiptRefreshFailed)
+            DispatchQueue.main.async { self.requestReceiptCompletion?(.requestReceiptRefreshFailed) }
+        }
     }
 }

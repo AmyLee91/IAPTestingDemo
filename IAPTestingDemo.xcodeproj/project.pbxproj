@@ -12,7 +12,6 @@
 		6805B78E24D3100A00169F3F /* IAPHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 6805B77E24D3100900169F3F /* IAPHelper.h */; platformFilter = ios; settings = {ATTRIBUTES = (Public, ); }; };
 		6805B79124D3100A00169F3F /* IAPHelper.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6805B77C24D3100900169F3F /* IAPHelper.framework */; };
 		6805B79224D3100A00169F3F /* IAPHelper.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6805B77C24D3100900169F3F /* IAPHelper.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		6805B79A24D3115100169F3F /* IAPReceiptDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68D5B24A24B2AF720092F570 /* IAPReceiptDelegate.swift */; };
 		6805B79B24D3115100169F3F /* IAPOpenSSL.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68A4653A24A42A7F002142D4 /* IAPOpenSSL.swift */; };
 		6805B79C24D3115100169F3F /* IAPPersistenceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6845FC0124A4D1EE007FF7BA /* IAPPersistenceProtocol.swift */; };
 		6805B79D24D3115100169F3F /* IAPHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68E05E4124A269CD00B6728D /* IAPHelper.swift */; };
@@ -33,8 +32,7 @@
 		6805B7AD24D3115100169F3F /* IAPReceipt+Read.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68D5B25024B2B0630092F570 /* IAPReceipt+Read.swift */; };
 		6805B7AE24D3115100169F3F /* IAPNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68E05E4224A269CD00B6728D /* IAPNotification.swift */; };
 		6805B7AF24D3115100169F3F /* IAPReceipt+ValidateSigning.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68D5B24E24B2B02E0092F570 /* IAPReceipt+ValidateSigning.swift */; };
-		6805B7B024D3115100169F3F /* IAPHelper+IAPReceiptDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 685E9F2A24BCB265005A71F3 /* IAPHelper+IAPReceiptDelegate.swift */; };
-		6805B7B124D3115100169F3F /* IAPReceiptError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68572E5224AE9EF200965618 /* IAPReceiptError.swift */; };
+		68425435254C9A090004FBB8 /* GetProductsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68425434254C9A090004FBB8 /* GetProductsCell.swift */; };
 		68427B9C253092B800A7C328 /* iap10.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 68427B91253092B800A7C328 /* iap10.jpg */; };
 		68427B9D253092B800A7C328 /* iap12.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 68427B92253092B800A7C328 /* iap12.jpg */; };
 		68427B9E253092B800A7C328 /* iap5.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 68427B93253092B800A7C328 /* iap5.jpg */; };
@@ -46,8 +44,8 @@
 		68427BA5253092B800A7C328 /* iap2.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 68427B9A253092B800A7C328 /* iap2.jpg */; };
 		68427BA6253092B800A7C328 /* iap11.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 68427B9B253092B800A7C328 /* iap11.jpg */; };
 		68427BB82530936800A7C328 /* iap1.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 68427BB72530936800A7C328 /* iap1.jpg */; };
+		6844716C2567319500758ECE /* ProductsRelease.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6844716B2567319500758ECE /* ProductsRelease.plist */; };
 		688774EA24A3A26D006840A8 /* Configuration.storekit in Resources */ = {isa = PBXBuildFile; fileRef = 68E05E3E24A263B100B6728D /* Configuration.storekit */; };
-		688774F024A3BF36006840A8 /* ConfigurationRelease.storekit in Resources */ = {isa = PBXBuildFile; fileRef = 688774EF24A3BF36006840A8 /* ConfigurationRelease.storekit */; };
 		688774F224A3C090006840A8 /* AppleIncRootCertificate.cer in Resources */ = {isa = PBXBuildFile; fileRef = 688774F124A3C080006840A8 /* AppleIncRootCertificate.cer */; };
 		689F742324B7403E0093F12C /* ProductCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 689F742224B7403E0093F12C /* ProductCell.swift */; };
 		689F742524B7404B0093F12C /* RestoreCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 689F742424B7404B0093F12C /* RestoreCell.swift */; };
@@ -220,6 +218,7 @@
 		6805B7B224D3136200169F3F /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libssl.a; path = IAPHelper/openssl/lib/libssl.a; sourceTree = "<group>"; };
 		6805B7B324D3136200169F3F /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcrypto.a; path = IAPHelper/openssl/lib/libcrypto.a; sourceTree = "<group>"; };
 		6811A5EE24A3D7DF00458F85 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		68425434254C9A090004FBB8 /* GetProductsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetProductsCell.swift; sourceTree = "<group>"; };
 		68427B91253092B800A7C328 /* iap10.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = iap10.jpg; sourceTree = "<group>"; };
 		68427B92253092B800A7C328 /* iap12.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = iap12.jpg; sourceTree = "<group>"; };
 		68427B93253092B800A7C328 /* iap5.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = iap5.jpg; sourceTree = "<group>"; };
@@ -231,15 +230,13 @@
 		68427B9A253092B800A7C328 /* iap2.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = iap2.jpg; sourceTree = "<group>"; };
 		68427B9B253092B800A7C328 /* iap11.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = iap11.jpg; sourceTree = "<group>"; };
 		68427BB72530936800A7C328 /* iap1.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = iap1.jpg; sourceTree = "<group>"; };
+		6844716B2567319500758ECE /* ProductsRelease.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = ProductsRelease.plist; sourceTree = "<group>"; };
 		6845FC0124A4D1EE007FF7BA /* IAPPersistenceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IAPPersistenceProtocol.swift; sourceTree = "<group>"; };
 		6845FC0324A4F379007FF7BA /* IAPLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IAPLog.swift; sourceTree = "<group>"; };
-		68572E5224AE9EF200965618 /* IAPReceiptError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IAPReceiptError.swift; sourceTree = "<group>"; };
 		68572E5424AE9F6800965618 /* IAPOpenSSLAttributeType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IAPOpenSSLAttributeType.swift; sourceTree = "<group>"; };
 		685E9F2824BCB218005A71F3 /* IAPHelper+SKRequestDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "IAPHelper+SKRequestDelegate.swift"; sourceTree = "<group>"; };
-		685E9F2A24BCB265005A71F3 /* IAPHelper+IAPReceiptDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "IAPHelper+IAPReceiptDelegate.swift"; sourceTree = "<group>"; };
 		688774EB24A3A2C3006840A8 /* IAPConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IAPConfiguration.swift; sourceTree = "<group>"; };
 		688774ED24A3BC98006840A8 /* IAPConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IAPConstants.swift; sourceTree = "<group>"; };
-		688774EF24A3BF36006840A8 /* ConfigurationRelease.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = ConfigurationRelease.storekit; sourceTree = "<group>"; };
 		688774F124A3C080006840A8 /* AppleIncRootCertificate.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = AppleIncRootCertificate.cer; sourceTree = "<group>"; };
 		689F742224B7403E0093F12C /* ProductCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductCell.swift; sourceTree = "<group>"; };
 		689F742424B7404B0093F12C /* RestoreCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestoreCell.swift; sourceTree = "<group>"; };
@@ -254,7 +251,6 @@
 		68D5B24224B2ABB00092F570 /* IAPHelper+SKPaymentTransactionObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "IAPHelper+SKPaymentTransactionObserver.swift"; sourceTree = "<group>"; };
 		68D5B24424B2AD5A0092F570 /* IAPHelper+SKProductsRequestDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "IAPHelper+SKProductsRequestDelegate.swift"; sourceTree = "<group>"; };
 		68D5B24624B2AE630092F570 /* IAPHelper+AppStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "IAPHelper+AppStore.swift"; sourceTree = "<group>"; };
-		68D5B24A24B2AF720092F570 /* IAPReceiptDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IAPReceiptDelegate.swift; sourceTree = "<group>"; };
 		68D5B24C24B2AFDA0092F570 /* IAPReceipt+Load.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "IAPReceipt+Load.swift"; sourceTree = "<group>"; };
 		68D5B24E24B2B02E0092F570 /* IAPReceipt+ValidateSigning.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "IAPReceipt+ValidateSigning.swift"; sourceTree = "<group>"; };
 		68D5B25024B2B0630092F570 /* IAPReceipt+Read.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "IAPReceipt+Read.swift"; sourceTree = "<group>"; };
@@ -426,7 +422,6 @@
 				688774ED24A3BC98006840A8 /* IAPConstants.swift */,
 				68E05E4124A269CD00B6728D /* IAPHelper.swift */,
 				68D5B24624B2AE630092F570 /* IAPHelper+AppStore.swift */,
-				685E9F2A24BCB265005A71F3 /* IAPHelper+IAPReceiptDelegate.swift */,
 				68D5B24224B2ABB00092F570 /* IAPHelper+SKPaymentTransactionObserver.swift */,
 				68D5B24424B2AD5A0092F570 /* IAPHelper+SKProductsRequestDelegate.swift */,
 				685E9F2824BCB218005A71F3 /* IAPHelper+SKRequestDelegate.swift */,
@@ -441,8 +436,6 @@
 				68D5B25024B2B0630092F570 /* IAPReceipt+Read.swift */,
 				68D5B25224B2B0A40092F570 /* IAPReceipt+Validate.swift */,
 				68D5B24E24B2B02E0092F570 /* IAPReceipt+ValidateSigning.swift */,
-				68D5B24A24B2AF720092F570 /* IAPReceiptDelegate.swift */,
-				68572E5224AE9EF200965618 /* IAPReceiptError.swift */,
 				68AA839C24AA4165003A27AE /* IAPReceiptProductInfo.swift */,
 				689F742824B745D10093F12C /* IAPProductInfo.swift */,
 			);
@@ -494,6 +487,7 @@
 			children = (
 				689F742224B7403E0093F12C /* ProductCell.swift */,
 				689F742424B7404B0093F12C /* RestoreCell.swift */,
+				68425434254C9A090004FBB8 /* GetProductsCell.swift */,
 			);
 			path = Cells;
 			sourceTree = "<group>";
@@ -502,12 +496,12 @@
 			isa = PBXGroup;
 			children = (
 				68E05E1724A262C300B6728D /* Assets.xcassets */,
-				688774EF24A3BF36006840A8 /* ConfigurationRelease.storekit */,
 				68E05E3E24A263B100B6728D /* Configuration.storekit */,
 				68E05E0E24A262C200B6728D /* AppDelegate.swift */,
 				68E05E1024A262C200B6728D /* SceneDelegate.swift */,
 				68E05E1C24A262C300B6728D /* Info.plist */,
 				68E05E1924A262C300B6728D /* LaunchScreen.storyboard */,
+				6844716B2567319500758ECE /* ProductsRelease.plist */,
 			);
 			path = Support;
 			sourceTree = "<group>";
@@ -915,12 +909,12 @@
 				68E05E1B24A262C300B6728D /* LaunchScreen.storyboard in Resources */,
 				68427B9F253092B800A7C328 /* iap6.jpg in Resources */,
 				68DB3B8A25486A99001ABB95 /* iap13sm.jpg in Resources */,
-				688774F024A3BF36006840A8 /* ConfigurationRelease.storekit in Resources */,
 				68427BA4253092B800A7C328 /* iap3.jpg in Resources */,
 				688774F224A3C090006840A8 /* AppleIncRootCertificate.cer in Resources */,
 				68427BA0253092B800A7C328 /* iap7.jpg in Resources */,
 				68427B9C253092B800A7C328 /* iap10.jpg in Resources */,
 				68C3943F25474D0300E33C21 /* wwdc-2020.jpg in Resources */,
+				6844716C2567319500758ECE /* ProductsRelease.plist in Resources */,
 				68DB3B86254869BD001ABB95 /* iap13.jpg in Resources */,
 				68427BA6253092B800A7C328 /* iap11.jpg in Resources */,
 				68427BA1253092B800A7C328 /* iap4.jpg in Resources */,
@@ -945,7 +939,6 @@
 				6805B7A024D3115100169F3F /* IAPConfigurationModel.swift in Sources */,
 				6805B79D24D3115100169F3F /* IAPHelper.swift in Sources */,
 				6805B7AB24D3115100169F3F /* IAPReceipt.swift in Sources */,
-				6805B7B024D3115100169F3F /* IAPHelper+IAPReceiptDelegate.swift in Sources */,
 				6805B7AE24D3115100169F3F /* IAPNotification.swift in Sources */,
 				6805B7A724D3115100169F3F /* IAPHelper+SKRequestDelegate.swift in Sources */,
 				6805B79C24D3115100169F3F /* IAPPersistenceProtocol.swift in Sources */,
@@ -954,9 +947,7 @@
 				6805B7AF24D3115100169F3F /* IAPReceipt+ValidateSigning.swift in Sources */,
 				6805B7A824D3115100169F3F /* IAPLog.swift in Sources */,
 				6805B7A324D3115100169F3F /* IAPReceiptProductInfo.swift in Sources */,
-				6805B79A24D3115100169F3F /* IAPReceiptDelegate.swift in Sources */,
 				6805B7A124D3115100169F3F /* IAPHelper+AppStore.swift in Sources */,
-				6805B7B124D3115100169F3F /* IAPReceiptError.swift in Sources */,
 				6805B7AD24D3115100169F3F /* IAPReceipt+Read.swift in Sources */,
 				6805B7AC24D3115100169F3F /* IAPReceipt+Load.swift in Sources */,
 				6805B7A224D3115100169F3F /* IAPReceipt+Validate.swift in Sources */,
@@ -980,6 +971,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				68E05E1324A262C200B6728D /* ViewController.swift in Sources */,
+				68425435254C9A090004FBB8 /* GetProductsCell.swift in Sources */,
 				68E05E0F24A262C200B6728D /* AppDelegate.swift in Sources */,
 				689F742924B745D10093F12C /* IAPProductInfo.swift in Sources */,
 				689F742324B7403E0093F12C /* ProductCell.swift in Sources */,
@@ -1031,6 +1023,7 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/IAPHelper/openssl-include";
 				INFOPLIST_FILE = IAPHelper/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -1046,6 +1039,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.rarcher.IAPHelper;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_OBJC_BRIDGING_HEADER = "";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1080,6 +1074,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.rarcher.IAPHelper;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_OBJC_BRIDGING_HEADER = "";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1252,6 +1247,8 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = R6BE99W3FU;
+				EXCLUDED_ARCHS = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = IAPTestingDemo/Support/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1275,6 +1272,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = R6BE99W3FU;
+				EXCLUDED_ARCHS = "";
 				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = IAPTestingDemo/Support/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (

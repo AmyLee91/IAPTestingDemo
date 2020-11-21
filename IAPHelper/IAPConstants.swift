@@ -10,19 +10,35 @@ import Foundation
 /// Constants used in support of IAP operations.
 public struct IAPConstants {
     
-    /// Returns the appropriate .storekit configuration file to use for DEBUG and RELEASE builds.
-    /// - Returns: Returns a String containing the name of the .storekit file file.
+    /// Returns true if built for release.
+    /// - Returns: true if built for release.
+    public static var isRelease: Bool {
+        #if DEBUG
+        return false
+        #else
+        return true
+        #endif
+    }
+    
+    /// Returns the appropriate .storekit or plist configuration file to use for DEBUG and RELEASE builds.
+    /// - Returns: Returns the name of the configuration file.
     public static func ConfigFile() -> String {
         #if DEBUG
         return "Configuration"
         #else
-        return "ConfigurationRelease"
+        return "ProductsRelease"
         #endif
     }
     
-    /// The file extension for the .storekit file.
-    /// - Returns: Returns the file extension for the .storekit file.
-    public static func ConfigFileExt() -> String { "storekit" }
+    /// The file extension for the appropriate .storekit or plist configuration file to use for DEBUG and RELEASE builds.
+    /// - Returns: Returns the name of the configuration file extension.
+    public static func ConfigFileExt() -> String {
+        #if DEBUG
+        return "storekit"
+        #else
+        return "plist"
+        #endif
+    }
     
     /// The appropriate certificate to use for DEBUG and RELEASE builds. Used in receipt validation.
     /// - Returns: Returns the appropriate certificate to use for DEBUG and RELEASE builds. Used in receipt validation.

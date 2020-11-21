@@ -18,16 +18,9 @@ class ViewController: UIViewController {
         
         configureTableView()
         configureProducts()
-        
-        iap.processNotifications { notification in
-            switch notification {
-            case .appStoreRevokedEntitlements(productId: _): self.tableView.reloadData()
-            default: break
-            }
-        }
     }
     
-    private func configureTableView() {
+    func configureTableView() {
         view.addSubview(tableView)
        
         tableView.translatesAutoresizingMaskIntoConstraints = false
@@ -43,10 +36,12 @@ class ViewController: UIViewController {
         tableView.tableFooterView = UIView(frame: .zero)  // Removes empty cells
         tableView.register(ProductCell.self, forCellReuseIdentifier: ProductCell.reuseId)
         tableView.register(RestoreCell.self, forCellReuseIdentifier: RestoreCell.reuseId)
+        tableView.register(GetProductsCell.self, forCellReuseIdentifier: GetProductsCell.reuseId)
     }
     
-    private func configureProducts() {
+    func configureProducts() {
         iap.requestProductsFromAppStore { _ in
+            self.iap.processReceipt()
             self.tableView.reloadData()
         }
     }
@@ -56,10 +51,11 @@ class ViewController: UIViewController {
 
 extension ViewController: UITableViewDelegate, UITableViewDataSource {
 
-    internal func numberOfSections(in tableView: UITableView) -> Int { 2 }
+    internal func numberOfSections(in tableView: UITableView) -> Int { 3 }
 
     internal func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         if indexPath.section == 1 { return RestoreCell.cellHeight }
+        else if indexPath.section == 2 { return GetProductsCell.cellHeight }
         
         var purchased = false
         if let p = iap.products?[indexPath.row], iap.isProductPurchased(id: p.productIdentifier) { purchased = true }
@@ -74,7 +70,8 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
     
     internal func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if indexPath.section == 0 { return configureProductCell(for: indexPath) }
-        return configureRestoreCell()
+        else if indexPath.section == 1 { return configureRestoreCell() }
+        else { return configureGetProductsCell() }
     }
     
     private func configureProductCell(for indexPath: IndexPath) -> ProductCell {
@@ -103,6 +100,12 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
         cell.delegate = self
         return cell
     }
+    
+    private func configureGetProductsCell() -> GetProductsCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: GetProductsCell.reuseId) as! GetProductsCell
+        cell.parentViewController = self
+        return cell
+    }
 }
 
 // MARK:- ProductCellDelegate
@@ -114,14 +117,18 @@ extension ViewController: ProductCellDelegate {
         
         iap.buyProduct(product) { notification in
             switch notification {
-            case .purchaseAbortPurchaseInProgress: print("Purchase aborted because another purchase is being processed")
-            case .purchaseCancelled(productId: let pid): print("Purchase cancelled for product \(pid)")
-            case .purchaseFailed(productId: let pid): print("Purchase failed for product \(pid)")
+            case .purchaseAbortPurchaseInProgress:       IAPLog.event("Purchase aborted because another purchase is being processed")
+            case .purchaseCancelled(productId: let pid): IAPLog.event("Purchase cancelled for product \(pid)")
+            case .purchaseFailed(productId: let pid):    IAPLog.event("Purchase failed for product \(pid)")
+            case .purchaseCompleted(productId: let pid):
+                
+                IAPLog.event("Purchase succeeded for product \(pid)")
+                self.iap.processReceipt()
             
             default: break
             }
             
-            self.tableView.reloadData()  // Reload data for a success, cancel or failure
+            self.tableView.reloadData()  // Reload data for a success, cancel or failure to clear the spinner
         }
     }
 }
@@ -132,6 +139,7 @@ extension ViewController: RestoreCellDelegate {
     
     internal func requestRestore() {
         iap.restorePurchases() { _ in
+            self.iap.processReceipt()
             self.tableView.reloadData()  // Reload data for a success or failure
         }
     }

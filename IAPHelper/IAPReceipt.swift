@@ -5,8 +5,8 @@
 //  Created by Russell Archer on 25/06/2020.
 //
 //  Swift wrapper for OpenSSL functions.
-//  This class contains modified portions of code created by Bill Morefield copyright (c) 2018 Razeware LLC.
-//  See https://www.raywenderlich.com/9257-in-app-purchases-receipt-validation-tutorial
+//  Contains modified portions of code created by Bill Morefield copyright (c) 2018 Razeware LLC.
+//
 
 import UIKit
 
@@ -20,14 +20,13 @@ import UIKit
 ///
 /// * The receipt is a single encrypted file stored locally on the device and is accessible
 ///   through the main bundle (Bundle.main.appStoreReceiptURL)
+/// * When the app is newly installed the receipt will be missing
 /// * We use OpenSSL to access data in the receipt
-/// * A new receipt is issued automatically (and to IAPHelper it appears as a refresh event)
-///   by the App Store each time:
+/// * A new receipt is issued automatically by the App Store when:
 ///
 ///     * an in-app purchase succeeds
-///     * the app is re-installed
+///     * previous in-app purchases are restored
 ///     * an app update happens
-///     * when previous in-app purchases are restored
 ///
 public class IAPReceipt {
         
@@ -43,14 +42,14 @@ public class IAPReceipt {
     /// True if the receipt is available in the main bundle, false otherwise.
     public var isReachable: Bool {
         guard let receiptUrl = Bundle.main.appStoreReceiptURL else {
-            mostRecentError = .badUrl
-            delegate?.requestSendNotification(notification: .receiptMissing)
+            IAPLog.event(.receiptBadUrl)
             return false
         }
         
+        IAPLog.event("Receipt reachable at \(receiptUrl)")
+        
         guard let _ = try? receiptUrl.checkResourceIsReachable() else {
-            mostRecentError = .missing
-            delegate?.requestSendNotification(notification: .receiptMissing)
+            IAPLog.event(.receiptMissing)
             return false
         }
         
@@ -69,16 +68,10 @@ public class IAPReceipt {
     /// True if the receipt has been read and its metadata cached.
     public var hasBeenRead = false
     
-    /// Keeps track of the most recent error condition.
-    public var mostRecentError: IAPReceiptError = .noError
-
-    /// IAPHelper delegate
-    public weak var delegate: IAPReceiptDelegate?
-    
     // MARK:- Private properties
 
     internal var inAppReceipts: [IAPReceiptProductInfo] = []  // Array of purchased product info stored in the receipt
-    internal var receiptData: UnsafeMutablePointer<PKCS7>?    // The receipt's cached data
+    internal var receiptData: UnsafeMutablePointer<PKCS7>?    // Pointer to the receipt's cached PKCS7 data
     
     // Data read from the receipt:
     internal var bundleIdString: String?
