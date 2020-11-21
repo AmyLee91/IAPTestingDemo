@@ -154,7 +154,7 @@ public class IAPHelper: NSObject  {
     ///     - when a purchase succeeds (the new receipt is available when paymentQueue(_:updatedTransactions:) is called by StoreKit)
     ///     - when purchases are restored
     public func processReceipt() {
-        IAPLog.event("Processing App Store receipt...")
+        IAPLog.event("Processing App Store receipt")
         
         receipt = IAPReceipt()
 

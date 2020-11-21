@@ -32,7 +32,6 @@
 		6805B7AD24D3115100169F3F /* IAPReceipt+Read.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68D5B25024B2B0630092F570 /* IAPReceipt+Read.swift */; };
 		6805B7AE24D3115100169F3F /* IAPNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68E05E4224A269CD00B6728D /* IAPNotification.swift */; };
 		6805B7AF24D3115100169F3F /* IAPReceipt+ValidateSigning.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68D5B24E24B2B02E0092F570 /* IAPReceipt+ValidateSigning.swift */; };
-		68425435254C9A090004FBB8 /* GetProductsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68425434254C9A090004FBB8 /* GetProductsCell.swift */; };
 		68427B9C253092B800A7C328 /* iap10.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 68427B91253092B800A7C328 /* iap10.jpg */; };
 		68427B9D253092B800A7C328 /* iap12.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 68427B92253092B800A7C328 /* iap12.jpg */; };
 		68427B9E253092B800A7C328 /* iap5.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 68427B93253092B800A7C328 /* iap5.jpg */; };
@@ -218,7 +217,6 @@
 		6805B7B224D3136200169F3F /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libssl.a; path = IAPHelper/openssl/lib/libssl.a; sourceTree = "<group>"; };
 		6805B7B324D3136200169F3F /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcrypto.a; path = IAPHelper/openssl/lib/libcrypto.a; sourceTree = "<group>"; };
 		6811A5EE24A3D7DF00458F85 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		68425434254C9A090004FBB8 /* GetProductsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetProductsCell.swift; sourceTree = "<group>"; };
 		68427B91253092B800A7C328 /* iap10.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = iap10.jpg; sourceTree = "<group>"; };
 		68427B92253092B800A7C328 /* iap12.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = iap12.jpg; sourceTree = "<group>"; };
 		68427B93253092B800A7C328 /* iap5.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = iap5.jpg; sourceTree = "<group>"; };
@@ -487,7 +485,6 @@
 			children = (
 				689F742224B7403E0093F12C /* ProductCell.swift */,
 				689F742424B7404B0093F12C /* RestoreCell.swift */,
-				68425434254C9A090004FBB8 /* GetProductsCell.swift */,
 			);
 			path = Cells;
 			sourceTree = "<group>";
@@ -971,7 +968,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				68E05E1324A262C200B6728D /* ViewController.swift in Sources */,
-				68425435254C9A090004FBB8 /* GetProductsCell.swift in Sources */,
 				68E05E0F24A262C200B6728D /* AppDelegate.swift in Sources */,
 				689F742924B745D10093F12C /* IAPProductInfo.swift in Sources */,
 				689F742324B7403E0093F12C /* ProductCell.swift in Sources */,
@@ -1023,7 +1019,6 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/IAPHelper/openssl-include";
 				INFOPLIST_FILE = IAPHelper/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -1248,7 +1243,6 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = R6BE99W3FU;
 				EXCLUDED_ARCHS = "";
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = IAPTestingDemo/Support/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (

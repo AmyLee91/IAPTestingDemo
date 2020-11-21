@@ -36,6 +36,7 @@ public enum IAPNotification: Error, Equatable {
     case receiptLoadCompleted
     case receiptLoadFailed
     case receiptValidateSigningFailed
+    case receiptValidateSigningSuccess
     case receiptReadCompleted
     case receiptReadFailed
     case receiptValidationCompleted
@@ -88,6 +89,7 @@ public enum IAPNotification: Error, Equatable {
         case .receiptLoadCompleted:                     return "Receipt load completed"
         case .receiptLoadFailed:                        return "Receipt load failed"
         case .receiptValidateSigningFailed:             return "Receipt validation of signing failed"
+        case .receiptValidateSigningSuccess:            return "Receipt validation of signing completed"
         case .receiptReadCompleted:                     return "Receipt read completed"
         case .receiptReadFailed:                        return "Receipt read failed"
         case .receiptValidationCompleted:               return "Receipt validation completed"
@@ -95,74 +97,20 @@ public enum IAPNotification: Error, Equatable {
         case .receiptRefreshInitiated:                  return "Receipt refresh initiated"
         case .receiptRefreshCompleted:                  return "Receipt refresh completed"
         case .receiptRefreshFailed:                     return "Receipt refresh failed"
-        case .receiptProcessingSuccess:                 return "Receipt processing success"
+        case .receiptProcessingSuccess:                 return "Receipt processing completed"
         case .receiptProcessingFailed:                  return "Receipt processing failed"
             
-        case .requestProductsSuccess:                   return "Products retrieved from App Store"
-        case .requestProductsDidFinish:                 return "The request for products finished"
-        case .requestProductsFailed:                    return "The request for products failed"
+        case .requestProductsSuccess:                   return "Localized product info retrieved from App Store"
+        case .requestProductsDidFinish:                 return "The request for products from the App Store completed"
+        case .requestProductsFailed:                    return "The request for products from the App Store failed"
         case .requestProductsNoProducts:                return "The App Store returned an empty list of products"
         case .requestProductsInvalidProducts:           return "The App Store returned a list of invalid (unrecognized) products"
-        case .requestReceiptRefreshSuccess:             return "The request for a receipt refresh completed successfully"
+        case .requestReceiptRefreshSuccess:             return "The request for a receipt refresh completed"
         case .requestReceiptRefreshFailed:              return "The request for a receipt refresh failed"
             
         case .appStoreChanged:                          return "The App Store storefront has changed"
         case .appStoreRevokedEntitlements:              return "The App Store revoked user entitlements"
         case .appStoreNoProductInfo:                    return "No localized product information is available"
-        }
-    }
-    
-    /// The name of the notification.
-    /// - Returns: Returns the name of the notification.
-    public func key() -> String {
-        switch self {
-            
-        case .configurationCantFindInBundle:            return "configurationCantFindInBundle"
-        case .configurationCantReadData:                return "configurationCantReadData"
-        case .configurationCantDecode:                  return "configurationCantDecode"
-        case .configurationNoProductIds:                return "configurationNoProductIds"
-        case .configurationLoadCompleted:               return "configurationLoadCompleted"
-        case .configurationLoadFailed:                  return "configurationLoadFailed"
-        case .configurationEmpty:                       return "configurationEmpty"
-                
-        case .purchaseProductUnavailable:               return "purchaseProductUnavailable"
-        case .purchaseAbortPurchaseInProgress:          return "purchaseAbortPurchaseInProgress"
-        case .purchaseInProgress:                       return "purchaseInProgress"
-        case .purchaseDeferred:                         return "purchaseDeferred"
-        case .purchaseCompleted:                        return "purchaseCompleted"
-        case .purchaseFailed:                           return "purchaseFailed"
-        case .purchaseCancelled:                        return "purchaseCancelled"
-        case .purchaseRestored:                         return "purchaseRestored"
-        case .purchaseRestoreFailed:                    return "purchaseRestoreFailed"
-        case .purchasedProductsLoadCompleted:           return "purchasedProductsLoadCompleted"
-        case .purchasedProductsValidatedAgainstReceipt: return "purchasedProductsValidatedAgainstReceipt"
-            
-        case .receiptBadUrl:                            return "receiptBadUrl"
-        case .receiptMissing:                           return "receiptMissing"
-        case .receiptLoadCompleted:                     return "receiptLoadCompleted"
-        case .receiptLoadFailed:                        return "receiptLoadFailed"
-        case .receiptValidateSigningFailed:             return "receiptValidateSigningFailed"
-        case .receiptReadCompleted:                     return "receiptReadCompleted"
-        case .receiptReadFailed:                        return "receiptReadFailed"
-        case .receiptValidationCompleted:               return "receiptValidationCompleted"
-        case .receiptValidationFailed:                  return "receiptValidationFailed"
-        case .receiptRefreshInitiated:                  return "receiptRefreshInitiated"
-        case .receiptRefreshCompleted:                  return "receiptRefreshCompleted"
-        case .receiptRefreshFailed:                     return "receiptRefreshFailed"
-        case .receiptProcessingSuccess:                 return "receiptProcessingSuccess"
-        case .receiptProcessingFailed:                  return "receiptProcessingFailed"
-            
-        case .requestProductsSuccess:                   return "requestProductsSuccess"
-        case .requestProductsDidFinish:                 return "requestProductsDidFinish"
-        case .requestProductsFailed:                    return "requestProductsFailed"
-        case .requestProductsNoProducts:                return "requestProductsNoProducts"
-        case .requestProductsInvalidProducts:           return "requestProductsInvalidProducts"
-        case .requestReceiptRefreshSuccess:             return "requestReceiptRefreshSuccess"
-        case .requestReceiptRefreshFailed:              return "requestReceiptRefreshFailed"
-            
-        case .appStoreChanged:                          return "appStoreChanged"
-        case .appStoreRevokedEntitlements:              return "appStoreRevokedEntitlements"
-        case .appStoreNoProductInfo:                    return "appStoreNoProductInfo"
         }
     }
 }

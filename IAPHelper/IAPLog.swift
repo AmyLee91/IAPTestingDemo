@@ -31,7 +31,11 @@ public struct IAPLog {
     /// publically available in the Console app.
     /// - Parameter event: An IAPNotification.
     public static func event(_ event: IAPNotification) {
-        os_log("Notification: (%{public}s) %{public}s", log: iapLog, type: .default, event.key(), event.shortDescription())
+        #if DEBUG
+        print(event.shortDescription())
+        #else
+        os_log("%{public}s", log: iapLog, type: .default, event.shortDescription())
+        #endif
     }
     
     /// Logs an IAPNotification. Note that the text (shortDescription) and the productId for the
@@ -40,13 +44,21 @@ public struct IAPLog {
     ///   - event:      An IAPNotification.
     ///   - productId:  A ProductId associated with the event.
     public static func event(_ event: IAPNotification, productId: ProductId) {
-        os_log("Notification: (%{public}s) %{public}s for product %{public}s", log: iapLog, type: .default, event.key(), event.shortDescription(), productId)
+        #if DEBUG
+        print("\(event.shortDescription()) for product \(productId)")
+        #else
+        os_log("%{public}s for product %{public}s", log: iapLog, type: .default, event.shortDescription(), productId)
+        #endif
     }
     
     /// Logs a message.
     /// - Parameter message: The message to log.
     public static func event(_ message: String) {
-        os_log("Message: %s", log: iapLog, type: .info, message)
+        #if DEBUG
+        print(message)
+        #else
+        os_log("%s", log: iapLog, type: .info, message)
+        #endif
     }
 }
 

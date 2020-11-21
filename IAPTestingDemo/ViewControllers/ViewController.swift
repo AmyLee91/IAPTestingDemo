@@ -36,11 +36,16 @@ class ViewController: UIViewController {
         tableView.tableFooterView = UIView(frame: .zero)  // Removes empty cells
         tableView.register(ProductCell.self, forCellReuseIdentifier: ProductCell.reuseId)
         tableView.register(RestoreCell.self, forCellReuseIdentifier: RestoreCell.reuseId)
-        tableView.register(GetProductsCell.self, forCellReuseIdentifier: GetProductsCell.reuseId)
     }
     
     func configureProducts() {
-        iap.requestProductsFromAppStore { _ in
+        iap.requestProductsFromAppStore { notification in
+            
+            // We're getting called more than once because the completion handler is being called
+            // multiple times in IAPHelper (to send multiple notifications before the "final" requestProductsDidFinish)
+            // See requestDidFinish(_ request: SKRequest). We need to check all calls to completion handlers to
+            // ensure they only have ONE call (success/failure). All other calls should just be logged
+            print("processReceipt 1")
             self.iap.processReceipt()
             self.tableView.reloadData()
         }
@@ -51,11 +56,10 @@ class ViewController: UIViewController {
 
 extension ViewController: UITableViewDelegate, UITableViewDataSource {
 
-    internal func numberOfSections(in tableView: UITableView) -> Int { 3 }
+    internal func numberOfSections(in tableView: UITableView) -> Int { 2 }
 
     internal func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         if indexPath.section == 1 { return RestoreCell.cellHeight }
-        else if indexPath.section == 2 { return GetProductsCell.cellHeight }
         
         var purchased = false
         if let p = iap.products?[indexPath.row], iap.isProductPurchased(id: p.productIdentifier) { purchased = true }
@@ -70,8 +74,7 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
     
     internal func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if indexPath.section == 0 { return configureProductCell(for: indexPath) }
-        else if indexPath.section == 1 { return configureRestoreCell() }
-        else { return configureGetProductsCell() }
+        return configureRestoreCell()
     }
     
     private func configureProductCell(for indexPath: IndexPath) -> ProductCell {
@@ -98,12 +101,6 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
     private func configureRestoreCell() -> RestoreCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: RestoreCell.reuseId) as! RestoreCell
         cell.delegate = self
-        return cell
-    }
-    
-    private func configureGetProductsCell() -> GetProductsCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: GetProductsCell.reuseId) as! GetProductsCell
-        cell.parentViewController = self
         return cell
     }
 }
