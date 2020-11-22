@@ -27,30 +27,30 @@ extension IAPReceipt {
         
         ASN1_get_object(&pointer, &length, &type, &xclass, pointer!.distance(to: end))
         guard type == V_ASN1_SET else {
-            IAPLog.event(.receiptReadFailed)
+            IAPLog.event(.receiptReadFailure)
             return false
         }
         
         while pointer! < end {
             ASN1_get_object(&pointer, &length, &type, &xclass, pointer!.distance(to: end))
             guard type == V_ASN1_SEQUENCE else {
-                IAPLog.event(.receiptReadFailed)
+                IAPLog.event(.receiptReadFailure)
                 return false
             }
             
             guard let attributeType = IAPOpenSSL.asn1Int(p: &pointer, expectedLength: length) else {
-                IAPLog.event(.receiptReadFailed)
+                IAPLog.event(.receiptReadFailure)
                 return false
             }
             
             guard let _ = IAPOpenSSL.asn1Int(p: &pointer, expectedLength: pointer!.distance(to: end)) else {
-                IAPLog.event(.receiptReadFailed)
+                IAPLog.event(.receiptReadFailure)
                 return false
             }
             
             ASN1_get_object(&pointer, &length, &type, &xclass, pointer!.distance(to: end))
             guard type == V_ASN1_OCTET_STRING else {
-                IAPLog.event(.receiptReadFailed)
+                IAPLog.event(.receiptReadFailure)
                 return false
             }
             
@@ -84,7 +84,7 @@ extension IAPReceipt {
         }
         
         hasBeenRead = true
-        IAPLog.event(.receiptReadCompleted)
+        IAPLog.event(.receiptReadSuccess)
         
         return true
     }

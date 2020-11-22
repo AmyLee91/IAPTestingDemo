@@ -36,44 +36,44 @@ extension IAPReceipt {
               let _ = opaqueData,
               let hash = hashData else {
             
-            IAPLog.event(.receiptValidationFailed)
+            IAPLog.event(.receiptValidationFailure)
             return false
         }
         
         guard let appBundleId = Bundle.main.bundleIdentifier else {
-            IAPLog.event(.receiptValidationFailed)
+            IAPLog.event(.receiptValidationFailure)
             return false
         }
         
         guard idString == appBundleId else {
-            IAPLog.event(.receiptValidationFailed)
+            IAPLog.event(.receiptValidationFailure)
             return false
         }
         
         guard let appVersionString = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String else {
-            IAPLog.event(.receiptValidationFailed)
+            IAPLog.event(.receiptValidationFailure)
             return false
         }
         
         guard version == appVersionString else {
-            IAPLog.event(.receiptValidationFailed)
+            IAPLog.event(.receiptValidationFailure)
             return false
         }
         
         guard hash == computeHash() else {
-            IAPLog.event(.receiptValidationFailed)
+            IAPLog.event(.receiptValidationFailure)
             return false
         }
         
         if let expirationDate = expirationDate {
             if expirationDate < Date() {
-                IAPLog.event(.receiptValidationFailed)
+                IAPLog.event(.receiptValidationFailure)
                 return false
             }
         }
         
         isValid = true
-        IAPLog.event(.receiptValidationCompleted)
+        IAPLog.event(.receiptValidationSuccess)
         
         return true
     }

@@ -95,53 +95,62 @@ public class IAPHelper: NSObject  {
     internal func readConfigFile() {
         // Read our configuration file that contains the list of ProductIds that are available on the App Store.
         configuredProductIdentifiers = nil
-        if IAPConstants.isRelease { readPropertyListFile() } else { readStoreKitFile() }
+        var success = false
+        if IAPConstants.isRelease { success = readPropertyListFile() } else { success = readStoreKitFile() }
+        
+        let notification = success ? IAPNotification.configurationSuccess : IAPNotification.configurationFailure
+        IAPLog.event(notification)
+        notificationCompletion?(notification)
     }
     
-    internal func readStoreKitFile() {
+    internal func readStoreKitFile() -> Bool {
         let result = IAPConfiguration.readStoreKitFile(filename: IAPConstants.ConfigFile(), ext: IAPConstants.ConfigFileExt())
         switch result {
-        case .failure(_): IAPLog.event(.configurationEmpty)
+        case .failure(_):
+            IAPLog.event(.configurationEmpty)
+            return false
+            
         case .success(let configuration):
             guard let configuredProducts = configuration.products, configuredProducts.count > 0 else {
                 IAPLog.event(.configurationEmpty)
-                return
+                return false
             }
             
             configuredProductIdentifiers = Set<ProductId>(configuredProducts.compactMap { product in product.productID })
-            IAPLog.event(.configurationLoadCompleted)
+            return true
         }
     }
     
-    internal func readPropertyListFile() {
+    internal func readPropertyListFile() -> Bool {
         guard let result = IAPConfiguration.readPropertyFile(filename: IAPConstants.ConfigFile()) else {
-            IAPLog.event(.configurationLoadFailed)
-            return
+            return false
         }
         
         guard result.count > 0 else {
             IAPLog.event(.configurationEmpty)
-            return
+            return false
         }
         
         guard let values = result["Products"] as? [String] else {
             IAPLog.event(.configurationEmpty)
-            return
+            return false
         }
         
         configuredProductIdentifiers = Set<ProductId>(values.compactMap { $0 })
-        IAPLog.event(.configurationLoadCompleted)
+        return true
     }
 
     internal func loadPurchasedProductIds() {
         // Load our set of purchased ProductIds from UserDefaults
         guard haveConfiguredProductIdentifiers else {
-            IAPLog.event(.configurationEmpty)
+            IAPLog.event(.purchasedProductsLoadFailure)
+            notificationCompletion?(.purchasedProductsLoadFailure)
             return
         }
 
         purchasedProductIdentifiers = IAPPersistence.loadPurchasedProductIds(for: configuredProductIdentifiers!)
-        IAPLog.event(.purchasedProductsLoadCompleted)
+        IAPLog.event(.purchasedProductsLoadSuccess)
+        notificationCompletion?(.purchasedProductsLoadSuccess)
     }
 
     // MARK:- Public Helpers
@@ -154,7 +163,7 @@ public class IAPHelper: NSObject  {
     ///     - when a purchase succeeds (the new receipt is available when paymentQueue(_:updatedTransactions:) is called by StoreKit)
     ///     - when purchases are restored
     public func processReceipt() {
-        IAPLog.event("Processing App Store receipt")
+        IAPLog.event(.receiptValidationStarted)
         
         receipt = IAPReceipt()
 
@@ -168,7 +177,7 @@ public class IAPHelper: NSObject  {
               receipt.read(),
               receipt.validate() else {
 
-            IAPLog.event(.receiptProcessingFailed)
+            IAPLog.event(.receiptProcessingFailure)
             return
         }
 
@@ -179,10 +188,10 @@ public class IAPHelper: NSObject  {
         IAPLog.event(.receiptProcessingSuccess)
     }
 
-    /// Register a completion block to receive asynchronous notifications for app store operations.
+    /// Register a completion block to receive general notifications for app store operations.
     /// - Parameter completion:     Completion block to receive asynchronous notifications for app store operations.
     /// - Parameter notification:   IAPNotification providing details on the event.
-    public func processNotifications(completion: @escaping (_ notification: IAPNotification?) -> Void) {
+    public func receiveNotifications(completion: @escaping (_ notification: IAPNotification?) -> Void) {
         notificationCompletion = completion
     }
 

@@ -44,15 +44,15 @@ extension IAPHelper: SKRequestDelegate {
             productsRequest = nil  // Destroy the request object
             
             // Call the completion handler. The request for product info failed
-            IAPLog.event(.requestProductsFailed)
-            DispatchQueue.main.async { self.requestProductsCompletion?(.requestProductsFailed) }
+            IAPLog.event(.requestProductsFailure)
+            DispatchQueue.main.async { self.requestProductsCompletion?(.requestProductsFailure) }
             return
         }
         
         if receiptRequest != nil {
             receiptRequest = nil  // Destory the receipt request object
-            IAPLog.event(.requestReceiptRefreshFailed)
-            DispatchQueue.main.async { self.requestReceiptCompletion?(.requestReceiptRefreshFailed) }
+            IAPLog.event(.requestReceiptRefreshFailure)
+            DispatchQueue.main.async { self.requestReceiptCompletion?(.requestReceiptRefreshFailure) }
         }
     }
 }

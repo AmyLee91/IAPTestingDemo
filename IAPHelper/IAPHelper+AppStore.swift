@@ -23,7 +23,7 @@ extension IAPHelper {
         receiptRequest!.delegate = self
         receiptRequest!.start()  // Will notify through SKRequestDelegate requestDidFinish(_:)
         
-        IAPLog.event(.receiptRefreshInitiated)
+        IAPLog.event(.receiptRefreshStarted)
     }
     
     /// Request from the App Store the collection of products that we've configured for sale in App Store Connect.
@@ -52,6 +52,8 @@ extension IAPHelper {
         productsRequest = SKProductsRequest(productIdentifiers: configuredProductIdentifiers!)
         productsRequest!.delegate = self  // Will notify through productsRequest(_:didReceive:)
         productsRequest!.start()
+        
+        IAPLog.event(.requestProductsStarted)
     }
     
     /// Start the process to purchase a product. When we add the payment to the default payment queue
@@ -75,6 +77,8 @@ extension IAPHelper {
         
         let payment = SKPayment(product: product)  // Wrap the SKProduct in an SKPayment object
         SKPaymentQueue.default().add(payment)
+        
+        IAPLog.event(.purchaseStarted)
     }
     
     /// Ask StoreKit to restore any previous purchases that are missing from this device.
@@ -88,6 +92,8 @@ extension IAPHelper {
 
         restorePurchasesCompletion = completion
         SKPaymentQueue.default().restoreCompletedTransactions()
+        
+        IAPLog.event(.purchaseRestoreStarted)
     }
     
     /// The Apple ID of some users (e.g. children) may not have permission to make purchases from the app store.

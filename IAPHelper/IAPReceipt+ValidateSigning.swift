@@ -17,14 +17,14 @@ extension IAPReceipt {
     public func validateSigning() -> Bool {
         // Do we have cached PKCS7 data
         guard receiptData != nil else {
-            IAPLog.event(.receiptValidateSigningFailed)
+            IAPLog.event(.receiptValidateSigningFailure)
             return false
         }
         
         guard let rootCertUrl = Bundle.main.url(forResource: IAPConstants.Certificate(), withExtension: IAPConstants.CertificateExt()),
               let rootCertData = try? Data(contentsOf: rootCertUrl) else {
             
-            IAPLog.event(.receiptValidateSigningFailed)
+            IAPLog.event(.receiptValidateSigningFailure)
             return false
         }
         
@@ -49,7 +49,7 @@ extension IAPReceipt {
         #endif
         
         guard verificationResult == 1  else {
-            IAPLog.event(.receiptValidateSigningFailed)
+            IAPLog.event(.receiptValidateSigningFailure)
             return false
         }
         

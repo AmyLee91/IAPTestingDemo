@@ -23,7 +23,7 @@ extension IAPHelper: SKProductsRequestDelegate {
 
         guard response.invalidProductIdentifiers.isEmpty else {
             IAPLog.event(.requestProductsInvalidProducts)
-            DispatchQueue.main.async { self.requestProductsCompletion?(.requestProductsInvalidProducts) }  // Call the completion handler
+            DispatchQueue.main.async { self.requestProductsCompletion?(.requestProductsInvalidProducts) }
             return
         }
         

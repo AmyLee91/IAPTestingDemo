@@ -20,13 +20,13 @@ extension IAPReceipt {
         
         // Get the URL of the receipt file
         guard let receiptUrl = Bundle.main.appStoreReceiptURL else {
-            IAPLog.event(.receiptLoadFailed)
+            IAPLog.event(.receiptLoadFailure)
             return false
         }
         
         // Read the encrypted receipt container file as Data
         guard let data = try? Data(contentsOf: receiptUrl) else {
-            IAPLog.event(.receiptLoadFailed)
+            IAPLog.event(.receiptLoadFailure)
             return false
         }
         
@@ -39,24 +39,24 @@ extension IAPReceipt {
 
         // Check the PKCS7 container exists
         guard receiptPKCS7 != nil else {
-            IAPLog.event(.receiptLoadFailed)
+            IAPLog.event(.receiptLoadFailure)
             return false
         }
         
         // Check the PKCS7 container has a signature
         guard pkcs7IsSigned(pkcs7: receiptPKCS7!) else {
-            IAPLog.event(.receiptLoadFailed)
+            IAPLog.event(.receiptLoadFailure)
             return false
         }
         
         // Check the PKCS7 container is of the correct data type
         guard pkcs7IsData(pkcs7: receiptPKCS7!) else {
-            IAPLog.event(.receiptLoadFailed)
+            IAPLog.event(.receiptLoadFailure)
             return false
         }
         
         receiptData = receiptPKCS7  // Cache the PKCS7 data
-        IAPLog.event(.receiptLoadCompleted)
+        IAPLog.event(.receiptLoadSuccess)
 
         return true
     }

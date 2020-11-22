@@ -18,6 +18,10 @@ class ViewController: UIViewController {
         
         configureTableView()
         configureProducts()
+        
+        iap.receiveNotifications { notification in
+            // Respond to general notifications
+        }
     }
     
     func configureTableView() {
@@ -41,13 +45,11 @@ class ViewController: UIViewController {
     func configureProducts() {
         iap.requestProductsFromAppStore { notification in
             
-            // We're getting called more than once because the completion handler is being called
-            // multiple times in IAPHelper (to send multiple notifications before the "final" requestProductsDidFinish)
-            // See requestDidFinish(_ request: SKRequest). We need to check all calls to completion handlers to
-            // ensure they only have ONE call (success/failure). All other calls should just be logged
-            print("processReceipt 1")
-            self.iap.processReceipt()
-            self.tableView.reloadData()
+            if notification == IAPNotification.requestProductsSuccess {
+                print("processReceipt 1")
+                self.iap.processReceipt()
+                self.tableView.reloadData()
+            }
         }
     }
 }
@@ -114,12 +116,12 @@ extension ViewController: ProductCellDelegate {
         
         iap.buyProduct(product) { notification in
             switch notification {
-            case .purchaseAbortPurchaseInProgress:       IAPLog.event("Purchase aborted because another purchase is being processed")
+            case .purchaseAbortPurchaseInProgress: IAPLog.event("Purchase aborted because another purchase is being processed")
             case .purchaseCancelled(productId: let pid): IAPLog.event("Purchase cancelled for product \(pid)")
-            case .purchaseFailed(productId: let pid):    IAPLog.event("Purchase failed for product \(pid)")
-            case .purchaseCompleted(productId: let pid):
+            case .purchaseFailure(productId: let pid): IAPLog.event("Purchase failure for product \(pid)")
+            case .purchaseSuccess(productId: let pid):
                 
-                IAPLog.event("Purchase succeeded for product \(pid)")
+                IAPLog.event("Purchase success for product \(pid)")
                 self.iap.processReceipt()
             
             default: break
@@ -135,9 +137,17 @@ extension ViewController: ProductCellDelegate {
 extension ViewController: RestoreCellDelegate {
     
     internal func requestRestore() {
-        iap.restorePurchases() { _ in
-            self.iap.processReceipt()
-            self.tableView.reloadData()  // Reload data for a success or failure
+        iap.restorePurchases() { notification in
+            
+            switch notification {
+            case .purchaseRestoreSuccess(productId:): fallthrough
+            case .purchaseRestoreFailure(productId:):
+                
+                self.iap.processReceipt()
+                self.tableView.reloadData()  // Reload data for a success or failure
+            
+            default: break
+            }
         }
     }
 }

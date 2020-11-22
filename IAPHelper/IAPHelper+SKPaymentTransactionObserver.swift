@@ -47,10 +47,10 @@ extension IAPHelper: SKPaymentTransactionObserver {
             // The app store says the purchase successfully completed. However, we can't access
             // the product id of the product that was purchased. We'll signal that the purchase/restore
             // was successful and try and resolve the issue next time the receipt is refreshed
-            IAPLog.event(restore ? .purchaseRestored(productId: upid) : .purchaseCompleted(productId: upid))
+            IAPLog.event(restore ? .purchaseRestoreSuccess(productId: upid) : .purchaseSuccess(productId: upid))
 
-            if restore { DispatchQueue.main.async { self.restorePurchasesCompletion?(.purchaseRestored(productId: upid)) }}
-            else { DispatchQueue.main.async { self.purchaseCompletion?(.purchaseCompleted(productId: upid)) }}
+            if restore { DispatchQueue.main.async { self.restorePurchasesCompletion?(.purchaseRestoreSuccess(productId: upid)) }}
+            else { DispatchQueue.main.async { self.purchaseCompletion?(.purchaseSuccess(productId: upid)) }}
             
             return
         }
@@ -63,9 +63,9 @@ extension IAPHelper: SKPaymentTransactionObserver {
         purchasedProductIdentifiers.insert(transaction.payment.productIdentifier)
 
         // Tell the request originator about the purchase
-        IAPLog.event(restore ? .purchaseRestored(productId: identifier) : .purchaseCompleted(productId: identifier))
-        if restore { DispatchQueue.main.async { self.restorePurchasesCompletion?(.purchaseRestored(productId: identifier)) }}
-        else { DispatchQueue.main.async { self.purchaseCompletion?(.purchaseCompleted(productId: identifier)) }}
+        IAPLog.event(restore ? .purchaseRestoreSuccess(productId: identifier) : .purchaseSuccess(productId: identifier))
+        if restore { DispatchQueue.main.async { self.restorePurchasesCompletion?(.purchaseRestoreSuccess(productId: identifier)) }}
+        else { DispatchQueue.main.async { self.purchaseCompletion?(.purchaseSuccess(productId: identifier)) }}
 
         // Note that we do not present a confirmation alert to the user as StoreKit will have already done this
     }
@@ -91,8 +91,8 @@ extension IAPHelper: SKPaymentTransactionObserver {
 
             } else {
 
-                IAPLog.event(.purchaseFailed(productId: identifier))
-                DispatchQueue.main.async { self.purchaseCompletion?(.purchaseFailed(productId: identifier)) }
+                IAPLog.event(.purchaseFailure(productId: identifier))
+                DispatchQueue.main.async { self.purchaseCompletion?(.purchaseFailure(productId: identifier)) }
             }
 
         } else {
@@ -131,9 +131,7 @@ extension IAPHelper: SKPaymentTransactionObserver {
     @available(iOS 13.0, *)
     public func paymentQueueDidChangeStorefront(_ queue: SKPaymentQueue) {
         IAPLog.event(.appStoreChanged)
-        
-        // TODO: We need an appStoreCompletion handler for this type of general app store notification
-        // that's not tied to specific requests like product info, purchase product, etc.
+        DispatchQueue.main.async { self.notificationCompletion?(.appStoreChanged) }
     }
     
     /// Sent when entitlements for a user have changed and access to the specified IAPs has been revoked.
@@ -144,10 +142,8 @@ extension IAPHelper: SKPaymentTransactionObserver {
     public func paymentQueue(_ queue: SKPaymentQueue, didRevokeEntitlementsForProductIdentifiers productIdentifiers: [String]) {
         productIdentifiers.forEach { productId in
             IAPLog.event(.appStoreRevokedEntitlements(productId: productId))
+            DispatchQueue.main.async { self.notificationCompletion?(.appStoreRevokedEntitlements(productId: productId)) }
         }
-        
-        // TODO: We need an appStoreCompletion handler for this type of general app store notification
-        // that's not tied to specific requests like product info, purchase product, etc.
     }
     
     /// Tells the observer that a user initiated an in-app purchase from the App Store, rather than via the app itself.
